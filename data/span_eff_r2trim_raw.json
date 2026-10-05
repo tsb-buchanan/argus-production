@@ -1,0 +1,308 @@
+{
+  "SWB_r2trim_t6000": {
+    "available": true,
+    "time": 6000.0,
+    "planes": [
+      {
+        "plane": "trefftz_x1",
+        "x_m": 2.39425,
+        "CDi": 0.006183378888907885,
+        "CDi_counts": 61.833788889078846,
+        "span_efficiency": 0.8758047401895154,
+        "n_faces": 78366
+      },
+      {
+        "plane": "trefftz_x2",
+        "x_m": 2.6261900000000007,
+        "CDi": 0.005867328250898662,
+        "CDi_counts": 58.67328250898662,
+        "span_efficiency": 0.9229810076611713,
+        "n_faces": 78312
+      },
+      {
+        "plane": "trefftz_x3",
+        "x_m": 2.91613,
+        "CDi": 0.00569359649658121,
+        "CDi_counts": 56.9359649658121,
+        "span_efficiency": 0.9511444206741849,
+        "n_faces": 78153
+      },
+      {
+        "plane": "trefftz_x4",
+        "x_m": 3.2060600000000004,
+        "CDi": 0.0055983646219037245,
+        "CDi_counts": 55.98364621903725,
+        "span_efficiency": 0.9673240146069275,
+        "n_faces": 77994
+      }
+    ],
+    "CDi_counts_range": [
+      55.98364621903725,
+      61.833788889078846
+    ],
+    "span_efficiency_range": [
+      0.8758047401895154,
+      0.9673240146069275
+    ],
+    "note": "Reported across ALL sampled stations. Induced drag on a wake plane decays downstream and has no plateau, so the SPREAD is the uncertainty, not scatter to be averaged away.",
+    "time_req": 6000,
+    "alpha_deg": 1.7476076753733858,
+    "CL": 0.4282682,
+    "Cd": 0.0188031
+  },
+  "SWC_r2trim_t6000": {
+    "available": true,
+    "time": 6000.0,
+    "planes": [
+      {
+        "plane": "trefftz_x1",
+        "x_m": 2.39425,
+        "CDi": 0.0061701777403826924,
+        "CDi_counts": 61.701777403826924,
+        "span_efficiency": 0.8777150110934706,
+        "n_faces": 78366
+      },
+      {
+        "plane": "trefftz_x2",
+        "x_m": 2.6261900000000007,
+        "CDi": 0.0058218511114614836,
+        "CDi_counts": 58.218511114614834,
+        "span_efficiency": 0.9302294957675695,
+        "n_faces": 78312
+      },
+      {
+        "plane": "trefftz_x3",
+        "x_m": 2.91613,
+        "CDi": 0.005638829638074975,
+        "CDi_counts": 56.38829638074975,
+        "span_efficiency": 0.9604222811202924,
+        "n_faces": 78159
+      },
+      {
+        "plane": "trefftz_x4",
+        "x_m": 3.2060600000000004,
+        "CDi": 0.005541407127033765,
+        "CDi_counts": 55.41407127033765,
+        "span_efficiency": 0.9773072975324957,
+        "n_faces": 77994
+      }
+    ],
+    "CDi_counts_range": [
+      55.41407127033765,
+      61.701777403826924
+    ],
+    "span_efficiency_range": [
+      0.8777150110934706,
+      0.9773072975324957
+    ],
+    "note": "Reported across ALL sampled stations. Induced drag on a wake plane decays downstream and has no plateau, so the SPREAD is the uncertainty, not scatter to be averaged away.",
+    "time_req": 6000,
+    "alpha_deg": 1.2683128488405377,
+    "CL": 0.4282771,
+    "Cd": 0.018784
+  },
+  "SWF_r2trim_t6000": {
+    "available": true,
+    "time": 6000.0,
+    "planes": [
+      {
+        "plane": "trefftz_x1",
+        "x_m": 2.39425,
+        "CDi": 0.0061000609567974685,
+        "CDi_counts": 61.000609567974685,
+        "span_efficiency": 0.8877901719476433,
+        "n_faces": 78366
+      },
+      {
+        "plane": "trefftz_x2",
+        "x_m": 2.6262000000000003,
+        "CDi": 0.0057668857526856085,
+        "CDi_counts": 57.66885752685609,
+        "span_efficiency": 0.9390812299696288,
+        "n_faces": 78312
+      },
+      {
+        "plane": "trefftz_x3",
+        "x_m": 2.91613,
+        "CDi": 0.005588977701020233,
+        "CDi_counts": 55.88977701020233,
+        "span_efficiency": 0.968974015540937,
+        "n_faces": 78156
+      },
+      {
+        "plane": "trefftz_x4",
+        "x_m": 3.2060600000000004,
+        "CDi": 0.005493176823148252,
+        "CDi_counts": 54.931768231482515,
+        "span_efficiency": 0.9858729001595391,
+        "n_faces": 77994
+      }
+    ],
+    "CDi_counts_range": [
+      54.931768231482515,
+      61.000609567974685
+    ],
+    "span_efficiency_range": [
+      0.8877901719476433,
+      0.9858729001595391
+    ],
+    "note": "Reported across ALL sampled stations. Induced drag on a wake plane decays downstream and has no plateau, so the SPREAD is the uncertainty, not scatter to be averaged away.",
+    "time_req": 6000,
+    "alpha_deg": 1.4754577280463896,
+    "CL": 0.4282738,
+    "Cd": 0.0187216
+  },
+  "SWH_r2trim_t6000": {
+    "available": true,
+    "time": 6000.0,
+    "planes": [
+      {
+        "plane": "trefftz_x1",
+        "x_m": 2.39425,
+        "CDi": 0.006156262019761362,
+        "CDi_counts": 61.56262019761362,
+        "span_efficiency": 0.8796850457824219,
+        "n_faces": 78366
+      },
+      {
+        "plane": "trefftz_x2",
+        "x_m": 2.6261900000000007,
+        "CDi": 0.0058188201829241955,
+        "CDi_counts": 58.188201829241954,
+        "span_efficiency": 0.930699259721893,
+        "n_faces": 78312
+      },
+      {
+        "plane": "trefftz_x3",
+        "x_m": 2.91613,
+        "CDi": 0.005639123451036994,
+        "CDi_counts": 56.391234510369934,
+        "span_efficiency": 0.9603569923099439,
+        "n_faces": 78153
+      },
+      {
+        "plane": "trefftz_x4",
+        "x_m": 3.2060600000000004,
+        "CDi": 0.0055416283451617905,
+        "CDi_counts": 55.41628345161791,
+        "span_efficiency": 0.9772527674885509,
+        "n_faces": 77994
+      }
+    ],
+    "CDi_counts_range": [
+      55.41628345161791,
+      61.56262019761362
+    ],
+    "span_efficiency_range": [
+      0.8796850457824219,
+      0.9772527674885509
+    ],
+    "note": "Reported across ALL sampled stations. Induced drag on a wake plane decays downstream and has no plateau, so the SPREAD is the uncertainty, not scatter to be averaged away.",
+    "time_req": 6000,
+    "alpha_deg": 1.5523109871715541,
+    "CL": 0.4282737,
+    "Cd": 0.0188022
+  },
+  "SWM_r2trim_t6000": {
+    "available": true,
+    "time": 6000.0,
+    "planes": [
+      {
+        "plane": "trefftz_x1",
+        "x_m": 2.39425,
+        "CDi": 0.006203465682532448,
+        "CDi_counts": 62.03465682532448,
+        "span_efficiency": 0.8730076178822329,
+        "n_faces": 78366
+      },
+      {
+        "plane": "trefftz_x2",
+        "x_m": 2.6261900000000007,
+        "CDi": 0.005851782456539123,
+        "CDi_counts": 58.51782456539123,
+        "span_efficiency": 0.925474048009089,
+        "n_faces": 78312
+      },
+      {
+        "plane": "trefftz_x3",
+        "x_m": 2.91613,
+        "CDi": 0.0056675960114726115,
+        "CDi_counts": 56.67596011472612,
+        "span_efficiency": 0.955550252198494,
+        "n_faces": 78153
+      },
+      {
+        "plane": "trefftz_x4",
+        "x_m": 3.2060600000000004,
+        "CDi": 0.005569584349323608,
+        "CDi_counts": 55.69584349323608,
+        "span_efficiency": 0.9723657024387345,
+        "n_faces": 77994
+      }
+    ],
+    "CDi_counts_range": [
+      55.69584349323608,
+      62.03465682532448
+    ],
+    "span_efficiency_range": [
+      0.8730076178822329,
+      0.9723657024387345
+    ],
+    "note": "Reported across ALL sampled stations. Induced drag on a wake plane decays downstream and has no plateau, so the SPREAD is the uncertainty, not scatter to be averaged away.",
+    "time_req": 6000,
+    "alpha_deg": 1.2574247848743663,
+    "CL": 0.4282777,
+    "Cd": 0.0188263
+  },
+  "SWW_r2trim_t6000": {
+    "available": true,
+    "time": 6000.0,
+    "planes": [
+      {
+        "plane": "trefftz_x1",
+        "x_m": 2.39416,
+        "CDi": 0.006095583220214044,
+        "CDi_counts": 60.95583220214044,
+        "span_efficiency": 0.8884427460184403,
+        "n_faces": 78366
+      },
+      {
+        "plane": "trefftz_x2",
+        "x_m": 2.6260800000000013,
+        "CDi": 0.005773764963894181,
+        "CDi_counts": 57.73764963894181,
+        "span_efficiency": 0.9379627900714363,
+        "n_faces": 78312
+      },
+      {
+        "plane": "trefftz_x3",
+        "x_m": 2.9159900000000003,
+        "CDi": 0.005599526191028339,
+        "CDi_counts": 55.99526191028339,
+        "span_efficiency": 0.9671490961910003,
+        "n_faces": 78153
+      },
+      {
+        "plane": "trefftz_x4",
+        "x_m": 3.205910000000002,
+        "CDi": 0.005505450470904555,
+        "CDi_counts": 55.05450470904555,
+        "span_efficiency": 0.9836754909287384,
+        "n_faces": 77994
+      }
+    ],
+    "CDi_counts_range": [
+      55.05450470904555,
+      60.95583220214044
+    ],
+    "span_efficiency_range": [
+      0.8884427460184403,
+      0.9836754909287384
+    ],
+    "note": "Reported across ALL sampled stations. Induced drag on a wake plane decays downstream and has no plateau, so the SPREAD is the uncertainty, not scatter to be averaged away.",
+    "time_req": 6000,
+    "alpha_deg": 1.520546959447182,
+    "CL": 0.4282739,
+    "Cd": 0.0187163
+  }
+}

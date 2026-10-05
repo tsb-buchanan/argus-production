@@ -1,0 +1,701 @@
+{
+  "schema": "argus.liming_vlm_claims/1",
+  "generated": "2026-09-15",
+  "purpose": "Every quantitative VLM/VSPAERO claim Liming Zheng (DSO) has made about ARGUS morphing-candidate performance, each with its operating point and normalising frame attached, and each marked current / superseded / withdrawn.",
+  "reading_rules": [
+    "NO percentage or drag count in this file may be quoted without the operating_point_id AND the frame_id that sit beside it.",
+    "Liming's reports supersede each other. Only entries with status=current are quotable as present DSO results.",
+    "Liming never quotes total drag. Every claim below is induced drag only: near-field CDi or wake/Trefftz CDiw. See notes.induced_drag_only.",
+    "A percentage reduction is invariant to Sref because baseline and candidate share it. A DRAG COUNT IS NOT. See frames.collision."
+  ],
+
+  "sources": [
+    {
+      "id": "rpt_2026-07-28",
+      "date": "2026-07-28",
+      "kind": "report",
+      "path": "$ARGUS_ROOT/dso_reference/2026-07-28_correction/ARGUS_aerodynamic_optimization_reports_28_July_Liming.pdf",
+      "text_extract": "ARGUS_aerodynamic_optimization_reports_28_July_Liming.txt (pdftotext extract of the report in path; not shipped)",
+      "pdftotext_lines": 3542,
+      "read_ok": true,
+      "content_state": "1050 N m hinge proxy withdrawn. NO inserted-airfoil correction. NO CDiw. All rankings on near-field CDi, pre-correction geometry."
+    },
+    {
+      "id": "rpt_2026-07-29",
+      "date": "2026-07-29",
+      "kind": "report",
+      "path": "$ARGUS_ROOT/dso_reference/ARGUS_aerodynamic_optimization_reports-Liming-29-07.pdf",
+      "text_extract": "ARGUS_aerodynamic_optimization_reports-Liming-29-07.txt (pdftotext extract of the report in path; not shipped)",
+      "pdftotext_lines": 4244,
+      "read_ok": true,
+      "note": "This report IS the pre-supplied $ARGUS_ROOT/dso_reference/liming_report_extracted.txt. Verified: all probe strings ('reduce CDi by 4.567%, 6.524%, and 5.851%', chc_g02_c17, cte_i002_c04, ctw_i001_c03) present in both; character counts differ by 385 of 156525 (0.25%) from layout/extraction differences only.",
+      "content_state": "Adds the SplitWingXSec inserted-airfoil correction and the corrected low-speed four-concept CDi comparison. Cruise M0.78 table still PRE-correction."
+    },
+    {
+      "id": "rpt_2026-08-07",
+      "date": "2026-08-07",
+      "kind": "report",
+      "path": "$ARGUS_ROOT/dso_reference/ARGUS_aerodynamic_optimization_reports_07_Augest_Liming.pdf",
+      "text_extract": "ARGUS_aerodynamic_optimization_reports_07_Augest_Liming.txt (pdftotext extract of the report in path; not shipped)",
+      "pdftotext_lines": 4325,
+      "read_ok": true,
+      "content_state": "Cruise M0.78 study regenerated on corrected geometry. Still near-field CDi."
+    },
+    {
+      "id": "rpt_2026-08-10",
+      "date": "2026-08-10",
+      "kind": "report",
+      "path": "$ARGUS_ROOT/dso_reference/10-8/ARGUS_aerodynamic_optimization_reports_10_Augest_Liming.pdf",
+      "text_extract": "ARGUS_aerodynamic_optimization_reports_10_Augest_Liming.txt (pdftotext extract of the report in path; not shipped)",
+      "pdftotext_lines": 4335,
+      "read_ok": true,
+      "content_state": "Numerically identical headline table to 2026-08-07. Adds the 'Constraint-dependent headline' paragraph: the early-cruise ordering is as much a statement about the assumed bending limit as about the concepts."
+    },
+    {
+      "id": "rpt_2026-08-19",
+      "date": "2026-08-19",
+      "kind": "report",
+      "path": "$ARGUS_ROOT/dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/ARGUS_aerodynamic_optimization_reports_19_Augest_Liming.pdf",
+      "text_extract": "ARGUS_aerodynamic_optimization_reports_19_Augest_Liming.txt (pdftotext extract of the report in path; not shipped)",
+      "pdftotext_lines": 4757,
+      "read_ok": true,
+      "content_state": "CURRENT. Switches the induced-drag metric from near-field CDi to wake/Trefftz CDiw and reranks every concept at both Mach numbers.",
+      "is_current": true
+    },
+    { "id": "pkg_2026-07-24", "date": "2026-07-24", "kind": "data_package", "path": "$ARGUS_ROOT/dso_reference/README.txt", "read_ok": true },
+    { "id": "pkg_2026-07-28", "date": "2026-07-28", "kind": "correction_notice", "path": "$ARGUS_ROOT/dso_reference/2026-07-28_correction/CORRECTION_NOTICE_2026-07-28.txt", "read_ok": true },
+    { "id": "pkg_2026-07-29", "date": "2026-07-29", "kind": "data_package", "path": "$ARGUS_ROOT/dso_reference/2026-07-29_correction_pair/README.txt", "read_ok": true, "also": "$ARGUS_ROOT/dso_reference/2026-07-29_correction_pair/CORRECTED_OPTIMUM_UPDATE.txt" },
+    { "id": "pkg_2026-08-07", "date": "2026-08-07", "kind": "data_package", "path": "$ARGUS_ROOT/dso_reference/7-8/README.txt", "read_ok": true, "also": "$ARGUS_ROOT/dso_reference/7-8/corrected_four_concept_summary.csv" },
+    { "id": "pkg_2026-08-10", "date": "2026-08-10", "kind": "data_package", "path": "$ARGUS_ROOT/dso_reference/10-8/README.txt", "read_ok": true },
+    { "id": "pkg_2026-08-19", "date": "2026-08-19", "kind": "data_package", "path": "$ARGUS_ROOT/dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/README.txt", "read_ok": true, "machine_readable": ["ARGUS_CDIW_audit_delivery_2026-08-19/01_cruise_cdiw_audit/audit_summary.json", "ARGUS_CDIW_audit_delivery_2026-08-19/01_cruise_cdiw_audit/selected_cases_near_vs_far.csv", "ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current/strict_summary.json", "ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current/strict_selected_results.csv"] },
+    { "id": "resp_2026-09-02", "date": "2026-09-02", "kind": "our_response", "path": "$ARGUS_ROOT/delivery/ARGUS_progress_2026-09-02/05_response_to_liming/RESPONSE.md", "read_ok": true }
+  ],
+
+  "frames": {
+    "note": "Established by WITHIN-FILE PROOF from the native VSPAERO .vspaero input decks, not from report prose. The report prose is wrong about this for the low-speed study; see flags.F1.",
+    "evidence_method": "Each .vspaero deck states Sref/Cref/Bref literally. Independently confirmed by recomputing ew = CL^2/(pi*AR*CDiw) from the native .polar and comparing to the solver's own Ew column: agreement 2.08e-07 with the correct AR, 1.13e-01 with the other one. A known-answer null that halts in both directions.",
+    "frame_lowspeed": {
+      "id": "frame_lowspeed",
+      "applies_to": "EVERY M = 0.10 case, all vintages (24 Jul handover, 29 Jul corrected pair, 19 Aug corrected low-speed selections)",
+      "Sref_ft2": 13.3572,
+      "Cref_ft": 1.29251,
+      "Bref_ft": 12.0,
+      "Sref_m2": 1.240924,
+      "Cref_m": 0.393957,
+      "bref_m": 3.6576,
+      "aspect_ratio": 10.780703,
+      "argus_name": "DSO basis",
+      "matches_argus_primary": true,
+      "proof_files": [
+        "dso_reference/baseline_operating_point_and_loads/baseline_wing_only_refined.vspaero",
+        "dso_reference/mbr_c01_l011_operating_point_and_loads/mbr_c01_l011.vspaero",
+        "dso_reference/2026-07-29_correction_pair/baseline_corrected/baseline_corrected.vspaero",
+        "dso_reference/2026-07-29_correction_pair/cte_i002_c04/cte_i002_c04.vspaero",
+        "dso_reference/2026-07-29_correction_pair/mcv2_i002_c01/mcv2_i002_c01.vspaero",
+        "dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current/native_cases/baseline_corrected/baseline_corrected.vspaero",
+        "dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current/native_cases/chc_g02_c06/chc_g02_c06.vspaero",
+        "dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current/native_cases/cfft_b02_c01/cfft_b02_c01.vspaero",
+        "dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current/native_cases/cffw_b01_c01/cffw_b01_c01.vspaero"
+      ]
+    },
+    "frame_cruise": {
+      "id": "frame_cruise",
+      "applies_to": "EVERY M = 0.78 case (early and late cruise), all vintages",
+      "Sref_ft2": 12.0,
+      "Cref_ft": 1.11667,
+      "Bref_ft": 12.0,
+      "Sref_m2": 1.114836,
+      "Cref_m": 0.340361,
+      "bref_m": 3.6576,
+      "aspect_ratio": 12.0,
+      "argus_name": "TP-1580 basis",
+      "matches_argus_primary": false,
+      "proof_files": [
+        "dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/01_cruise_cdiw_audit/rigid_baseline/early_cruise/native/rigid_baseline.vspaero",
+        "dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/01_cruise_cdiw_audit/rigid_baseline/late_cruise/native/rigid_baseline.vspaero"
+      ],
+      "corroborating_field": "selected_cases_near_vs_far.csv column reference_aspect_ratio = 11.999999999999998 on all 12 rows"
+    },
+    "collision": {
+      "statement": "LIMING'S LOW-SPEED AND CRUISE STUDIES ARE ON DIFFERENT REFERENCE AREAS. Sref_lowspeed / Sref_cruise = 13.3572 / 12 = 1.113100, i.e. 11.310 %.",
+      "factor_lowspeed_over_cruise": 1.1131,
+      "factor_cruise_counts_to_dso_basis": 0.898392,
+      "consequence_safe": "PERCENTAGE reductions are unaffected: within one study the baseline and the candidate share Sref, so it cancels exactly (linear, exact, not approximate).",
+      "consequence_unsafe": "DRAG COUNTS and ABSOLUTE CDi/CDiw DO NOT CANCEL. A cruise count and a low-speed count are not the same unit. Multiply a cruise count by 0.898392 to put it on the DSO basis our RANS uses.",
+      "relation_to_argus_record": "This is D036 / FRAME RULE instance 2, live inside the DSO deliveries. The 11.31 % factor is ~28x a morphing effect of order 0.4 %."
+    },
+    "load_scale": {
+      "statement": "Root-bending moments are on two different physical scales and must not be compared across studies.",
+      "lowspeed": "Model scale, native VSPAERO condition rho = 0.002377 slug/ft3, Vinf = 100 ft/s. Rigid baseline_corrected half-wing root bending = 110.75353915805569 N m.",
+      "cruise": "Aircraft scale, geometry scaled to Sref = 122.6 m2 / span 38.36 m. Rigid early-cruise half-wing root bending = 2926583.3084655334 N m."
+    }
+  },
+
+  "operating_points": {
+    "op_cruise_early": {
+      "id": "op_cruise_early",
+      "label": "Early cruise",
+      "mach": 0.78,
+      "target_CL": 0.5292970874539268,
+      "target_CL_as_printed_in_report": 0.52929708745,
+      "altitude_m": 10000,
+      "equivalent_lift_mass_kg": 74500,
+      "rho_kg_m3": 0.41271,
+      "q_inf_Pa": 11258.7,
+      "frame": "frame_cruise",
+      "trim": "each geometry independently trimmed in alpha to |CL - CL_target| <= 2e-5",
+      "source": "rpt_2026-08-19 Table 18 (line 3350-3354); pkg_2026-08-07 README"
+    },
+    "op_cruise_late": {
+      "id": "op_cruise_late",
+      "label": "Late cruise",
+      "mach": 0.78,
+      "target_CL": 0.5441148002120662,
+      "target_CL_as_printed_in_report": 0.54411480021,
+      "altitude_m": 12000,
+      "equivalent_lift_mass_kg": 56000,
+      "rho_kg_m3": 0.31083,
+      "q_inf_Pa": 8232.4,
+      "frame": "frame_cruise",
+      "source": "rpt_2026-08-19 Table 18; pkg_2026-08-07 README"
+    },
+    "op_m01_cl0428": {
+      "id": "op_m01_cl0428",
+      "label": "Low speed, fixed CL 0.428277635108",
+      "mach": 0.10,
+      "target_CL": 0.428277635108,
+      "native_condition": "Vinf = 100 ft/s, rho = 0.002377 slug/ft3, wake iterations 3, symmetry on, ReCref = 1e7",
+      "frame": "frame_lowspeed",
+      "used_by": "24 Jul handover pair; 29 Jul corrected pair; corrected TE/twist/conventional reoptimisations; the CURRENT 19 Aug corrected low-speed four-concept selections; the twist DOE, twist first pass and rotation-axis sensitivity studies",
+      "source": "rpt_2026-08-19 lines 1645, 1914, 2287, 2774, 2992; pkg_2026-07-24 README; native .vspaero decks"
+    },
+    "op_m01_cl0529": {
+      "id": "op_m01_cl0529",
+      "label": "Low speed, fixed CL 0.529297",
+      "mach": 0.10,
+      "target_CL": 0.529297,
+      "altitude": "0 m ISA",
+      "q_inf_Pa": 709.275,
+      "frame": "frame_lowspeed",
+      "used_by": "ONLY the historical 125-case four-concept sensitivity database",
+      "warning": "SAME MACH, SAME CONCEPT NAMES, DIFFERENT CL from op_m01_cl0428. This is the D076 operating-point collision inside Liming's own low-speed work. The CL was chosen to equal the early-cruise target, not for any low-speed reason.",
+      "source": "rpt_2026-08-19 eq. 36 (line 4242), Table 26; rpt_2026-07-29 eq. 33, Table 20"
+    }
+  },
+
+  "method": {
+    "solver": "VSPAERO (vortex lattice) driven through the OpenVSP Python API",
+    "vspaero_settings_from_native_decks": {
+      "source_files": ["01_cruise_cdiw_audit/rigid_baseline/*/native/rigid_baseline.vspaero", "02_corrected_low_speed_current/native_cases/*/*.vspaero"],
+      "WakeIters": 3,
+      "Symmetry": 1,
+      "ReCref": 1e7,
+      "Vinf_model_units": 100,
+      "Rho_model_units": 0.002377,
+      "NumWakeNodes": 8,
+      "FarAway": 5,
+      "WakeRelax": 1,
+      "StallModel": 0,
+      "X_cg_ft": 5.5, "Y_cg_ft": 0.0, "Z_cg_ft": -0.224,
+      "native_length_unit": "feet"
+    },
+    "objective_current": "min CDiw (wake / Trefftz-plane induced drag) only. Was min CDi (surface-integration) before 2026-08-19.",
+    "optimiser": {
+      "type": "surrogate-assisted batch optimisation",
+      "surrogate": "Gaussian-process regression, Matern-5/2 kernel, normalised design variables; separate models for the drag objective and for the root-bending metric",
+      "acquisition": "S(x) = CDi_hat(x) - lambda_sigma * sigma_hat(x) + P_constraints(x) + P_distance(x)",
+      "inner_search_lowspeed": "differential evolution, population-size factor 12, <=60 surrogate-only inner iterations, polishing, batch size 4",
+      "inner_search_cruise": "200000 smooth random schedules screened per batch with the GP; 4 role-specific geometries retained (early min, early constraint boundary, late min, late uncertainty exploration)",
+      "stopping_rule": "prescribed budget of adaptive batches, not a convergence proof",
+      "reported_values": "ALWAYS exact VSPAERO reruns with strict iterative fixed-lift trim. The surrogate only chooses where to evaluate."
+    },
+    "design_variables": {
+      "trailing_edge_camber": {
+        "vector": "[A1/c .. A5/c]",
+        "lowspeed_control_stations_eta": [0.60, 0.70, 0.80, 0.90, 1.00],
+        "cruise_control_stations_eta": [0.68, 0.76, 0.84, 0.92, 1.00],
+        "lowspeed_bounds": "0 <= Ai/c <= 0.035",
+        "cruise_bounds": "-0.035 <= Ai/c <= 0.035, |Ai - Ai-1|/c <= 0.025",
+        "chordwise_start_line": "xh/c = 0.62 (fixed)",
+        "interpolation_cruise": "shape-preserving piecewise cubic; tip value free (the earlier parameterisation forced it to zero and made an artificial tip discontinuity)"
+      },
+      "distributed_twist": {
+        "vector": "[dtheta1 .. dtheta5] deg",
+        "cruise_bounds": "-4 deg <= dtheta_i <= 4 deg, |dtheta_i - dtheta_i-1| <= 3 deg",
+        "rotation_axis": "x/c = 0.25 (quarter chord)",
+        "kinematics": "whole local section rotates, airfoil profile preserved"
+      },
+      "conventional_hinged": {
+        "vector": "[delta_inboard, delta_outboard] deg",
+        "hinge": "xh/c = 0.70",
+        "segments_eta": [[0.710, 0.852], [0.852, 0.970]],
+        "bound_deg": 6.65,
+        "bound_rationale": "equal maximum trailing-edge displacement to the continuous concept: |dz_TE/c|max = 0.035, |delta|max = asin(0.035/(1-0.70)) = 6.65 deg. The physical NASA TP-1580 mechanical range is about +/-30 deg but that is for control, not cruise adaptation.",
+        "representation": "zero-gap outer-mold-line approximation; no hinge gap, seal, bracket or leakage modelled"
+      },
+      "morphing_region": "0.60 <= eta <= 1.00 for both continuous concepts (the earliest twist DOE and the rotation-axis study used 0.60 <= eta <= 0.95)"
+    },
+    "constraints": {
+      "lowspeed": ["root-bending increase fM <= 6.8 % (illustrative, not certified)", "max adjacent command |Ai/c - Ai-1/c| <= 0.018 with virtual A0 = A6 = 0 (illustrative numerical smoothness screen)", "0 <= Ai/c <= 0.035"],
+      "cruise": ["absolute half-wing root bending Mroot <= Mlim = 2.9266 MNm, set equal to the rigid early-cruise value, illustrative not certified"],
+      "m01_cl0529_historical": ["Mroot <= Mroot_rigid = 180.115 kN m, no positive feasibility tolerance"],
+      "withdrawn": "the 1050 N m hinge-torque proxy limit, disabled in code, neither fitted nor penalised"
+    },
+    "trim": {
+      "fast": "small alpha sweep, local lift-curve slope, one load case near the target, used inside the optimisation loop only",
+      "strict": "iterative fixed-lift trim, tolerance |CL - CL_target| <= 2e-5; this is what every reported number uses",
+      "achieved_max_CL_error": {"cruise_audit_102_geoms": 1.87e-5, "lowspeed_current_4_selections": 7.13e-7}
+    },
+    "evaluation_counts": {
+      "cruise_current_19aug": {"rigid": {"geometries": 1, "state_evaluations": 2}, "conventional_hinged": {"geometries": 33, "state_evaluations": 66}, "trailing_edge": {"geometries": 38, "state_evaluations": 76}, "distributed_twist": {"geometries": 30, "state_evaluations": 60}, "total_geometries": 102, "total_state_evaluations": 204, "native_solver_files": 816},
+      "cruise_stage_one_solver_calls": {"trailing_edge": {"DOE": 14, "batches": 4, "new_per_batch": 4, "exact_geometries": 30, "state_evaluations": 60, "solver_calls": 185}, "distributed_twist": {"DOE": 14, "batches": 2, "new_per_batch": 4, "exact_geometries": 22, "state_evaluations": 44, "solver_calls": 138}},
+      "lowspeed_corrected_current": {"total_geometries": 118, "rigid": 1, "conventional_hinged": 49, "trailing_edge": 34, "distributed_twist": 34},
+      "lowspeed_historical_125": {"total_evaluations": 125, "rigid": 1, "conventional_hinged": 33, "trailing_edge": 51, "distributed_twist": 40, "note": "count breakdown is the 19 Aug post-dedup audit; the 29 Jul report stated 40/22/22 for the first 85-case pass plus 2x20 local refinements"},
+      "conventional_cruise_search": "5x5 exact grid over [-6.65, 6.65]^2 then 8 extra points; 33 geometries, 66 strict evaluations; no surrogate used (only 2 design variables)"
+    },
+    "surrogate_quality_cross_validation": {
+      "note": "five-fold CV of the stage-one cruise models",
+      "twist_induced_drag_R2": [0.93, 0.97],
+      "trailing_edge_induced_drag_R2": [0.27, 0.45],
+      "root_bending_R2": [0.992, 0.9999],
+      "liming_caveat": "the weak trailing-edge drag surrogate is an important limitation; selected TE cases are best exact SAMPLED candidates, not proven global optima"
+    },
+    "geometry_generation": {
+      "baseline": "public NASA-style OpenVSP EET cruise wing, wing-only (fuselage, tail, slats, high-lift removed)",
+      "refinement": "10 spanwise sections inserted, mainly 0.55 <= eta <= 0.95, section count 9 -> 19",
+      "inserted_airfoil_method_corrected": "both bracketing airfoils resampled onto a common cosine-spaced x/c grid then linearly blended in eta; max coordinate error 3.71e-12 c; MAC change 5.21e-7 ft",
+      "aircraft_scaling_for_cruise_loads": "model treated as geometrically similar and scaled to Sref = 122.6 m2 preserving AR, giving span 38.36 m"
+    }
+  },
+
+  "claims": [
+    {
+      "id": "C-CRUISE-CDIW-CURRENT",
+      "status": "current",
+      "report": "rpt_2026-08-19",
+      "metric": "CDiw",
+      "metric_long": "VSPAERO wake / Trefftz-plane induced drag",
+      "frame": "frame_cruise",
+      "geometry": "post-correction (blended inserted airfoils)",
+      "source": "rpt_2026-08-19 Table 23 (line 3965-3973) and Table 1; confirmed independently by pkg_2026-08-19 audit_summary.json and selected_cases_near_vs_far.csv",
+      "rows": [
+        {"operating_point": "op_cruise_early", "concept": "rigid",               "case_id": "rigid_baseline (conv_g01_c13 is geometrically identical)", "CDiw": 0.010688986273, "reduction_percent": 0.0,     "reduction_counts_own_frame": 0.0,      "reduction_counts_dso_basis_derived": 0.0,      "root_bending_utilization_percent": 100.000},
+        {"operating_point": "op_cruise_early", "concept": "conventional_hinged", "case_id": "conv_g02_c06",                  "CDiw": 0.010682105004, "reduction_percent": 0.06437718998088199, "reduction_counts_own_frame": 0.06881268999999607, "reduction_counts_dso_basis_derived": 0.061821, "root_bending_utilization_percent": 99.97585199137972},
+        {"operating_point": "op_cruise_early", "concept": "trailing_edge",       "case_id": "trailing_edge_seed_r02",        "CDiw": 0.010536741884, "reduction_percent": 1.4243108290312227,  "reduction_counts_own_frame": 1.522443889999999,   "reduction_counts_dso_basis_derived": 1.367751, "root_bending_utilization_percent": 99.5408599803143},
+        {"operating_point": "op_cruise_early", "concept": "distributed_twist",   "case_id": "ff_tw_b02_c01_early_min_cdiw",  "CDiw": 0.010578796141, "reduction_percent": 1.0308754187320566,  "reduction_counts_own_frame": 1.101901320000008,   "reduction_counts_dso_basis_derived": 0.989939, "root_bending_utilization_percent": 99.98713307233642},
+        {"operating_point": "op_cruise_late",  "concept": "rigid",               "case_id": "rigid_baseline",                "CDiw": 0.0112988040,   "reduction_percent": 0.0,     "reduction_counts_own_frame": 0.0,      "reduction_counts_dso_basis_derived": 0.0,      "root_bending_utilization_percent": 75.273},
+        {"operating_point": "op_cruise_late",  "concept": "conventional_hinged", "case_id": "conv_g01_c19",                  "CDiw": 0.011059146779, "reduction_percent": 2.121084574083752,   "reduction_counts_own_frame": 2.39657188,          "reduction_counts_dso_basis_derived": 2.153061, "root_bending_utilization_percent": 79.37357246421418},
+        {"operating_point": "op_cruise_late",  "concept": "trailing_edge",       "case_id": "ff_te_b01_c03_late_min_cdiw",   "CDiw": 0.010812748154, "reduction_percent": 4.301834197846118,   "reduction_counts_own_frame": 4.860558129999998,   "reduction_counts_dso_basis_derived": 4.366686, "root_bending_utilization_percent": 79.61298071270854},
+        {"operating_point": "op_cruise_late",  "concept": "distributed_twist",   "case_id": "ff_tw_b01_c03_late_min_cdiw",   "CDiw": 0.010811525604, "reduction_percent": 4.312654369641039,   "reduction_counts_own_frame": 4.872783630000006,   "reduction_counts_dso_basis_derived": 4.377669, "root_bending_utilization_percent": 80.0562352996572}
+      ],
+      "liming_interpretation": "Trailing-edge camber leads twist by 0.393 percentage points in the constrained early state. At late cruise the difference is 0.0108 percentage points and is NOT a meaningful aerodynamic discriminator at this fidelity.",
+      "constraint_caveat": "Both early-cruise continuous candidates sit effectively ON the illustrative bending limit (99.54 % and 99.99 %). A database sensitivity sweep over 88-108 % of the nominal limit changes which geometry is feasible and can change the concept ordering. The early-cruise ranking is as much a statement about the assumed structural allowable as about the concepts."
+    },
+    {
+      "id": "C-LOWSPEED-CDIW-CURRENT",
+      "status": "current",
+      "report": "rpt_2026-08-19",
+      "metric": "CDiw",
+      "frame": "frame_lowspeed",
+      "operating_point": "op_m01_cl0428",
+      "geometry": "post-correction",
+      "source": "rpt_2026-08-19 Table 17 (line 2985-2990); confirmed number-for-number by pkg_2026-08-19 02_corrected_low_speed_current/strict_summary.json and strict_selected_results.csv",
+      "rows": [
+        {"concept": "rigid",               "case_id": "baseline_corrected", "CDiw": 0.005667805449, "CDi_near_field": 0.009878741611, "Ew": 0.955520528139, "CL": 0.428278133112, "CL_error": 4.98004e-07,  "reduction_percent": 0.0,                "reduction_counts": 0.0,                "root_bending_Nm": 110.75353915805569, "root_bending_increase_percent": 0.0},
+        {"concept": "conventional_hinged", "case_id": "chc_g02_c06",        "CDiw": 0.00563832192,  "CDi_near_field": 0.009537006501, "Ew": 0.960511640978, "CL": 0.428276922524, "CL_error": -7.12584e-07, "reduction_percent": 0.5201930317703878, "reduction_counts": 0.2948352900000034, "root_bending_Nm": 114.92731150476423, "root_bending_increase_percent": 3.7685227744751173, "commands": {"delta_inboard_deg": 2.495, "delta_outboard_deg": 1.664}},
+        {"concept": "trailing_edge",       "case_id": "cfft_b02_c01",       "CDiw": 0.005571172322, "CDi_near_field": 0.009446540051, "Ew": 0.972090152371, "CL": 0.428277235372, "CL_error": -3.99736e-07, "reduction_percent": 1.7049478474433148, "reduction_counts": 0.9663312700000041, "root_bending_Nm": 114.91256047842883, "root_bending_increase_percent": 3.7552039889559006, "commands": {"A_over_c": [0.01261, 0.01387, 0.01207, 0.01228, 0.00046]}},
+        {"concept": "distributed_twist",   "case_id": "cffw_b01_c01",       "CDiw": 0.005582683664, "CDi_near_field": 0.009503008568, "Ew": 0.97008821263,  "CL": 0.428277783612, "CL_error": 1.48504e-07,  "reduction_percent": 1.5018473334334168, "reduction_counts": 0.851217850000004,  "root_bending_Nm": 114.08731823021593, "root_bending_increase_percent": 3.0100880725830574, "commands": {"dtheta_deg": [1.800, 1.126, 1.278, 0.257, -0.999]}}
+      ],
+      "liming_interpretation": "Trailing-edge camber leads twist by only 0.115 drag counts (0.9663 - 0.8512). Liming states this is below the useful resolution of the planned matched-mesh RANS concept comparison and is not sufficient for a mechanical down-selection.",
+      "our_independent_agreement": "resp_2026-09-02 confirms this from the other direction: our pre-registered acceptance band for a candidate-versus-reference drag delta is 0.10 counts, set from a measured fixed-CL noise floor of 0.106 to 0.199 counts on this mesh family. A 0.115-count separation sits inside that floor."
+    },
+    {
+      "id": "C-LOWSPEED-125CASE-CDIW",
+      "status": "current_but_historical_geometry",
+      "report": "rpt_2026-08-19",
+      "metric": "CDiw",
+      "frame": "frame_lowspeed",
+      "operating_point": "op_m01_cl0529",
+      "geometry": "PRE-correction (inherited inserted airfoils)",
+      "source": "rpt_2026-08-19 Table 26 (line 4288-4292) and section 12.3",
+      "rows": [
+        {"concept": "rigid",               "case_id": "rigid_baseline", "CDiw": 0.00785947, "reduction_percent": 0.000, "root_bending_over_rigid_percent": 100.000},
+        {"concept": "conventional_hinged", "case_id": "conv_g02_c06",   "CDiw": 0.00784901, "reduction_percent": 0.133, "root_bending_over_rigid_percent": 99.948},
+        {"concept": "trailing_edge",       "case_id": "m01_te_r16",     "CDiw": 0.00781263, "reduction_percent": 0.596, "root_bending_over_rigid_percent": 99.936},
+        {"concept": "distributed_twist",   "case_id": "tw_b02_c01",     "CDiw": 0.00782626, "reduction_percent": 0.423, "root_bending_over_rigid_percent": 99.922}
+      ],
+      "caveat": "Retained by Liming as method-development evidence only. The geometry predates the inserted-airfoil correction. Liming explicitly forbids comparing these percentages against the early/late cruise percentages as if they were the same flight state.",
+      "note_ordering_flip": "On CDi this database ranked TWIST first (0.679 %) and TE second (0.594 %). On CDiw the order REVERSES: TE 0.596 %, twist 0.423 %. Same geometries, same solver run, different column."
+    },
+    {
+      "id": "C-CRUISE-ADAPTATION-CURRENT",
+      "status": "current",
+      "report": "rpt_2026-08-19",
+      "metric": "CDiw",
+      "frame": "frame_cruise",
+      "operating_point": "op_cruise_late",
+      "claim": "Additional CDiw reduction at LATE cruise from switching the early-optimised command to the late-optimised command.",
+      "source": "rpt_2026-08-19 Table 22 (line 3729-3731) and section 14.7",
+      "rows": [
+        {"concept": "conventional_hinged", "additional_reduction_percent": 2.048},
+        {"concept": "trailing_edge", "early_shape_at_late_CDiw": 0.01113677, "late_shape_at_late_CDiw": 0.01081275, "additional_reduction_percent": 2.909},
+        {"concept": "distributed_twist",   "early_shape_at_late_CDiw": 0.01118457, "late_shape_at_late_CDiw": 0.01081153, "additional_reduction_percent": 3.335}
+      ],
+      "feasibility_note": "Both late-cruise optima are INFEASIBLE if retained unchanged at early cruise: Mroot/Mlim = 105.96 % (trailing edge) and 106.55 % (twist). Morphing is therefore useful here as scheduled adaptation, not as one fixed replacement shape."
+    },
+    {
+      "id": "C-CRUISE-CDI-2026-07-28",
+      "status": "superseded",
+      "superseded_by": ["C-CRUISE-CDI-2026-08-07", "C-CRUISE-CDIW-CURRENT"],
+      "report": "rpt_2026-07-28",
+      "also_in": ["rpt_2026-07-29"],
+      "metric": "CDi",
+      "metric_long": "VSPAERO near-field surface-integration induced drag",
+      "frame": "frame_cruise",
+      "geometry": "PRE-correction",
+      "source": "rpt_2026-07-29 Table 17 (line 2820-2830) and Table 1",
+      "rows": [
+        {"operating_point": "op_cruise_early", "concept": "rigid",               "CDi": 0.01142113, "reduction_percent": 0.000, "root_bending_utilization_percent": 100.000},
+        {"operating_point": "op_cruise_early", "concept": "conventional_hinged", "CDi": 0.01142113, "reduction_percent": 0.000, "root_bending_utilization_percent": 100.000},
+        {"operating_point": "op_cruise_early", "concept": "trailing_edge",       "CDi": 0.01141397, "reduction_percent": 0.063, "root_bending_utilization_percent": 99.954, "case_id": "te_b02_c01_early_min_cdi"},
+        {"operating_point": "op_cruise_early", "concept": "distributed_twist",   "CDi": 0.01136639, "reduction_percent": 0.479, "root_bending_utilization_percent": 99.981, "case_id": "tw_b02_c01_early_min_cdi"},
+        {"operating_point": "op_cruise_late",  "concept": "rigid",               "CDi": 0.01210232, "reduction_percent": 0.000, "root_bending_utilization_percent": 75.237},
+        {"operating_point": "op_cruise_late",  "concept": "conventional_hinged", "CDi": 0.01191198, "reduction_percent": 1.573, "root_bending_utilization_percent": 78.507},
+        {"operating_point": "op_cruise_late",  "concept": "trailing_edge",       "CDi": 0.01178424, "reduction_percent": 2.628, "root_bending_utilization_percent": 80.097, "case_id": "te_b02_c03_late_min_cdi"},
+        {"operating_point": "op_cruise_late",  "concept": "distributed_twist",   "CDi": 0.01182165, "reduction_percent": 2.319, "root_bending_utilization_percent": 79.130, "case_id": "tw_b02_c03_late_min_cdi"}
+      ],
+      "decision_at_the_time": "Distributed twist carried forward as PRIMARY high-authority concept because it performed best when the early-cruise bending constraint was active.",
+      "why_superseded": "Two independent reasons: (1) the geometry predates the SplitWingXSec inserted-airfoil correction, (2) the metric is near-field CDi, superseded by CDiw on 2026-08-19."
+    },
+    {
+      "id": "C-CRUISE-CDI-2026-08-07",
+      "status": "superseded",
+      "superseded_by": ["C-CRUISE-CDIW-CURRENT"],
+      "report": "rpt_2026-08-07",
+      "also_in": ["rpt_2026-08-10"],
+      "metric": "CDi",
+      "frame": "frame_cruise",
+      "geometry": "post-correction",
+      "source": "rpt_2026-08-07 Table 17 (line 2836-2846) and Table 1",
+      "rows": [
+        {"operating_point": "op_cruise_early", "concept": "rigid",               "CDi": 0.01067595, "reduction_percent": 0.000,  "root_bending_utilization_percent": 100.000},
+        {"operating_point": "op_cruise_early", "concept": "conventional_hinged", "CDi": 0.01067595, "reduction_percent": 0.000,  "root_bending_utilization_percent": 100.000, "case_id": "conv_g01_c13"},
+        {"operating_point": "op_cruise_early", "concept": "trailing_edge",       "CDi": 0.01068890, "reduction_percent": -0.121, "root_bending_utilization_percent": 99.706,  "case_id": "te_b03_c01_early_min_cdi", "note": "NEGATIVE: this candidate INCREASED near-field CDi relative to the rigid wing"},
+        {"operating_point": "op_cruise_early", "concept": "distributed_twist",   "CDi": 0.01062721, "reduction_percent": 0.457,  "root_bending_utilization_percent": 99.898,  "case_id": "tw_b02_c01_early_min_cdi"},
+        {"operating_point": "op_cruise_late",  "concept": "rigid",               "CDi": 0.01130877, "reduction_percent": 0.000,  "root_bending_utilization_percent": 75.273},
+        {"operating_point": "op_cruise_late",  "concept": "conventional_hinged", "CDi": 0.01121537, "reduction_percent": 0.826,  "root_bending_utilization_percent": 76.306,  "case_id": "conv_g02_c07"},
+        {"operating_point": "op_cruise_late",  "concept": "trailing_edge",       "CDi": 0.01096749, "reduction_percent": 3.018,  "root_bending_utilization_percent": 78.989,  "case_id": "te_b01_c04_late_uncertainty_exploration"},
+        {"operating_point": "op_cruise_late",  "concept": "distributed_twist",   "CDi": 0.01110897, "reduction_percent": 1.767,  "root_bending_utilization_percent": 78.207,  "case_id": "tw_b02_c03_late_min_cdi"}
+      ],
+      "why_superseded": "Metric. The 2026-08-19 far-field audit established CDiw as the correct induced-drag ranking quantity and reranked every one of these."
+    },
+    {
+      "id": "C-LOWSPEED-CDI-CORRECTED-4CONCEPT",
+      "status": "superseded",
+      "superseded_by": ["C-LOWSPEED-CDIW-CURRENT"],
+      "report": "rpt_2026-07-29",
+      "also_in": ["rpt_2026-08-07", "rpt_2026-08-10"],
+      "metric": "CDi",
+      "frame": "frame_lowspeed",
+      "operating_point": "op_m01_cl0428",
+      "geometry": "post-correction",
+      "source": "rpt_2026-07-29 Table 16 / rpt_2026-08-19 Table 16 (line 2778-2782), and the exec-summary sentence 'reduce CDi by 4.567%, 6.524%, and 5.851%'",
+      "note": "THIS IS THE CLAIM THE TASK BRIEF QUOTED. It is superseded. Quoting 6.524 % as the current DSO trailing-edge result would be an error of a factor of 3.8 against the current 1.705 %.",
+      "rows": [
+        {"concept": "rigid",               "case_id": "baseline_corrected", "CDi": 0.009878742, "reduction_percent": null,  "reduction_counts": null,  "root_bending_increase_percent": null},
+        {"concept": "conventional_hinged", "case_id": "chc_g02_c17",        "CDi": 0.009427625, "reduction_percent": 4.567, "reduction_counts": 4.511, "root_bending_increase_percent": 6.765},
+        {"concept": "trailing_edge",       "case_id": "cte_i002_c04",       "CDi": 0.009234250, "reduction_percent": 6.524, "reduction_counts": 6.445, "root_bending_increase_percent": 6.796, "max_adjacent_command": 0.017771, "trim_alpha_deg": 1.256517, "CL": 0.428277943, "commands": {"A_over_c": [0.01643, 0.02183, 0.03373, 0.01596, 0.00001]}},
+        {"concept": "distributed_twist",   "case_id": "ctw_i001_c03",       "CDi": 0.009300691, "reduction_percent": 5.851, "reduction_counts": 5.781, "root_bending_increase_percent": 6.787}
+      ],
+      "liming_interpretation_at_the_time": "TE leads twist by 0.664 drag counts; too small for hardware selection.",
+      "why_superseded": "Metric change to CDiw, plus a fresh CDiw refinement batch that selected DIFFERENT geometries (chc_g02_c06, cfft_b02_c01, cffw_b01_c01 instead of chc_g02_c17, cte_i002_c04, ctw_i001_c03). The TE-twist separation shrank from 0.664 counts to 0.115 counts."
+    },
+    {
+      "id": "C-LOWSPEED-125CASE-CDI",
+      "status": "superseded",
+      "superseded_by": ["C-LOWSPEED-125CASE-CDIW"],
+      "report": "rpt_2026-07-28",
+      "also_in": ["rpt_2026-07-29"],
+      "metric": "CDi",
+      "frame": "frame_lowspeed",
+      "operating_point": "op_m01_cl0529",
+      "geometry": "PRE-correction",
+      "source": "rpt_2026-07-29 Table 20 (line 3099-3106)",
+      "rows": [
+        {"concept": "rigid",               "case_id": "rigid_baseline", "CDi": 0.01277814, "reduction_percent": 0.000, "root_bending_over_rigid_percent": 100.000},
+        {"concept": "conventional_hinged", "case_id": "conv_g02_c06",   "CDi": 0.01276980, "reduction_percent": 0.065, "root_bending_over_rigid_percent": 99.948, "commands": {"delta_deg": [1.664, -1.664]}},
+        {"concept": "trailing_edge",       "case_id": "m01_te_r16",     "CDi": 0.01270229, "reduction_percent": 0.594, "root_bending_over_rigid_percent": 99.936, "commands": {"A_over_c": [0.01312, -0.00113, 0.00176, -0.00785, -0.02625]}},
+        {"concept": "distributed_twist",   "case_id": "tw_b02_c01",     "CDi": 0.01269141, "reduction_percent": 0.679, "root_bending_over_rigid_percent": 99.922, "commands": {"dtheta_deg": [0.537, -0.649, 1.306, -0.681, -2.595]}}
+      ],
+      "why_superseded": "Metric. Reranking the SAME 125 saved geometries on CDiw reverses the TE/twist order."
+    },
+    {
+      "id": "C-MATCHED-PAIR-2026-07-29",
+      "status": "current_as_validation_geometry_only",
+      "report": "pkg_2026-07-29",
+      "also_in": ["rpt_2026-07-29", "rpt_2026-08-19"],
+      "metric": "CDi",
+      "frame": "frame_lowspeed",
+      "operating_point": "op_m01_cl0428",
+      "geometry": "post-correction",
+      "source": "pkg_2026-07-29 README.txt; rpt_2026-08-19 Table 13 (line 2290-2298)",
+      "claim": "Corrected matched baseline / mcv2_i002_c01 pair, generated by one corrected script.",
+      "rows": [
+        {"concept": "rigid",         "case_id": "baseline_corrected", "CDi": 0.009878742, "trim_alpha_deg": 1.645359, "CL": 0.428278133, "root_bending_Nm": 110.754},
+        {"concept": "trailing_edge", "case_id": "mcv2_i002_c01",      "CDi": 0.009261687, "trim_alpha_deg": 1.249720, "CL": 0.428277505, "root_bending_Nm": 118.644, "reduction_percent": 6.246, "reduction_counts": 6.171, "root_bending_increase_percent": 7.124, "max_adjacent_command": 0.017981}
+      ],
+      "status_note": "Liming explicitly says this must NOT be presented as the corrected constrained optimum: the unchanged mcv2 command exceeds the illustrative 6.8 % bending screen (7.124 %) once the geometry is corrected. He asks that it be retained in the RANS validation chain for traceability because it is the case discussed in the earlier exchange.",
+      "withdrawn_predecessor": "The pre-correction mcv2_i002_c01 value CDi = 0.008775870, a 4.27 % reduction (3.92 counts) with 6.646 % root bending, quoted in rpt_2026-07-28. Same case name, different geometry, different number."
+    },
+    {
+      "id": "C-LEGACY-DEV-CASES",
+      "status": "superseded_method_development",
+      "report": "rpt_2026-07-29",
+      "also_in": ["rpt_2026-08-19"],
+      "metric": "CDi",
+      "frame": "frame_lowspeed",
+      "operating_point": "op_m01_cl0428",
+      "geometry": "PRE-correction",
+      "baseline_CDi": 0.00916763,
+      "source": "rpt_2026-08-19 Table 3 (line 965-968), Table 5, Table 6, Table 9 (line 1836-1841)",
+      "rows": [
+        {"case_id": "usr_i003_c03",     "CDi": 0.008729147, "reduction_percent": 4.783,  "root_bending_increase_percent": 7.024, "max_dA_over_c": 0.01914, "role": "phase-1 candidate, rejected: bending above the 7.0 % limit"},
+        {"case_id": "ph2b_i001_c03",    "CDi": 0.008761262, "reduction_percent": 4.433,  "root_bending_increase_percent": 6.080, "max_dA_over_c": 0.01124, "role": "phase-2 balanced candidate, xh/c = 0.62"},
+        {"case_id": "opt_s002",         "CDi": 0.008771138, "reduction_percent": 4.325,  "root_bending_increase_percent": 5.478, "max_dA_over_c": 0.00000},
+        {"case_id": "mcv2_i002_c01",    "CDi": 0.00877587,  "reduction_percent": 4.273,  "root_bending_increase_percent": 6.646, "role": "pre-correction audited constrained TE candidate", "commands": {"A_over_c": [0.00803, 0.02598, 0.03497, 0.01820, 0.00022]}},
+        {"case_id": "wsu_i002_c02",     "CDi": 0.00799662,  "reduction_percent": 12.773, "root_bending_increase_percent": 7.024, "role": "WHOLE-WING UNCONSTRAINED SANITY CHECK ONLY, not an actuator-feasible design", "commands": {"A_over_c": [0.00567, 0.04000, 0.04000, 0.03894, 0.04000]}, "elliptical_rms_error": {"baseline": 1.513e-2, "optimum": 1.087e-2, "reduction_percent": 28.18}},
+        {"case_id": "Uniform +2 deg twist DOE", "CDi": 0.00880751, "reduction_percent": 3.935, "root_bending_increase_percent": 5.263},
+        {"case_id": "twoi_i001_c01",    "CDi": 0.00880576,  "reduction_percent": 3.955,  "root_bending_increase_percent": 5.913, "role": "first twist optimisation pass, region 0.60 <= eta <= 0.95", "commands": {"dtheta_deg": [0.0, 2.5, 2.5, 2.5, 0.0]}},
+        {"case_id": "xh050b_i001_c03",  "CDi": null,        "reduction_percent": 3.308,  "root_bending_increase_percent": 3.667, "xh_over_c": 0.50, "max_A_over_c": 0.01758, "delta_eq_deg": 2.013, "role": "chordwise start-line comparison"},
+        {"case_id": "ph2b_i001_c03 (xh/c 0.62 pair)", "CDi": null, "reduction_percent": 4.433, "root_bending_increase_percent": 6.080, "xh_over_c": 0.62, "max_A_over_c": 0.02513, "delta_eq_deg": 3.784}
+      ],
+      "note": "All of these are PRE-correction geometry and near-field CDi. Retained by Liming to document method development. Not quotable as performance."
+    },
+    {
+      "id": "C-TWIST-AXIS-SENSITIVITY",
+      "status": "current_as_a_sensitivity_statement",
+      "report": "rpt_2026-08-19",
+      "metric": "CDi",
+      "frame": "frame_lowspeed",
+      "operating_point": "op_m01_cl0428",
+      "geometry": "PRE-correction, morphing region 0.60 <= eta <= 0.95, 12 strict cases, axis at x/c = 0.25, 0.33, 0.40, 0.50, commands 0 / +2 / -2 deg",
+      "source": "rpt_2026-08-19 sections 10.6.1-10.6.6 (Table 10 line 1905-1912, text line 1993-1998, 2205-2220)",
+      "claim": "Fixed-lift aerodynamic benefit is nearly independent of the chordwise rotation-axis position.",
+      "rows": [
+        {"axis_x_over_c": 0.25, "wash_in_CDi_reduction_percent": 3.9355, "root_bending_increase_percent": 5.2631},
+        {"axis_x_over_c": 0.50, "wash_in_CDi_reduction_percent": 3.9420, "root_bending_increase_percent": 5.2599}
+      ],
+      "recommendation": "x/c = 0.25 preferred aerodynamic reference and minimises leading-edge motion; x/c = 0.33 retained as a structural trade candidate, reduces trailing-edge travel by about 10.7 % relative to quarter chord; x/c = 0.50 not justified, doubles leading-edge travel for no meaningful induced-drag advantage. Preliminary: torque has not been established.",
+      "paired_baseline_note": "Every wash-in/wash-out case is compared against a baseline generated with the SAME axis location, because OpenVSP Twist_Location acts on total section twist including the original baseline washout. This avoids attributing a baseline shift to the morphing benefit."
+    }
+  ],
+
+  "supersessions": [
+    {
+      "id": "S1-HINGE-TORQUE-PROXY",
+      "date_withdrawn": "2026-07-28",
+      "kind": "WITHDRAWN",
+      "what": "The 1050 N m 'hinge-torque proxy' limit, the resulting 99.98 % utilisation figure, the legacy feasible/infeasible Boolean for mbr_c01_l011, and every three- and four-actuator stroke/segment-lift/torque table derived from it.",
+      "why": "Two defects. (1) The quantity was a moment about the GLOBAL AIRCRAFT REFERENCE POINT, formed by shifting the VSPAERO sectional cmy to an assumed quarter chord, NOT a moment about the local xh/c = 0.62 hinge line. (2) The 1050 value was an illustrative internal optimisation bound with no traceable actuator specification.",
+      "consequence": "The optimiser may have rejected otherwise useful camber candidates against a non-physical constraint. The constraint is now disabled in code and is neither fitted nor penalised.",
+      "still_valid": "Dimensionless CL, CD, CDi remain valid for their archived geometries.",
+      "replacement": "H(eta) = integral over S(eta) of [(r - r_h) x (-p n)] . e_h dS, about the local xh/c = 0.62 line over 0.60 <= eta <= 1.00, unit / frame / sign convention / operating point stated explicitly. Positive trailing-edge down.",
+      "source": ["pkg_2026-07-28 CORRECTION_NOTICE_2026-07-28.txt", "rpt_2026-08-19 sections 4.5, 5.3, 9.2, 9.3"]
+    },
+    {
+      "id": "S2-FEET-LABELLED-SI",
+      "date_withdrawn": "2026-07-28",
+      "kind": "WITHDRAWN",
+      "what": "All legacy post-processed absolute load/moment columns labelled N, N/m or Nm from the low-speed chain; TE_displacement_m as a metre-valued column (its stored values are FEET).",
+      "why": "Native OpenVSP Chord, dSpan and Yavg are in FEET and had been used as though metres.",
+      "still_valid": "Native .lod, .polar, .history, .vspaero files and their feet-based geometry fields. Dimensionless CL, CD, CDi, Cm. Relative root-bending PERCENTAGES, because baseline and candidate share the same geometry scale and condition so the error cancels.",
+      "source": ["pkg_2026-07-28 CORRECTION_NOTICE_2026-07-28.txt", "pkg_2026-07-24 README.txt", "rpt_2026-08-19 section 4.5"]
+    },
+    {
+      "id": "S3-INSERTED-AIRFOIL",
+      "date_corrected": "2026-07-29",
+      "kind": "CORRECTED",
+      "what": "SplitWingXSec had copied ONE NEIGHBOURING airfoil-coordinate array into each inserted spanwise section instead of blending between the bracketing profiles. This changed the BASE SURFACE on which every subsequent morphing command was applied.",
+      "found_by": "independent CFD-ingest inspection on our side",
+      "fix": "Both bracketing airfoils resampled onto a common cosine-spaced x/c grid, then linearly blended in eta. Original sections retained untouched. Max coordinate error 3.71e-12 c; MAC change 5.21e-7 ft; span unchanged; area and AR differences at floating-point round-off.",
+      "numerical_consequence": "The rigid low-speed baseline CDi moved from 0.009167627 to 0.009878742, i.e. +7.76 %. Every pre-correction percentage is against a different reference wing.",
+      "feasibility_consequence": "The unchanged mcv2_i002_c01 command went from 6.646 % root-bending increase (feasible) to 7.124 % (INFEASIBLE against the illustrative 6.8 % screen). It was therefore demoted from 'audited constrained optimum' to 'RANS validation geometry'.",
+      "propagated_to_cruise": "2026-08-07",
+      "source": ["pkg_2026-07-29 README.txt", "rpt_2026-08-19 section 11.1-11.3"]
+    },
+    {
+      "id": "S4-CDI-TO-CDIW",
+      "date_corrected": "2026-08-19",
+      "kind": "METRIC SUPERSESSION, the largest one",
+      "what": "Every induced-drag ranking, percentage and candidate selection was recomputed on the wake/Trefftz-plane coefficient CDiw instead of the surface-integration coefficient CDi.",
+      "why": "VSPAERO writes BOTH in each native .polar. The earlier pipeline extracted only CDi. A complete native-output audit concluded CDiw is the physically appropriate induced-drag quantity for the VLM/RANS comparison. Our independent lifting-line check supported it.",
+      "scope": "Not a relabelling. Every stored native polar had to be reparsed, every concept reranked, and new optimisation batches targeted CDiw directly (two dedicated four-case batches per continuous concept at both Mach numbers).",
+      "audit_volume": "102 cruise geometries, 204 state evaluations, 816 native solver files. Max CL closure error 1.87e-5. Stored CSV CDi and CDiw match their native polar fields exactly. Recomputed span efficiency agrees with native Ew to 1.51e-7.",
+      "changed_selections": {
+        "cruise_early_conventional": "conv_g01_c13 (zero command) -> conv_g02_c06",
+        "cruise_late_conventional": "conv_g02_c07 -> conv_g01_c19",
+        "cruise_early_trailing_edge": "te_b03_c01_early_min_cdi -> trailing_edge_seed_r02",
+        "cruise_early_twist": "tw_b02_c01_early_min_cdi -> ff_tw_b02_c01_early_min_cdiw",
+        "cruise_late_trailing_edge": "te_b01_c04_late_uncertainty_exploration -> ff_te_b01_c03_late_min_cdiw",
+        "cruise_late_twist": "tw_b02_c03_late_min_cdi -> ff_tw_b01_c03_late_min_cdiw",
+        "lowspeed_conventional": "chc_g02_c17 -> chc_g02_c06",
+        "lowspeed_trailing_edge": "cte_i002_c04 -> cfft_b02_c01",
+        "lowspeed_twist": "ctw_i001_c03 -> cffw_b01_c01"
+      },
+      "changed_orderings": [
+        "Cruise EARLY: the CDi ranking put twist first (0.457 %) and trailing edge NEGATIVE (-0.121 %). The CDiw ranking puts trailing edge first (1.424 %) ahead of twist (1.031 %). THE WINNER CHANGED.",
+        "Cruise LATE: CDi gave TE 3.018 % and twist 1.767 %, a clear TE lead. CDiw gives TE 4.302 % and twist 4.313 %, a tie with twist marginally ahead.",
+        "Low speed 125-case at CL 0.529297: CDi gave twist 0.679 % ahead of TE 0.594 %. CDiw gives TE 0.596 % ahead of twist 0.423 %. THE WINNER CHANGED.",
+        "Low speed corrected at CL 0.428277635108: the TE-twist separation shrank from 0.664 drag counts (CDi) to 0.115 drag counts (CDiw)."
+      ],
+      "liming_instruction": "'All report statements that used near-field CDi as the optimized induced-drag metric are historical. Archived plots and case identifiers remain available for traceability, but they must not be mixed with the current far-field ranking.'",
+      "source": ["pkg_2026-08-19 README.txt", "rpt_2026-08-19 sections 4.3, 12.1-12.4, 11.9"]
+    },
+    {
+      "id": "S5-CRUISE-DECISION-REVERSAL",
+      "date": "2026-08-19",
+      "kind": "CONCLUSION REVERSED",
+      "what": "The headline concept recommendation.",
+      "was_2026-07-28_to_2026-08-10": "'Distributed twist should be carried forward as the primary high-authority concept because it performs best when the early-cruise bending constraint is active.'",
+      "now_2026-08-19": "'Continuous trailing-edge camber is the current low-order aerodynamic benchmark: it gives the largest verified early-cruise reduction and is effectively tied with twist in late cruise.' Twist remains a serious candidate for its bidirectional authority, not for its induced drag.",
+      "caution": "Both statements are conditional on an ILLUSTRATIVE, uncertified root-bending allowable that both early-cruise candidates sit within 0.5 % of. Liming states a sensitivity sweep over 88-108 % of that limit can change the ordering again."
+    },
+    {
+      "id": "S6-REPORT-VS-PACKAGE-MISMATCH",
+      "date": "2026-08-07 to 2026-08-10",
+      "kind": "DATA DELIVERY GAP, closed",
+      "what": "The 7 August report text quotes the early-cruise trailing-edge candidate as te_b03_c01 at -0.121 % CDi, but the 7 August data package corrected_four_concept_summary.csv ships te_b02_c02 at -0.743305459075089 %. Different geometry, different number, same row of the same table.",
+      "resolution": "The 10 August patch (10-8/) delivered te_early_te_b03_c01.vsp3 and its schedule, explicitly 'replaces te_b02_c02 only for the current Mach 0.78 report comparison'.",
+      "lesson_for_us": "Do not assume a delivered CSV matches the report of the same date. Both are superseded now by S4 in any case."
+    }
+  ],
+
+  "vlm_accuracy_and_limitation_statements": {
+    "note": "Liming's own words about what the method can and cannot support. These are the caveats that must travel with any DSO number quoted in our report.",
+    "on_the_method": [
+      "'VSPAERO is a low-order method; viscous effects, separation, detailed three-dimensional flow physics, and local pressure recovery are not fully resolved.'",
+      "'The current analysis should therefore be interpreted as a conceptual aerodynamic model rather than a high-fidelity CFD result.'",
+      "'VSPAERO does not resolve the Mach 0.78 shock/wave-drag physics.' (pkg_2026-08-07 README)",
+      "'At M = 0.78, the matched cruise comparison also cannot resolve transonic shock and wave-drag effects and therefore requires RANS validation.'",
+      "'The separate M = 0.1 fixed-CL study removes the transonic applicability concern but does not add viscous profile drag, hinge-gap loss, transition, separation, or actuator/structural penalties.'"
+    ],
+    "on_the_conventional_benchmark": [
+      "'The conventional result must also be read as an optimistic aerodynamic reference. Its VSPAERO representation has no hinge gap, leakage, seal, bracket, transition, or profile-drag increment.'",
+      "'Conversely, the continuous concepts use more spanwise authority than the physical NASA aileron.' (NASA aileron 0.710 <= eta <= 0.970, x/c >= 0.70; ARGUS continuous concepts 0.60 <= eta <= 1.00) 'Consequently, this is a reference-concept comparison rather than an equal-area mechanism comparison.'"
+    ],
+    "on_the_surrogate": [
+      "'Five-fold cross-validation gives R2 = 0.93-0.97 for the twist induced-drag models and R2 = 0.27-0.45 for the more difficult trailing-edge induced-drag models.'",
+      "'The trailing-edge CDi surrogate has moderate cross-validation quality, so the selected TE cases are best exact sampled candidates, not proven global optima.'",
+      "'The convergence plot is therefore evidence of diminishing improvement within that budget, not a proof of global convergence.'",
+      "'The search uses six adaptive batches for trailing-edge camber and four for twist ... and therefore still does not prove a global optimum.'"
+    ],
+    "on_what_the_percentages_mean": [
+      "'All current percentage benefits in this section refer to wake/Trefftz induced drag CDiw, NOT total aircraft drag, fuel burn, or mission range. Viscous, wave, interference, actuator-mass, and structural-mass effects are outside this ranking.'",
+      "'The numbers should therefore be read as aerodynamic load-shaping evidence rather than a direct operating-cost prediction.'",
+      "'The M = 0.1 percentages must not be compared directly with the physical early/late-cruise percentages as if they represented the same flight state.'",
+      "'Earlier low-speed studies are retained to document method development; their percentages should not be compared directly with the physical early/late-cruise results.'"
+    ],
+    "on_the_resolution_floor": [
+      "'Trailing-edge camber leads twist by only 0.115 drag counts, which is below the useful concept-separation capability of the planned matched-mesh RANS comparison.'",
+      "'Their 0.0108-percentage-point difference is too small to support an aerodynamic down-selection.' (late cruise)",
+      "'The trailing-edge/twist difference is only 0.115 drag count. It is too small for an aerodynamic hardware down-selection and is below the useful resolution of the matched-mesh RANS concept comparison.' (pkg_2026-08-19 README)"
+    ],
+    "on_the_audit_itself": [
+      "'Passing the audit establishes internal reproducibility of the saved result chain; it is not an independent aerodynamic validation. The same OpenVSP baseline and VSPAERO method are used throughout the compared cases.'",
+      "'The pre-geometry-correction audit established arithmetic consistency but did NOT establish that the refined airfoil interpolation or induced-drag field was appropriate.'"
+    ],
+    "on_the_structural_allowable": [
+      "'The limit is set equal to the rigid-wing early-cruise value. It is deliberately an illustrative design limit rather than a certified structural allowable.'",
+      "'Neither 6.8 % nor 0.018 is a certified structural or manufacturing allowable.' (pkg_2026-07-29)",
+      "'Wing fuel-weight relief is not included in the current net root-bending calculation.'",
+      "'The early-cruise result is simultaneously a statement about aerodynamic authority and about the chosen structural allowable.'"
+    ],
+    "independent_cross_check_liming_ran": "A Glauert/Fourier lifting-line calculation applied to the selected spanwise loadings. Reproduces unit span efficiency on an elliptical self-test and closes integrated CL to about 1e-6. Its absolute drag differs from VSPAERO because of modal truncation, but it supports the same low-speed ordering (TE lowest induced drag, twist close behind)."
+  },
+
+  "notes": {
+    "induced_drag_only": {
+      "statement": "NO Liming report quotes CDtot or CDo. Every performance claim in every version is CDi or CDiw, i.e. induced drag alone. Verified by grep across all five report texts: zero occurrences of CDtot, CDo or 'total drag' as a quoted result.",
+      "consequence": "The RANS-versus-VLM comparison is induced drag against induced drag BY CONSTRUCTION on Liming's side. The usual trap (comparing VSPAERO CDtot, which contains a flat-plate skin-friction correlation CDo, against a real viscous RANS total drag) is not present in his claims.",
+      "but": "The delivered native .polar files DO carry CDo and CDtot, and the delivered selected_cases_near_vs_far.csv carries a CD_total_near_field column. Those values are a FLAT-PLATE SKIN-FRICTION ESTIMATE, not a computed viscous solution, and must not be compared against RANS total drag.",
+      "example_values_do_not_use_for_comparison": {
+        "cruise_rigid_early": {"CDo": 0.007384974606, "CDi": 0.010675951055, "CDtot": 0.018060925661, "frame": "frame_cruise", "source": "01_cruise_cdiw_audit/rigid_baseline/early_cruise/native/rigid_baseline.polar"},
+        "lowspeed_baseline_corrected": {"CDo": 0.006380340951, "CDi": 0.009878741611, "CDtot": 0.016259082562, "frame": "frame_lowspeed", "source": "02_corrected_low_speed_current/native_cases/baseline_corrected/baseline_corrected.polar"}
+      }
+    },
+    "near_field_vs_far_field_gap": {
+      "statement": "On the corrected low-speed baseline the near-field CDi is 0.009878741611 and the wake CDiw is 0.005667805449. The near-field value is 74.3 % higher than the far-field one on the same solver run.",
+      "span_efficiency": "The same file gives near-field E = 0.548218049330 and wake Ew = 0.955520528139. A VLM wing at this loading should not have e = 0.55; the far-field value is the credible one, which is the physical argument behind S4.",
+      "consequence_for_us": "Our RANS Trefftz-plane counterpart (resp_2026-09-02: four planes, e = 0.874 at the nearest plane x1) is the correct thing to compare against Ew = 0.9555, NOT against E = 0.5482."
+    },
+    "what_liming_asks_from_us": [
+      "Low-speed pressure-integrated LOCAL hinge moment about the swept xh/c = 0.62 line, projected on its local tangent, surfaces aft of the line only, over 0.60 <= eta <= 1.00, positive trailing-edge down. Pressure, viscous and total reported SEPARATELY, as sectional moment per unit span [N m/m], c_mh = m'_h/(q_inf c(y)^2), integrated half-wing moment [N m], and C_Mh,region = M_h/(q_inf * integral c(y)^2 dy).",
+      "Separation evidence at low speed.",
+      "Compressible / transonic validation on the ARGUS geometry.",
+      "A RANS counterpart to CDiw (Trefftz-plane induced drag).",
+      "Comparison of VSPAERO spanwise distributions against OpenFOAM/RANS strip loads BEFORE relying on the small TE-versus-twist difference.",
+      "A traceable structural allowable to replace the illustrative 6.8 % / 2.9266 MNm screens, including fuel-weight relief."
+    ],
+    "liming_explicit_warning_on_low_speed_hinge_moment": "'Low-speed hinge moment must not be used directly for cruise actuator sizing.' (pkg_2026-08-19 README)"
+  },
+
+  "flags": [
+    {
+      "id": "F1",
+      "severity": "HIGH",
+      "title": "The 19 August report's own prose misstates the low-speed reference area.",
+      "detail": "Report section 14.1 (line 3815) says 'The comparison uses the same NASA EET reference wing with the NASA Sref = 12 ft2, bref = 12 ft, and ARref = 12 convention', and section 13.2 (line 3327) repeats it. That is TRUE for the M = 0.78 cruise runs and FALSE for the M = 0.10 runs, whose native .vspaero decks all carry Sref = 13.3572, Cref = 1.29251.",
+      "resolution": "Believe the native decks, not the prose. Confirmed independently by the span-efficiency closure: ew recomputed on AR = 10.7807 matches the native low-speed Ew to 2.08e-07, and on AR = 12 it misses by 1.13e-01.",
+      "action": "Any DSO cruise coefficient or drag count we place beside a RANS number on the DSO basis (Sref 1.24092 m2) must be multiplied by 0.898392. Percentages need no conversion."
+    },
+    {
+      "id": "F2",
+      "severity": "HIGH",
+      "title": "Two different M = 0.1 operating points share a Mach number and a concept vocabulary.",
+      "detail": "op_m01_cl0428 (CL 0.428277635108, current, corrected geometry) and op_m01_cl0529 (CL 0.529297, historical 125-case, pre-correction geometry). Liming's own exec summary moves between them within a paragraph. The CL 0.529297 value was chosen only because it equals the early-cruise target.",
+      "action": "State the CL inline every time a low-speed DSO percentage is quoted. This is D076 inside the DSO deliveries."
+    },
+    {
+      "id": "F3",
+      "severity": "HIGH",
+      "title": "The number the task brief quoted is superseded.",
+      "detail": "'reduce CDi by 4.567%, 6.524%, and 5.851%' is the 29 July / 7 August / 10 August corrected low-speed CDi result at M 0.1, CL 0.428277635108. The current equivalent is CDiw 0.520 %, 1.705 %, 1.502 % on different selected geometries. Quoting 6.524 % as current would overstate the trailing-edge benefit by a factor of 3.83.",
+      "action": "Use C-LOWSPEED-CDIW-CURRENT. Cite C-LOWSPEED-CDI-CORRECTED-4CONCEPT only as history, with its supersession stated."
+    },
+    {
+      "id": "F4",
+      "severity": "MEDIUM",
+      "title": "Cruise dynamic pressure does not reconcile with the U values in our own report brief.",
+      "detail": "Liming Table 18 gives early cruise rho = 0.41271 kg/m3 and q_inf = 11258.7 Pa, which implies U = 233.580522 m/s. Our brief carries U = 233.934028 m/s, which with the same rho implies q = 11292.8041 Pa, a +0.303 % difference. Late cruise: Liming rho 0.31083, q 8232.4 implies U = 230.153066 m/s; our brief U = 230.466914 m/s implies q = 8254.8675 Pa, +0.273 %. The offset is consistent in sign and size, which points to a different assumed speed of sound rather than an arithmetic error.",
+      "status": "NOT RESOLVED HERE. Recorded, not adjudicated. It does not affect any dimensionless coefficient or any percentage, because VSPAERO is run in model units (Vinf = 100, rho = 0.002377) and the dimensional state is used only to set the target CL and to reconstruct aircraft-scale loads.",
+      "action": "Whoever writes the operating-point section should establish which speed of sound is authoritative before quoting a dimensional cruise load."
+    },
+    {
+      "id": "F5",
+      "severity": "MEDIUM",
+      "title": "The cruise aircraft-scale derivation and the low-speed coefficient normalisation are on different Sref, inside one report.",
+      "detail": "Cruise loads are reconstructed on Sref = 122.6 m2 with span 38.36 m, which preserves AR = 12 from the 12 ft2 basis. The low-speed coefficients are on 13.3572 ft2, AR 10.7807. Both appear in the same document without the difference being stated.",
+      "action": "Never place a cruise CDiw and a low-speed CDiw in one table without the Sref column."
+    },
+    {
+      "id": "F6",
+      "severity": "LOW",
+      "title": "Claims with no operating point attached.",
+      "detail": "Two classes were found and both are qualitative, not numerical: (a) the Table 25 engineering decision matrix (outer mold line, load-shaping authority, maturity, gap/noise) carries no operating point because it carries no numbers; (b) the twist-axis travel figures ('reduces trailing-edge travel by approximately 10.7 %', 'doubles leading-edge travel') are GEOMETRIC ratios and are operating-point independent by construction.",
+      "resolution": "EVERY numerical performance claim extracted into this file has an operating_point id. None had to be recorded as unattached."
+    },
+    {
+      "id": "F7",
+      "severity": "LOW",
+      "title": "Low-speed evidence-count discrepancy between report versions.",
+      "detail": "The 29 July report describes the 125-case database as 1 rigid + 40 conventional + 22 TE + 22 twist for the first 85-case pass plus 2 x 20 local refinements. The 19 August report, after 'provenance checks and deduplication', describes the same 125 evaluations as 1 rigid + 33 conventional + 51 TE + 40 twist. The total is 125 in both. Recorded, not adjudicated."
+    },
+    {
+      "id": "F8",
+      "severity": "INFO",
+      "title": "Source coverage is complete. No PDF failed to read.",
+      "detail": "All five report PDFs converted with pdftotext -layout without error (3542, 4244, 4325, 4335 and 4757 lines). All six package READMEs, both correction notices, the four delivered summary CSV/JSON files and eleven native .vspaero/.polar decks were read directly. liming_report_extracted.txt was identified as the 29 July report rather than a separate source.",
+      "not_read": "The per-case .lod strip-load files and the .history files were NOT parsed for this extraction; they carry spanwise distributions rather than the headline claims this file covers. SHA256SUMS.csv manifests were not verified."
+    }
+  ]
+}

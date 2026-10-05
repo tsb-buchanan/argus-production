@@ -1,0 +1,22 @@
+#!/bin/sh
+cd "${0%/*}" || exit
+set -e
+. ${WM_PROJECT_DIR:?}/bin/tools/RunFunctions
+# Laptop (WSL2): anaconda MPICH shadows the Open MPI that org-7 links against,
+# giving "attempt to run parallel on 1 processor" (docs/environment.md)
+case "$(mpirun --version 2>/dev/null | head -1)" in
+    *"Open MPI"*) ;;
+    *) echo "Allmesh: mpirun is not Open MPI; prepending /usr/bin to PATH"
+       PATH=/usr/bin:$PATH; export PATH ;;
+esac
+runApplication blockMesh
+runApplication surfaceFeatures        # org-7 utility (ESI: surfaceFeatureExtract; do not use)
+runApplication decomposePar -copyZero
+runParallel snappyHexMesh -overwrite
+grep -q "Finished meshing" log.snappyHexMesh || \
+    { echo "Allmesh: snappyHexMesh did not finish; see log.snappyHexMesh"; exit 1; }
+runApplication reconstructParMesh -constant
+rm -rf processor*
+runApplication extrudeMesh            # flatten slab to single 1 m spanwise cell
+runApplication changeDictionary       # front/back -> empty
+runApplication checkMesh

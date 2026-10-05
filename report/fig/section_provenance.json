@@ -1,0 +1,38 @@
+{
+  "axes_note": "alpha_deg and dragDir differ between the datasets by up to 0.0301 deg, so each case's Q_PINF row is taken from the SAME dataset as its section CSV. Mixing them would reproduce the D019 wind-axis bias.",
+  "counts": {
+    "published": 1,
+    "r2": 5,
+    "unavailable": 0,
+    "welded": 12
+  },
+  "mixed": true,
+  "purpose": "which section dataset served each case in the Cp/Cf figures",
+  "residual_bound_note": "Where a difference is taken between cases served from different generations, the generation itself differs between the two sides and does not cancel (D071). Measured bound on that residual, from the cases evaluated both ways: p95 |dCp| SWB 0.0126, SWW 0.0130.",
+  "rule": "sections_welded, else sections_r2, else sections_nflag, first that carries the case",
+  "served_from_published": [
+    "SWM_trim"
+  ],
+  "served_from_r2": [
+    "SWB_trim",
+    "SWC_trim",
+    "SWF_trim",
+    "SWH_trim",
+    "SWW_trim"
+  ],
+  "served_from_welded": [
+    "CMPB_trim",
+    "CMPC_trim",
+    "CMPF_trim",
+    "CMPH_trim",
+    "CMPM_trim",
+    "CMPW_trim",
+    "LCB_trim",
+    "LCC_trim",
+    "LCF_trim",
+    "LCH_trim",
+    "LCM_trim",
+    "LCW_trim"
+  ],
+  "unavailable": []
+}

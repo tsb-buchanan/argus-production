@@ -1,0 +1,526 @@
+{
+  "condition_CR": {
+    "vlm_buckets": {
+      "plotted": [
+        "cte_i002_c04/condition_CR",
+        "mcv2_i002_c01/condition_CR",
+        "cfft_b02_c01/condition_CR",
+        "cffw_b01_c01/condition_CR",
+        "chc_g02_c06/condition_CR",
+        "baseline_wing_only_refined/condition_CR"
+      ],
+      "reference_baseline_other_lineage": [
+        "baseline_corrected/condition_CR"
+      ],
+      "not_condition_CR": [
+        "conv_g01_c19/early_cruise",
+        "conv_g01_c19/late_cruise",
+        "conv_g02_c06/early_cruise",
+        "conv_g02_c06/late_cruise",
+        "ff_te_b01_c03_late_min_cdiw/early_cruise",
+        "ff_te_b01_c03_late_min_cdiw/late_cruise",
+        "ff_tw_b01_c03_late_min_cdiw/early_cruise",
+        "ff_tw_b01_c03_late_min_cdiw/late_cruise",
+        "ff_tw_b02_c01_early_min_cdiw/early_cruise",
+        "ff_tw_b02_c01_early_min_cdiw/late_cruise",
+        "rigid_baseline/early_cruise",
+        "rigid_baseline/late_cruise",
+        "trailing_edge_seed_r02/early_cruise",
+        "trailing_edge_seed_r02/late_cruise"
+      ],
+      "unmapped": [
+        "mbr_c01_l011/condition_CR"
+      ],
+      "duplicate_redelivery_byte_identical": [
+        "baseline_corrected/condition_CR"
+      ]
+    },
+    "rans_routes": {
+      "B": "dense_surface_integration",
+      "C": "dense_surface_integration",
+      "F": "dense_surface_integration",
+      "H": "dense_surface_integration",
+      "M": "dense_surface_integration",
+      "W": "dense_surface_integration"
+    },
+    "rans_cases": {
+      "B": "SWB_trim",
+      "C": "SWC_trim",
+      "F": "SWF_trim",
+      "H": "SWH_trim",
+      "M": "SWM_trim",
+      "W": "SWW_trim"
+    },
+    "rans_stations": {
+      "B": 78,
+      "C": 78,
+      "F": 78,
+      "H": 78,
+      "M": 78,
+      "W": 78
+    },
+    "rans_turbulence": [
+      "kOmegaSST"
+    ],
+    "vlm_geometry": {
+      "C": "cte_i002_c04",
+      "M": "mcv2_i002_c01",
+      "F": "cfft_b02_c01",
+      "W": "cffw_b01_c01",
+      "H": "chc_g02_c06",
+      "B": "baseline_wing_only_refined"
+    },
+    "vlm_reference_baseline": "baseline_corrected",
+    "vlm_n_strips": {
+      "C": 69,
+      "M": 69,
+      "F": 69,
+      "W": 69,
+      "H": 69,
+      "B": 69
+    },
+    "lod_closure": {
+      "C": {
+        "with_factor_2": 0.428278173269847,
+        "polar_CLtot": 0.428277943081,
+        "rel_err": 5.374753726122537e-07,
+        "ratio_without_factor_2": 0.5000002687376863
+      },
+      "M": {
+        "with_factor_2": 0.4282762409337286,
+        "polar_CLtot": 0.428277505407,
+        "rel_err": -2.952462493134467e-06,
+        "ratio_without_factor_2": 0.4999985237687534
+      },
+      "F": {
+        "with_factor_2": 0.428277327029617,
+        "polar_CLtot": 0.428277235372,
+        "rel_err": 2.140146835417044e-07,
+        "ratio_without_factor_2": 0.5000001070073418
+      },
+      "W": {
+        "with_factor_2": 0.4282758227472823,
+        "polar_CLtot": 0.428277783612,
+        "rel_err": -4.578488057718961e-06,
+        "ratio_without_factor_2": 0.49999771075597116
+      },
+      "H": {
+        "with_factor_2": 0.4282759468900668,
+        "polar_CLtot": 0.428276922524,
+        "rel_err": -2.278044605924828e-06,
+        "ratio_without_factor_2": 0.499998860977697
+      },
+      "B": {
+        "with_factor_2": 0.42826148691342497,
+        "polar_CLtot": 0.42826231128,
+        "rel_err": -1.9249103955448934e-06,
+        "ratio_without_factor_2": 0.49999903754480224
+      },
+      "B_corrected": {
+        "with_factor_2": 0.4282775341388914,
+        "polar_CLtot": 0.428278133112,
+        "rel_err": -1.3985610338302564e-06,
+        "ratio_without_factor_2": 0.49999930071948306
+      }
+    },
+    "rans_closure": {
+      "B": {
+        "CL_from_strips": 0.4074788657012778,
+        "CL_forceCoeffs": 0.4282682,
+        "rel": -0.0485427923406926
+      },
+      "C": {
+        "CL_from_strips": 0.408084039768072,
+        "CL_forceCoeffs": 0.428277111,
+        "rel": -0.04714954573401889
+      },
+      "F": {
+        "CL_from_strips": 0.4077446980145114,
+        "CL_forceCoeffs": 0.428273778,
+        "rel": -0.04793447799059177
+      },
+      "H": {
+        "CL_from_strips": 0.4072430049165814,
+        "CL_forceCoeffs": 0.428273693,
+        "rel": -0.04910572007377213
+      },
+      "M": {
+        "CL_from_strips": 0.40806331269124746,
+        "CL_forceCoeffs": 0.4282777,
+        "rel": -0.04719925251478778
+      },
+      "W": {
+        "CL_from_strips": 0.40840375831974307,
+        "CL_forceCoeffs": 0.4282739,
+        "rel": -0.046395873482500134
+      }
+    },
+    "rans_eta_window": [
+      0.024953418908573926,
+      0.9856640966754155
+    ],
+    "semispan_reconciliation": {
+      "B": {
+        "from_surface_m": 1.8253925,
+        "used_m": 1.8288000000000002,
+        "difference_mm": 3.40750000000023
+      },
+      "C": {
+        "from_surface_m": 1.8253925,
+        "used_m": 1.8288000000000002,
+        "difference_mm": 3.40750000000023
+      },
+      "F": {
+        "from_surface_m": 1.8253925,
+        "used_m": 1.8288000000000002,
+        "difference_mm": 3.40750000000023
+      },
+      "H": {
+        "from_surface_m": 1.8253925,
+        "used_m": 1.8288000000000002,
+        "difference_mm": 3.40750000000023
+      },
+      "M": {
+        "from_surface_m": 1.8253949999999999,
+        "used_m": 1.8288000000000002,
+        "difference_mm": 3.4050000000003244
+      },
+      "W": {
+        "from_surface_m": 1.8254000000000001,
+        "used_m": 1.8288000000000002,
+        "difference_mm": 3.4000000000000696
+      }
+    },
+    "lod_closure_max_abs_rel_with_factor_2": 4.578488057718961e-06,
+    "lod_ratio_without_factor_2_range": [
+      0.49999771075597116,
+      0.5000002687376863
+    ],
+    "vlm_truncation_null": {
+      "C": {
+        "full": 0.428278173269847,
+        "truncated": 0.40625865537687544,
+        "rel": -0.05141405578728301,
+        "n_strips_kept": 67,
+        "n_strips_total": 69
+      },
+      "M": {
+        "full": 0.4282762409337286,
+        "truncated": 0.40614465097475516,
+        "rel": -0.051675969488109194,
+        "n_strips_kept": 67,
+        "n_strips_total": 69
+      },
+      "F": {
+        "full": 0.428277327029617,
+        "truncated": 0.40503536353427366,
+        "rel": -0.05426848919727213,
+        "n_strips_kept": 67,
+        "n_strips_total": 69
+      },
+      "W": {
+        "full": 0.4282758227472823,
+        "truncated": 0.40564288524541076,
+        "rel": -0.05284663831053298,
+        "n_strips_kept": 67,
+        "n_strips_total": 69
+      },
+      "H": {
+        "full": 0.4282759468900668,
+        "truncated": 0.4052910796873596,
+        "rel": -0.053668358845768045,
+        "n_strips_kept": 67,
+        "n_strips_total": 69
+      },
+      "B": {
+        "full": 0.42826148691342497,
+        "truncated": 0.40883397444075104,
+        "rel": -0.045363669314960595,
+        "n_strips_kept": 67,
+        "n_strips_total": 69
+      }
+    },
+    "peak_difference": {
+      "C": {
+        "rans": [
+          0.07440264458345272,
+          0.7985094050743656
+        ],
+        "vlm": [
+          0.06944458196951905,
+          0.78537
+        ]
+      },
+      "F": {
+        "rans": [
+          0.03437859028604093,
+          0.7985094050743656
+        ],
+        "vlm": [
+          0.03194486693436699,
+          0.7497733333333333
+        ]
+      },
+      "H": {
+        "rans": [
+          0.03569503268552801,
+          0.7985094050743656
+        ],
+        "vlm": [
+          0.04080720029564927,
+          0.78518
+        ]
+      },
+      "M": {
+        "rans": [
+          0.07889941465064132,
+          0.7985104986876639
+        ],
+        "vlm": [
+          0.0740413539437304,
+          0.7853883333333332
+        ]
+      },
+      "W": {
+        "rans": [
+          0.03851743393191792,
+          0.7236521216097989
+        ],
+        "vlm": [
+          0.03521602551219266,
+          0.714445
+        ]
+      }
+    },
+    "lineage_offset": {
+      "peak": -0.1237514990212843,
+      "eta_at_peak": 0.016918333333333334,
+      "rms": 0.015871992735977163,
+      "what": "VLM B(baseline_wing_only_refined, the surface every RANS B case meshes) MINUS B(baseline_corrected, the lineage all five candidates are on). The RANS difference panel carries this term and cannot remove it, because no RANS case has ever been meshed on the corrected baseline (registry: NOT_USED_overruled_by_ARG-099, 'DO NOT MESH')."
+    },
+    "rans_minus_vlm_on_the_difference": {
+      "C": {
+        "rms": 0.003424229377140495,
+        "max_abs": 0.011010647471856774,
+        "eta_lo": 0.024953418908573926,
+        "eta_hi": 0.98566004688867,
+        "n_points": 78
+      },
+      "F": {
+        "rms": 0.0015457810667447805,
+        "max_abs": 0.0034004260935345757,
+        "eta_lo": 0.024953418908573926,
+        "eta_hi": 0.98566004688867,
+        "n_points": 78
+      },
+      "H": {
+        "rms": 0.003376278375146886,
+        "max_abs": 0.010802234638209847,
+        "eta_lo": 0.024953418908573926,
+        "eta_hi": 0.98566004688867,
+        "n_points": 78
+      },
+      "M": {
+        "rms": 0.0033852699342850263,
+        "max_abs": 0.008876706450084475,
+        "eta_lo": 0.024953453083989496,
+        "eta_hi": 0.9856613968175852,
+        "n_points": 78
+      },
+      "W": {
+        "rms": 0.0021099591248078093,
+        "max_abs": 0.009437323195356662,
+        "eta_lo": 0.02495352143482065,
+        "eta_hi": 0.9856640966754155,
+        "n_points": 78
+      }
+    },
+    "interp": {
+      "rans": {
+        "max_eta_offset": 4.049786745508044e-06,
+        "max_interp_error_bound": 6.783773901322642e-06,
+        "baseline": "SWB_trim"
+      },
+      "vlm": {
+        "max_eta_offset": 0.00034333333333336213,
+        "max_interp_error_bound": 0.0008479997832296301,
+        "baseline": "baseline_corrected"
+      }
+    },
+    "figure": "$ARGUS_ROOT/docs/report/all_geometry_2026-09-15/fig/spanwise_loading_condition_CR.pdf"
+  },
+  "early_cruise": {
+    "rans_routes": {
+      "B": "dense_surface_integration",
+      "C": "dense_surface_integration",
+      "F": "dense_surface_integration",
+      "H": "dense_surface_integration",
+      "M": "dense_surface_integration",
+      "W": "dense_surface_integration"
+    },
+    "rans_cases": {
+      "B": "CMPB_trim",
+      "C": "CMPC_trim",
+      "F": "CMPF_trim",
+      "H": "CMPH_trim",
+      "M": "CMPM_trim",
+      "W": "CMPW_trim"
+    },
+    "rans_stations": {
+      "B": 78,
+      "C": 78,
+      "F": 78,
+      "H": 78,
+      "M": 78,
+      "W": 78
+    },
+    "rans_turbulence": [
+      "SpalartAllmaras"
+    ],
+    "rans_closure": {
+      "B": {
+        "CL_from_strips": 0.5024560594837851,
+        "CL_forceCoeffs": 0.5293165,
+        "rel": -0.05074551901596651
+      },
+      "C": {
+        "CL_from_strips": 0.5027710466974875,
+        "CL_forceCoeffs": 0.5292666,
+        "rel": -0.0500608829321792
+      },
+      "F": {
+        "CL_from_strips": 0.5025976458715028,
+        "CL_forceCoeffs": 0.5292954,
+        "rel": -0.0504401778827044
+      },
+      "H": {
+        "CL_from_strips": 0.5020956194011065,
+        "CL_forceCoeffs": 0.5293058,
+        "rel": -0.051407297254051576
+      },
+      "M": {
+        "CL_from_strips": 0.5027100472881996,
+        "CL_forceCoeffs": 0.5293351,
+        "rel": -0.050299050094732775
+      },
+      "W": {
+        "CL_from_strips": 0.5034028257513374,
+        "CL_forceCoeffs": 0.5292406,
+        "rel": -0.04882046889196051
+      }
+    },
+    "peak_difference": {
+      "C": [
+        0.07485557616201971,
+        0.7610792767115048
+      ],
+      "F": [
+        0.046367999035539564,
+        0.7985094050743656
+      ],
+      "H": [
+        0.04572051480090472,
+        0.7985094050743656
+      ],
+      "M": [
+        0.07690321767609914,
+        0.7236491483486439
+      ],
+      "W": [
+        0.04609207055826142,
+        0.7236521216097989
+      ]
+    },
+    "missing_families": [],
+    "missing_case_reason": {},
+    "vlm_counterpart": "NONE. Every VSPAERO cruise run in vlm.json is on the TP-1580 Sref basis AND is a different geometry set (all six unmapped by .vsp3 sha256). No frame-equal VLM comparison exists.",
+    "figure": "$ARGUS_ROOT/docs/report/all_geometry_2026-09-15/fig/spanwise_loading_early_cruise.pdf"
+  },
+  "late_cruise": {
+    "rans_routes": {
+      "B": "dense_surface_integration",
+      "C": "dense_surface_integration",
+      "F": "dense_surface_integration",
+      "H": "dense_surface_integration",
+      "M": "dense_surface_integration",
+      "W": "dense_surface_integration"
+    },
+    "rans_cases": {
+      "B": "LCB_trim",
+      "C": "LCC_trim",
+      "F": "LCF_trim",
+      "H": "LCH_trim",
+      "M": "LCM_trim",
+      "W": "LCW_trim"
+    },
+    "rans_stations": {
+      "B": 78,
+      "C": 78,
+      "F": 78,
+      "H": 78,
+      "M": 78,
+      "W": 78
+    },
+    "rans_turbulence": [
+      "SpalartAllmaras"
+    ],
+    "rans_closure": {
+      "B": {
+        "CL_from_strips": 0.5167126102500184,
+        "CL_forceCoeffs": 0.5441685,
+        "rel": -0.050454757579649866
+      },
+      "C": {
+        "CL_from_strips": 0.5170504234279253,
+        "CL_forceCoeffs": 0.54419,
+        "rel": -0.04987150916421593
+      },
+      "F": {
+        "CL_from_strips": 0.5167917537162806,
+        "CL_forceCoeffs": 0.5440928,
+        "rel": -0.050177187207254774
+      },
+      "H": {
+        "CL_from_strips": 0.516268680814995,
+        "CL_forceCoeffs": 0.5440776,
+        "rel": -0.05111204575414436
+      },
+      "M": {
+        "CL_from_strips": 0.5169250252632915,
+        "CL_forceCoeffs": 0.5441693,
+        "rel": -0.050065806242116984
+      },
+      "W": {
+        "CL_from_strips": 0.5176139828745585,
+        "CL_forceCoeffs": 0.5440253,
+        "rel": -0.04854795746712797
+      }
+    },
+    "peak_difference": {
+      "C": [
+        0.0739543140015756,
+        0.7610792767115048
+      ],
+      "F": [
+        0.04608961059636091,
+        0.7985094050743656
+      ],
+      "H": [
+        0.045021037261512964,
+        0.7985094050743656
+      ],
+      "M": [
+        0.07628400364420918,
+        0.7236491483486439
+      ],
+      "W": [
+        0.04607966726852136,
+        0.7236521216097989
+      ]
+    },
+    "missing_families": [],
+    "missing_case_reason": {},
+    "vlm_counterpart": "NONE. Every VSPAERO cruise run in vlm.json is on the TP-1580 Sref basis AND is a different geometry set (all six unmapped by .vsp3 sha256). No frame-equal VLM comparison exists.",
+    "figure": "$ARGUS_ROOT/docs/report/all_geometry_2026-09-15/fig/spanwise_loading_late_cruise.pdf"
+  }
+}

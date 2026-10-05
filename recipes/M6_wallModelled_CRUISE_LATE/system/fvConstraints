@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           |
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvConstraints;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+limitp
+{
+    type       limitPressure;
+
+    minFactor  0.1;
+    maxFactor  2;
+}
+
+// limitTemperature: INHERITED FROM THE VALIDATED M6 SETUP, which carries it in
+// system/fvOptions as `limitT`, min 101 / max 1000. The recipe folder was built
+// without fvOptions and so lost it; OF-12 puts limiters in fvConstraints.
+// MEASURED CONSEQUENCE of its absence: the compressible smoke case diverged at
+// iteration 3 with "Negative initial temperature T0: -8.0223418". The
+// incompressible path solves no energy equation, which is why its smoke passed.
+// BOUNDS ARE THE M6's, NOT RETUNED: cruise T_inf 223.15 K, stagnation 250.3 K,
+// so [101, 1000] is inert in normal operation and only catches divergence.
+limitT
+{
+    type       limitTemperature;
+    select     all;          // OF-12 spelling; OF-7 wrote `selectionMode all`
+    min        101;
+    max        1000;
+}

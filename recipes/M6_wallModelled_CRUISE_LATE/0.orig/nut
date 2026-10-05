@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     | Version:  7
+    \\  /    A nd           |
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    location    "0";
+    object      nut;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -1 0 0 0 0];
+
+internalField   uniform 1.183902e-06;
+
+boundaryField
+{
+    wing
+    {
+        type            nutUSpaldingWallFunction;
+        value           uniform 0;
+    }
+    inlet
+    {
+        type            calculated;
+        value           uniform 1.183902e-06;
+    }
+    outlet
+    {
+        type            calculated;
+        value           uniform 1.183902e-06;
+    }
+    outboard
+    {
+        type            calculated;
+        value           uniform 1.183902e-06;
+    }
+    topBottom
+    {
+        type            calculated;
+        value           uniform 1.183902e-06;
+    }
+    symmetry
+    {
+        type            symmetryPlane;
+    }
+    #includeEtc "caseDicts/setConstraintTypes"
+}

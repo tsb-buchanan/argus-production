@@ -1,0 +1,25 @@
+/* D013 numerics lessons (TMR NACA 0012 campaign, session 2):
+   1. GAMG-p can FPE or stall (100s of V-cycles/solve) on extreme-anisotropy meshes;
+      fallback: p PCG/DIC (linear-solver path only, converged solution unchanged).
+   2. SIMPLEC low-URF pathology: with consistent yes, do NOT drop relaxation below
+      ~0.7/0.5 (diverges where 0.7/0.5 is stable); for heavy relaxation switch to
+      classic SIMPLE (consistent no; fields p 0.3).
+   3. Stiff cases need a staged startup (first-order convection + reduced URF through
+      the startup transient) or an alpha warm-start ladder from a converged neighbor. */
+FoamFile { version 2.0; format ascii; class dictionary; object fvSolution; }
+solvers
+{
+    p { solver GAMG; smoother GaussSeidel; tolerance 1e-7; relTol 0.01; }
+    "(U|k|omega)" { solver smoothSolver; smoother symGaussSeidel; tolerance 1e-8; relTol 0.1; }
+}
+SIMPLE
+{
+    nNonOrthogonalCorrectors 1;
+    consistent yes;             // SIMPLEC
+    residualControl { p 1e-5; U 1e-6; "(k|omega)" 1e-6; }
+}
+relaxationFactors
+{
+    equations { U 0.9; ".*" 0.7; }   // SIMPLEC values
+}
+cache { grad(U); }

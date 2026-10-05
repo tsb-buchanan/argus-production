@@ -1,0 +1,170 @@
+{
+  "_what": "THE PINNED v5 RECIPE. Single source of truth for campaign v5. Every value here was READ FROM THE CASE THAT ACTUALLY RAN (layers/L11_base), not transcribed from a dict on disk and not remembered.",
+  "_why_this_file_exists": "rescue/phaseA/layers/L11_base/system/ carries TWO layer dicts that disagree. layerSettings.wallResolved says 36 layers at expansionRatio 1.18. layerSettings, the active include, says 11 at 1.450, and 11 at 1.450 is what the snappyHexMesh log records. The apparent convention is that the runner copies layerSettings.$ARGUS_WALL over layerSettings, and that job ran with ARGUS_WALL=wallResolved and ARGUS_SKIP_MESH=1, so the copy never happened and the stale variant was never consulted. A v5 mesh job that follows the convention would silently build 36 layers at 1.18 and EVERY OUTPUT GATE WOULD PASS, because a 36-layer mesh is a perfectly valid mesh of the wrong recipe (GEO-102). The recipe is therefore pinned here and asserted against the dict before snappyHexMesh is allowed to run.",
+  "layers": {
+    "nSurfaceLayers": 11,
+    "expansionRatio": 1.45,
+    "firstLayerThickness": 4.5e-06,
+    "minThickness": 4.05e-06,
+    "relativeSizes": false,
+    "featureAngle": 330,
+    "slipFeatureAngle": 30,
+    "maxThicknessToMedialRatio": 0.6,
+    "maxFaceThicknessRatio": 1,
+    "nRelaxedIter": 3,
+    "_source": "rescue/phaseA/layers/L11_base/system/layerSettings, confirmed against log/snappyHexMesh.log which reports 'wing 5276772 11 4.5e-06 0.000586' requested and 'wing 5276772 9.78 0.000556 95' achieved"
+  },
+  "expected_from_this_recipe": {
+    "requested_stack_m": 0.000586,
+    "achieved_layers": 9.78,
+    "achieved_stack_m": 0.000556,
+    "achieved_pct": 95,
+    "wall_faces": 5276772,
+    "cells": 85665074,
+    "extrusion_pct": 97.07,
+    "_note": "MEASURED ON baseline. The other five geometries will differ a little; these are the numbers a mesh job reports against so a gross departure is visible, NOT a pass/fail tolerance."
+  },
+  "levels": {
+    "surfaceLevelMin": 11,
+    "surfaceLevelMax": 11,
+    "levelOuter": 5,
+    "levelMid": 6,
+    "levelNear": 7,
+    "levelWing": 8,
+    "levelWake": 7,
+    "levelCone": 7,
+    "levelMorph": 7,
+    "featureLevel": 11,
+    "levelTEouter": 11,
+    "levelTEinner": 11,
+    "_source": "system/meshLevels, the UNSUFFIXED file snappyHexMeshDict #includes, recovered from layers/L11_morph after L11_base's copy was lost to disk damage. Carried by 11 cases on scratch.",
+    "_CORRECTION": "SUPERSEDES the first version of this block, which pinned surfaceLevelMin/Max 8 with levelOuter 4 / levelMid 5 / levelNear 6 / levelWing 7 / levelWake 6. THOSE VALUES WERE WRONG AND ARE WITHDRAWN. They came from meshLevels.full, which is a stale suffixed variant, because it was the only meshLevels that rescue/ held; the mesh that actually ran is a surface-level-11 skin, three refinement levels finer. Load-bearing for NOTHING DOWNSTREAM: no v5 mesh had been built and docs/CAMPAIGN_V5_PLAN.md never quoted a level, so the only artifact affected was this file (D051). It is recorded rather than silently overwritten because it is the second instance in one hour of the same trap, and it caught the person writing the guard against it."
+  },
+  "ranks": {
+    "mesh": 192,
+    "solve": 192,
+    "_why": "snappyHexMesh does not produce the same mesh at different rank counts, so 192 is part of the mesh recipe. The solve rank count does not change the converged answer, but holding it fixed across all 18 solves keeps the candidate-to-candidate differential common-mode (D071)."
+  },
+  "solve": {
+    "endTime": 4500,
+    "endTime_increment_if_unconverged": 1500,
+    "walltime": "24:00:00",
+    "max_legs": 4,
+    "s_per_iteration_at_192": 7.7,
+    "_source": "layers/L11_base/log/simpleFoam.log: 300 iterations, ClockTime 2310 s"
+  },
+  "convergence_gate": {
+    "window_iterations": 200,
+    "cd_drift_counts_max": 0.05,
+    "cl_drift_counts_max": 1.0,
+    "_basis": "D023 force stationarity. CRB_a1p75 is the only phaseA case that ran long enough to calibrate this: at 3525 iterations its Cd drift is 0.020 counts, still twice the gate, having halved roughly every 350 iterations from 0.176 at 2465. The Cl bound is set at one count because the trim loop's own tolerance is |dCL| < 1e-4, and at 2400 iterations phaseA's Cl drift was 20 to 60 counts.",
+    "_note": "LIFT CONVERGES SLOWER THAN DRAG ON THIS WING. Both bounds are checked; the Cl one is the binding constraint in every phaseA case measured."
+  },
+  "conditions": {
+    "_declared_in": "docs/ARGUS_reference_data.md section 9, DECIDED 2026-07-13. THREE conditions are declared, not two, and each has a STATED PURPOSE. The purpose is what decides which one a case runs at; the name is not.",
+    "WT": {
+      "mach": 0.12,
+      "U_inf": 40.8,
+      "Re_cref": 950000.0,
+      "purpose": "BASELINE-VS-EXPERIMENT. Closest TP-1580 tested point to cruise.",
+      "kInf": 0.002497,
+      "omegaInf": 17.1,
+      "nut_inf": 0.00014602,
+      "nut_over_nu": 10.0,
+      "recipe_folder": "hpc/recipes/L11_wallResolved_WT",
+      "cases_measured_on_scratch": 35
+    },
+    "CR": {
+      "mach": 0.1,
+      "U_inf": 34.0,
+      "Re_cref": 790000.0,
+      "purpose": "BASELINE-VS-MORPHED DELTAS AGAINST DSO PREDICTIONS. M 0.10 is the VSPAERO run Mach.",
+      "kInf": 0.001734,
+      "omegaInf": 14.25,
+      "nut_inf": 0.00012167,
+      "nut_over_nu": 8.34,
+      "recipe_folder": "hpc/recipes/L11_wallResolved_CR",
+      "cases_measured_on_scratch": 7
+    },
+    "WT_HIGH": {
+      "mach": null,
+      "Re_cref": 1630000.0,
+      "purpose": "TURBULENT-END BRACKET (D043). Same geometry, mesh and recipe as WT, at TP-1580 run 4's Reynolds number. WT alone is exposed because run 1 at Re 0.97e6 is the TRANSITIONAL OUTLIER of the experimental sweep, so the closest tested point is the one least comparable to a fully turbulent RANS.",
+      "recipe_folder": null,
+      "gate": "NOT BUILT. Section 9 item 3b requires the first 3D solve to report achieved y+ WITH THE CONVENTION NAMED before WT-HIGH runs.",
+      "cases_measured_on_scratch": 0
+    },
+    "_common": {
+      "nu": 1.46e-05,
+      "rhoInf": 1.225,
+      "target_CL": 0.428277635108,
+      "_frame": "target CL is on the DSO basis, Sref 1.24092 m2 / Cref 0.39396 m (D006 second amendment). Both conditions run at the SAME fixed CL, each geometry trimmed to its own alpha.",
+      "_mesh_is_shared": "THE MESH IS CONDITION-INDEPENDENT. Same geometry, same nu; only the freestream changes. So ONE mesh per geometry serves BOTH conditions AND all alphas, and the two recipe folders differ in exactly four files (0.orig U, k, omega, nut) plus controlDict's magUInf and its two axis vectors. Every mesh dict and every numerics file is byte-identical between them, which is what makes WT and CR coefficients directly comparable.",
+      "_turbulence_scaling": "k = 1.5*(U*I)^2 at I = 0.1 percent, omega scaled LINEARLY with U, hence nut proportional to U. Verified exact at both conditions: omega_CR = 17.10*34.0/40.8 = 14.25. nut/nu therefore DIFFERS between conditions, 10.00 at WT and 8.34 at CR, and that is CORRECT rather than an inconsistency: nu is fixed while U changed, which is the Reynolds number changing."
+    },
+    "_CORRECTION_2": "SUPERSEDES BOTH EARLIER VERSIONS OF THIS BLOCK. The first said Condition CR only. The second said Condition WT only and asserted 'THE WHOLE PHASEA CAMPAIGN RAN AT WT AND SO DID THE L11 PAIR'. THAT SECOND CLAIM IS WITHDRAWN AND WAS WRONG. I had sampled exactly two cases, WR_mcv2_a1p30 and CTE_a1p40, both WT, and generalised over a campaign of 48. A full sweep of every readable 0.orig/U on scratch gives 35 cases at |U| 40.8 and SEVEN AT |U| 34.0: CRB_a1p75, CRB_a1p90, CRC_a1p30, CRC_a1p50, CRM_a1p30, CRM_a1p50 and 2d/CR2d_sweep70_fine_a0p4. THE 'CR' PREFIX MEANT EXACTLY WHAT IT SAYS. Both conditions are live, correctly scaled, and were always intended: section 9 declares them with different purposes. The first correction was right that the L11 recipe is WT; it was wrong to extend that to the campaign. LOAD-BEARING FOR: the claim that 'v5 stays at WT', which is now REPLACED by the split in v5_matrix below. Still true and unaffected: the L11 pair is WT, the recipe folder named _WT is correctly named, and no result rested on any of it because nothing had run.",
+    "_v5_scope_note": "As of 2026-08-24 v5 runs CR only. WT and WT-HIGH stay documented here because they are real declared conditions and the WT recipe folder is built and verified; they are DEFERRED, not withdrawn."
+  },
+  "v5_matrix": {
+    "_ruling": "v5 RUNS CONDITION CR ONLY (project decision, 2026-08-24). 6 meshes, 18 solves.",
+    "CR_deltas": {
+      "geometries": 6,
+      "alphas": 3,
+      "solves": 18,
+      "why": "the morphing deltas against DSO, at Liming's only low-speed condition (M 0.10, CL 0.428277635108). The campaign's reason for existing."
+    },
+    "meshes": 6,
+    "WT_deferred": {
+      "solves": 0,
+      "why": "WT and WT-HIGH are both taken from NASA TP-1580 (Langley V/STOL, circa 1980): WT its lowest tested point, WT-HIGH its highest. NEITHER APPEARS IN LIMING'S REPORT. Their value was the tie to low-speed experiment, but the experiment this project answers to is the ARGUS campaign at the TU DELFT low-speed tunnel (Task 2.5, PIV/PTV) and ITS CONDITIONS ARE RECORDED NOWHERE. Matching a 1980 NASA tunnel before knowing whether the campaign we are judged against sits near it is the wrong order.",
+      "cost_to_add_later": "3 solves. The mesh is condition-independent, so the six v5 meshes serve WT unchanged, and hpc/recipes/L11_wallResolved_WT is already built and verified. NOTHING IS THROWN AWAY BY DEFERRING."
+    },
+    "WT_HIGH_deferred": {
+      "solves": 0,
+      "why": "same as WT, plus it was never ungated: reference data s9 item 3b requires the first 3D solve to report achieved y+ WITH THE CONVENTION NAMED before it runs."
+    },
+    "_cost_unchanged": "41,500 core-hours, exactly the figure costed in CAMPAIGN_V5_PLAN section 2 and approved. The 18 CR solves were always that number; WT would have been additional."
+  },
+  "moment_reference": {
+    "CofR": [
+      1.34,
+      0.0,
+      0.0
+    ],
+    "lRef": 0.393957,
+    "_what_CofR_is": "THE ROOT QUARTER-CHORD, NOT THE MAC QUARTER-CHORD. Measured on baseline_oml_placed_laddercap.stl: root chord 0.63981 m with its leading edge at x 1.17653, so root c/4 sits at x 1.33648, which is the 1.34 in the dict to 3.5 mm. The MAC quarter-chord is at x 1.66493.",
+    "_the_frame_warning": "SO Cm FROM THIS SETUP IS A MIXED FRAME: the moment is taken about the ROOT c/4 but non-dimensionalised by the MAC. That is a choice, not an error, and CL AND CD ARE COMPLETELY UNAFFECTED. But a Cm from these runs is NOT comparable to a MAC-c/4-referenced Cm without the transfer, and the transfer is LARGE: dCm = CL * (1.66493 - 1.33648) / 0.393957 = 0.8337 * CL, which is 0.357 at the trim CL of 0.428277635108. THAT DWARFS ANY MORPHING EFFECT. Anyone quoting Cm against a DSO, VSPAERO or TP-1580 value must state both reference points first (D068).",
+    "_unaffected": "CL, CD and every force-derived quantity. CofR enters the moment only."
+  },
+  "geometry": {
+    "form": "*_oml_placed_laddercap.stl",
+    "closure_gate_run": "2026-08-24, all six: 0 open edges, 0 over-connected edges, y_min -20.000 mm",
+    "surfaces": {
+      "baseline": {
+        "tris": 192588,
+        "wetted_m2": 1.34966
+      },
+      "mcv2_i002_c01": {
+        "tris": 192588,
+        "wetted_m2": 1.350275
+      },
+      "cte_i002_c04": {
+        "tris": 192588,
+        "wetted_m2": 1.350253
+      },
+      "chc_g02_c06": {
+        "tris": 195266,
+        "wetted_m2": 1.350103
+      },
+      "cfft_b02_c01": {
+        "tris": 195266,
+        "wetted_m2": 1.350032
+      },
+      "cffw_b01_c01": {
+        "tris": 195266,
+        "wetted_m2": 1.349877
+      }
+    },
+    "_tessellation_note": "The six split into two exact triangle-count families, 192588 and 195266, so the three never-run candidates cross a tessellation boundary that mcv2 and cte do not. RECORDED, NOT ADJUDICATED (D071): the wetted-area spread is bounded at 0.046 percent and does not track the family split, so tessellation contributes under 0.03 percent of wetted area, which is at most about 0.03 drag counts against a morphing effect of order 4."
+  }
+}

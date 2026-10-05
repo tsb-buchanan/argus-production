@@ -1,0 +1,18 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object omega; }
+// nut_inf / nu = 10  ->  nut_inf = 1.46e-4,  omega = k/nut = 2.497e-3/1.46e-4 = 17.10
+dimensions      [0 0 -1 0 0 0 0];
+omegaInf        14.25;
+internalField   uniform $omegaInf;
+
+boundaryField
+{
+    inlet     { type inletOutlet; inletValue uniform $omegaInf; value uniform $omegaInf; }
+    topBottom { type inletOutlet; inletValue uniform $omegaInf; value uniform $omegaInf; }
+    outboard  { type inletOutlet; inletValue uniform $omegaInf; value uniform $omegaInf; }
+    outlet    { type inletOutlet; inletValue uniform $omegaInf; value uniform $omegaInf; }
+    symmetry  { type symmetry; }
+    // omegaWallFunction blends between the viscous-sublayer and log-layer forms,
+    // so it is correct for BOTH cases.  This file does not change between them.
+    wing      { type omegaWallFunction; value uniform $omegaInf; }
+    #includeEtc "caseDicts/setConstraintTypes"
+}

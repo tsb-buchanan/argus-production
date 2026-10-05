@@ -1,0 +1,34 @@
+cff-version: 1.2.0
+message: "If you use this software, please cite it using the metadata below."
+title: "ARGUS Morphing Wing RANS Validation Workflow"
+version: 1.1.0
+date-released: 2026-10-09
+type: software
+license: MIT
+repository-code: "https://github.com/tsb-buchanan/argus-production"
+authors:
+  - family-names: Buchanan
+    given-names: Tyler
+    affiliation: Delft University of Technology
+abstract: >-
+  OpenFOAM-org 12 RANS workflows for validating the OpenVSP/VSPAERO outer-wing
+  morphing design study of the ARGUS project: case recipes, HPC mesh and solve
+  jobs, trim to target lift, post-processing, run cards, and the validation
+  report comparing viscous drag, induced drag, hinge moment, and root bending
+  with the vortex-lattice selection.
+keywords:
+  - morphing wing
+  - OpenFOAM
+  - RANS
+  - CFD validation
+  - VSPAERO
+references:
+  - type: software
+    title: "ARGUS Aerodynamic Morphing-Wing Workflow"
+    version: 1.1.0
+    license: BSD-3-Clause
+    repository-code: "https://github.com/Liming-Zheng/ARGUS_Aerodynamic_Workflow"
+    authors:
+      - family-names: Zheng
+        given-names: Liming
+        affiliation: Delft University of Technology

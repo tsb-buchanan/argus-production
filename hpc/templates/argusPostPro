@@ -1,0 +1,234 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  ARGUS STANDARD POST-PROCESSING BLOCK.  Include from a case's controlDict:
+
+      functions
+      {
+          #include "argusPostPro"
+      }
+
+  and copy this file to <case>/system/argusPostPro.
+
+  -----------------------------------------------------------------------------
+  WHY THIS FILE EXISTS
+  -----------------------------------------------------------------------------
+  THE POST-PROCESSOR CANNOT COMPUTE WHAT THE CASE NEVER SAMPLED, and every entry
+  below was added because a downstream consumer needs it, not because it seemed
+  useful. This is the GEO-102 lesson pointed forward: a gate on the output cannot
+  see a wrong input, so the inputs are DECLARED here once and asserted before a
+  case is submitted by scripts/assert_case_postpro.py.
+
+  MEASURED COST OF NOT HAVING IT (2026-08-22). results/vtk_export/*.vtk carries cp,
+  cf and yplus but NOT the wall-shear VECTOR, because the export was written for
+  making pictures. The hinge-moment integrator needs the vector for its viscous
+  term, so that term is reported as null on every existing 3D case and cannot be
+  recovered without re-running. A field that is cheap to write during the solve is
+  expensive to obtain afterwards, and on a purged case it is impossible.
+
+  EVERY ENTRY NAMES ITS CONSUMER. An entry whose consumer disappears should be
+  removed, and an entry with no named consumer should never have been added.
+\*---------------------------------------------------------------------------*/
+
+// ---------------------------------------------------------------------------
+// 1. FORCES, WITH THE PRESSURE/VISCOUS SPLIT.
+//    CONSUMER: run cards (results.CD_pressure / CD_viscous), the drag decomposition,
+//    and every delta we report.
+//    forceCoeffs is NOT sufficient and this is a documented trap: its Cd(f)/Cd(r)
+//    are FRONT and REAR, not pressure and viscous, and hpc/make_run_card.py lists
+//    the split as "never derivable" for cases that carry only forceCoeffs. The
+//    `forces` object writes them separately and the card asserts
+//    CD = CD_pressure + CD_viscous exactly, which catches a column mis-parse.
+// ---------------------------------------------------------------------------
+argusForces
+{
+    type            forces;
+    libs            ("libforces.so");
+    writeControl    timeStep;
+    writeInterval   1;
+    log             false;
+    patches         ($ARGUS_WALL_PATCH);
+    CofR            ($ARGUS_COFR);
+    // rhoInf is only read when rho is rhoInf; for an incompressible solver p is
+    // kinematic and rhoInf 1 gives coefficients on the correct normalisation.
+    rho             $ARGUS_RHO_MODE;
+    rhoInf          $ARGUS_RHOINF;
+}
+
+// ---------------------------------------------------------------------------
+// 1b. WALL FIELDS -- AND THEY MUST COME BEFORE THE SAMPLER.
+//     FUNCTION OBJECT ORDER IS EXECUTION ORDER. wallShearStress and yPlus are
+//     CREATED by these objects; the `surfaces` sampler below can only sample a
+//     field that already exists when it runs. With the sampler first, OpenFOAM
+//     writes p_wingSurface.vtk and SILENTLY OMITS the other two -- no error, no
+//     warning, just a surface missing the exact field the hinge-moment viscous
+//     term and the separation analysis need. Caught 2026-08-22 by the --after
+//     gate, which is why that gate checks what was WRITTEN and not only what was
+//     CONFIGURED.
+// ---------------------------------------------------------------------------
+argusWallShearStress
+{
+    type            wallShearStress;
+    libs            ("libfieldFunctionObjects.so");
+    writeControl    writeTime;
+    patches         ($ARGUS_WALL_PATCH);
+    log             false;
+}
+
+argusYPlus
+{
+    type            yPlus;
+    libs            ("libfieldFunctionObjects.so");
+    writeControl    writeTime;
+    log             false;
+}
+
+// ---------------------------------------------------------------------------
+// 1c. PRESSURE COEFFICIENT AS A FIELD.
+//     CONSUMER: the report figures and scripts/export_wing_vtk.py, which want cp
+//     rather than raw p so a surface is directly comparable between cases at
+//     different conditions.
+//
+//     DERIVED BY OPENFOAM, NOT BY THE PLOTTER. Forming cp downstream needs q, and q
+//     needs rho and |U|, which the plotting script would have to be TOLD. Every
+//     coefficient in this project carries its normalising frame or it is not
+//     reportable (the frame rule), and a frame supplied on a command line is one
+//     nobody can audit later. Computed here, the normalisation travels with the file.
+//
+//     pInf AND rhoInf ARE SUBSTITUTED, NOT FIXED, AND THAT IS NOT COSMETIC. For an
+//     incompressible solver p is KINEMATIC GAUGE pressure, so pInf 0 and rhoInf 1 are
+//     right. For a compressible one p is ABSOLUTE PASCALS and both are wrong: pInf 0
+//     leaves the whole freestream in the numerator, and rhoInf 1 drops the freestream
+//     density out of the dynamic pressure, 16.6% on the ONERA M6 case. This template was
+//     only ever exercised incompressibly and carried both defects until 2026-08-22.
+//     install_postpro.py now derives them from the case and HALTS if it cannot.
+//
+//     CF IS DELIBERATELY NOT DERIVED HERE. It would have to be a magnitude, and the
+//     wall-shear VECTOR written above carries strictly more: reverse flow is the SIGN
+//     of tau, which |cf| cannot express, and the viscous hinge moment needs the
+//     direction. The post-processor forms |cf| from the vector when it wants a scalar.
+// ---------------------------------------------------------------------------
+argusCp
+{
+    type            pressure;
+    libs            ("libfieldFunctionObjects.so");
+    writeControl    writeTime;
+    // ORG-7 SYNTAX, NOT ESI. This block read `mode staticCoeff;` until 2026-08-22, which
+    // is openfoam.com's spelling. OpenFOAM-org 7 takes two BOOLEANS instead and aborts
+    // with "keyword calcTotal is undefined" on every rank. The error names the missing
+    // entry but not the dialect, and the project rules already record that porting between the
+    // two has cost this project a job once (`residuals` against `solverInfo`). This is
+    // the same trap in a second function object, and it means argusCp had NEVER RUN:
+    // installing a block is not executing it, and only a run can tell the difference.
+    calcTotal       no;
+    calcCoeff       yes;
+    result          cp;
+    rho             $ARGUS_RHO_MODE;
+    rhoInf          $ARGUS_RHOINF;
+    pInf            $ARGUS_PINF;
+    UInf            ($ARGUS_UINF 0 0);
+    log             false;
+}
+
+// ---------------------------------------------------------------------------
+// 2. THE WING SURFACE, WITH THE WALL-SHEAR VECTOR.
+//    CONSUMERS: scripts/hinge_moment_integrate.py (needs p AND the tau VECTOR),
+//    scripts/wing_surface_maps.py (separation: reverse flow is the SIGN of tau,
+//    which a magnitude cannot express), scripts/export_wing_vtk.py.
+//
+//    VTK FORMAT IS DELIBERATE. `raw` writes face-centre POINTS ONLY, with no
+//    connectivity, so face AREAS and NORMALS are unavailable and no surface
+//    integral can be formed from it. The moment integral needs both. VTK carries
+//    the polygons, so areas and normals are derived from the geometry itself
+//    rather than assumed from a nominal cell size (D060: a faceted surface
+//    under-reads area, so an assumed area is wrong in a known direction).
+// ---------------------------------------------------------------------------
+argusWingSurface
+{
+    type            surfaces;
+    libs            ("libsampling.so");
+    writeControl    writeTime;
+    surfaceFormat   vtk;
+    interpolationScheme cellPoint;
+    fields          (p cp wallShearStress yPlus);
+    // A PARENTHESISED LIST, not a dictionary. OpenFOAM-org 7's `surfaces` function
+    // object reads this entry as a list and fails with "Attempt to return dictionary
+    // entry as a primitive" if it is braced. The error names the entry but not the
+    // cause, so it is recorded here.
+    surfaces
+    (
+        wingSurface
+        {
+            type        patch;
+            patches     ($ARGUS_WALL_PATCH);
+            interpolate false;   // FACE values, not interpolated to points: the
+                                 // integral is over faces and interpolating first
+                                 // then integrating is a different operator.
+        }
+    );
+}
+
+// ---------------------------------------------------------------------------
+// 3. TREFFTZ PLANES.
+//    CONSUMER: scripts/trefftz.py (induced drag the way a VLM defines it).
+//
+//    SAMPLED IN-SOLVER RATHER THAN CUT AFTERWARDS, because cutting afterwards
+//    needs the whole volume field, and the volume is the first thing deleted when
+//    scratch fills. On 2026-08-21 the processor directories of 36 cases were
+//    purged and their volume fields went with them; anything not sampled during
+//    the run is gone.
+//
+//    PLACEMENT IS MEASURED, NOT CHOSEN. CDi from a Trefftz plane DECAYS
+//    monotonically downstream as numerical diffusion spreads the wake, with no
+//    plateau (measured 2026-08-22 on the synthetic wings: e swept 0.63 to 1.05
+//    across 0.05 to 0.71 chords). A SINGLE plane is therefore a choice and must
+//    never be reported alone. Several are written so the decay is visible and the
+//    placement sensitivity is reported rather than hidden.
+// ---------------------------------------------------------------------------
+argusTrefftz
+{
+    type            surfaces;
+    libs            ("libsampling.so");
+    writeControl    writeTime;
+    surfaceFormat   vtk;
+    interpolationScheme cellPoint;
+    fields          ($ARGUS_TREFFTZ_FIELDS);
+    surfaces
+    (
+        trefftz_x1 { type cuttingPlane; planeType pointAndNormal;
+                     pointAndNormalDict { point ($ARGUS_TREFFTZ_X1 0 0); normal (1 0 0); }
+                     interpolate true; }
+        trefftz_x2 { type cuttingPlane; planeType pointAndNormal;
+                     pointAndNormalDict { point ($ARGUS_TREFFTZ_X2 0 0); normal (1 0 0); }
+                     interpolate true; }
+        trefftz_x3 { type cuttingPlane; planeType pointAndNormal;
+                     pointAndNormalDict { point ($ARGUS_TREFFTZ_X3 0 0); normal (1 0 0); }
+                     interpolate true; }
+        trefftz_x4 { type cuttingPlane; planeType pointAndNormal;
+                     pointAndNormalDict { point ($ARGUS_TREFFTZ_X4 0 0); normal (1 0 0); }
+                     interpolate true; }
+    );
+}
+
+// ---------------------------------------------------------------------------
+// 4. WALL FIELDS, so the surface sample above has something to sample.
+//    CONSUMER: entry 2. yPlus is also read directly by the run card
+//    (wall_treatment.yplus_*), and the wall treatment claim is only checkable
+//    against a measured y+.
+// ---------------------------------------------------------------------------
+
+
+// ---------------------------------------------------------------------------
+// 5. RESIDUALS.
+//    CONSUMER: run cards (convergence.final_residuals) and the D023 tail-drift
+//    check. OpenFOAM-org 7 calls this `residuals`; ESI calls it `solverInfo`, and
+//    porting between them has already cost this project a job.
+// ---------------------------------------------------------------------------
+argusResiduals
+{
+    type            residuals;
+    libs            ("libutilityFunctionObjects.so");
+    writeControl    timeStep;
+    writeInterval   1;
+    fields          ($ARGUS_RESIDUAL_FIELDS);
+}
+
+// ************************************************************************* //

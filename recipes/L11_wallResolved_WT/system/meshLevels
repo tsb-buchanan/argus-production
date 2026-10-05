@@ -1,0 +1,19 @@
+// Sandbox background base cell = 0.25 m.  Surface level 6 -> 0.25/2^6 = 3.906 mm
+surfaceLevelMin 11;   //   3.906 mm base skin
+surfaceLevelMax 11;   //   0.977 mm where curvature demands (LE)
+levelOuter       5;   //  31.25 mm  (shell 0.35 .. 1.20 m)
+levelMid         6;   //  15.63 mm  (shell 0.10 .. 0.35 m)
+levelNear        7;   //   7.81 mm  (shell 0.03 .. 0.10 m)
+levelWing        8;   //   3.906 mm - MATCHES the skin.  At 5 the first
+                      //   isotropic cell off the wall was 2x the surface cell.
+levelWake        7;   //  31.25 mm - trimmed, layers matter more than the wake
+                      //   on a sandbox that is not a forces domain anyway
+levelCone        7;   //  15.63 mm - trimmed for the same reason
+featureLevel    11;   //   0.488 mm on EXTRACTED EDGES.  The blunt TE base is a
+                      //   FLAT face: surfaceLevelMax is curvature-driven via
+                      //   resolveFeatureAngle and will never fire on it.  The two
+                      //   base corners ARE feature edges, so this is what reaches
+                      //   the TE.  2.11 cells across the 1.031 mm tip base.
+levelTEouter    11;   //   0.977 mm
+levelTEinner    11;   //   0.488 mm
+levelMorph       7;   //   7.81 mm

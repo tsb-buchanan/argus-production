@@ -1,0 +1,610 @@
+{
+ "_generator": "scripts/make_cruise_tables.py",
+ "coverage": {
+  "by_condition": {
+   "condition_CR": 25,
+   "early_cruise": 33,
+   "late_cruise": 32
+  },
+  "cruise_published": 38,
+  "total": 90,
+  "welded": 27
+ },
+ "early_cruise": {
+  "Cd": {
+   "B": 177.839,
+   "C": 190.71,
+   "F": 179.635,
+   "H": 180.083,
+   "M": 192.393,
+   "W": 177.07
+  },
+  "Cl_minus_target": {
+   "B": 0.19412549999930917,
+   "C": -0.3048745000000519,
+   "F": -0.01687450000065205,
+   "H": 0.0871255000001181,
+   "M": 0.3801254999991066,
+   "W": -0.564874500000867
+  },
+  "LD": {
+   "B": 29.763803215267743,
+   "C": 27.752430391694194,
+   "F": 29.46504857071283,
+   "H": 29.39232465030014,
+   "M": 27.513220335459188,
+   "W": 29.888778449200878
+  },
+  "alpha": {
+   "B": 1.1020801437872232,
+   "C": 0.7413018567842916,
+   "F": 0.8586669395318464,
+   "H": 0.93483093779793,
+   "M": 0.7500200065446249,
+   "W": 0.8954459214790783
+  },
+  "baseline_Cd_counts": 177.839,
+  "bias": {
+   "B": -0.006234552753635013,
+   "C": 0.0023915476937594236,
+   "F": 0.0006389898231626452,
+   "H": -0.003250990845543686,
+   "M": -0.010850508312394678,
+   "W": 0.021486554069451668
+  },
+  "delta": {
+   "B": 0.0,
+   "C": 12.871,
+   "F": 1.796,
+   "H": 2.244,
+   "M": 14.554,
+   "W": -0.769
+  },
+  "incidence_below_B": {
+   "C": 0.3607782870029316,
+   "F": 0.24341320425537682,
+   "H": 0.16724920598929316,
+   "M": 0.3520601372425983,
+   "W": 0.20663422230814488
+  },
+  "order": [
+   "W",
+   "F",
+   "H",
+   "C",
+   "M"
+  ],
+  "target_CL": 0.52929708745,
+  "worst_abs_Cl_residual": 0.564874500000867
+ },
+ "generation_null": {
+  "per_case": {
+   "early_cruise/B": {
+    "dCl_counts": 1.6879999999996897,
+    "published": 177.938,
+    "published_cells": null,
+    "role": "sound",
+    "shift": -0.09899999999998954,
+    "welded": 177.839,
+    "welded_cells": 73644516
+   },
+   "early_cruise/C": {
+    "dCl_counts": 0.5680000000007901,
+    "published": 191.043,
+    "published_cells": null,
+    "role": "sound",
+    "shift": -0.3329999999999984,
+    "welded": 190.71,
+    "welded_cells": 73704220
+   },
+   "early_cruise/F": {
+    "dCl_counts": 0.30099999999921856,
+    "published": 233.557,
+    "published_cells": null,
+    "role": "seam",
+    "shift": -53.922,
+    "welded": 179.635,
+    "welded_cells": 73660573
+   },
+   "early_cruise/H": {
+    "dCl_counts": 0.6230000000007063,
+    "published": 232.184,
+    "published_cells": null,
+    "role": "seam",
+    "shift": -52.101,
+    "welded": 180.083,
+    "welded_cells": 73669659
+   },
+   "early_cruise/M": {
+    "dCl_counts": 1.8609999999996685,
+    "published": 192.58399999999997,
+    "published_cells": null,
+    "role": "sound",
+    "shift": -0.19099999999997408,
+    "welded": 192.393,
+    "welded_cells": 73727346
+   },
+   "early_cruise/W": {
+    "dCl_counts": -0.09745735000121769,
+    "published": 228.056700115,
+    "published_cells": null,
+    "role": "seam",
+    "shift": -50.98670011500002,
+    "welded": 177.07,
+    "welded_cells": 73668547
+   },
+   "late_cruise/B": {
+    "dCl_counts": 1.2190000000000811,
+    "published": 188.113,
+    "published_cells": null,
+    "role": "sound",
+    "shift": -0.15399999999999636,
+    "welded": 187.959,
+    "welded_cells": 73673859
+   },
+   "late_cruise/C": {
+    "dCl_counts": 0.9729999999996686,
+    "published": 200.513,
+    "published_cells": null,
+    "role": "sound",
+    "shift": -0.3400000000000034,
+    "welded": 200.173,
+    "welded_cells": 73728353
+   },
+   "late_cruise/F": {
+    "dCl_counts": 0.43200000000021,
+    "published": 244.602,
+    "published_cells": null,
+    "role": "seam",
+    "shift": -55.295000000000016,
+    "welded": 189.307,
+    "welded_cells": 73684317
+   },
+   "late_cruise/H": {
+    "dCl_counts": 0.24700000000099642,
+    "published": 243.324,
+    "published_cells": null,
+    "role": "seam",
+    "shift": -53.43800000000002,
+    "welded": 189.886,
+    "welded_cells": 73693511
+   },
+   "late_cruise/M": {
+    "dCl_counts": 1.1739999999993422,
+    "published": 202.02700000000002,
+    "published_cells": null,
+    "role": "sound",
+    "shift": -0.3400000000000034,
+    "welded": 201.687,
+    "welded_cells": 73751122
+   },
+   "late_cruise/W": {
+    "dCl_counts": 0.08400000000019503,
+    "published": 239.463,
+    "published_cells": null,
+    "role": "seam",
+    "shift": -52.285,
+    "welded": 187.178,
+    "welded_cells": 73691820
+   }
+  },
+  "seam_shift_range": [
+   -55.295000000000016,
+   -50.98670011500002
+  ],
+  "sound_max_abs_shift": 0.3400000000000034
+ },
+ "hinge": {
+  "Condition CR, M = 0.10/B": {
+   "C_Mh": -0.035972651945010224,
+   "M_h": -0.8668184458093058,
+   "case": "SWB_trim",
+   "dM_h": 0.0,
+   "pct": 0.0,
+   "surface": "results/postpro_latest/SWB_r2_trim/surfaces/r2/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.407042704583122
+  },
+  "Condition CR, M = 0.10/C": {
+   "C_Mh": -0.03745722549999653,
+   "M_h": -0.902245052097063,
+   "case": "SWC_trim",
+   "dM_h": -0.03542660628775718,
+   "pct": -4.0869695908098835,
+   "surface": "results/postpro_latest/SWC_r2_trim/surfaces/r2/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.39029285265035585
+  },
+  "Condition CR, M = 0.10/F": {
+   "C_Mh": -0.0366823802942433,
+   "M_h": -0.8841695394094594,
+   "case": "SWF_trim",
+   "dM_h": -0.017351093600153633,
+   "pct": -2.0016987045025063,
+   "surface": "results/postpro_latest/SWF_r2_trim/surfaces/r2/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.4010726494550013
+  },
+  "Condition CR, M = 0.10/H": {
+   "C_Mh": -0.03775616202590797,
+   "M_h": -0.9101609029697042,
+   "case": "SWH_trim",
+   "dM_h": -0.04334245716039842,
+   "pct": -5.000177069366781,
+   "surface": "results/postpro_latest/SWH_r2_trim/surfaces/r2/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.372067986402527
+  },
+  "Condition CR, M = 0.10/M": {
+   "C_Mh": -0.03755955878200145,
+   "M_h": -0.9047245509923227,
+   "case": "SWM_trim",
+   "dM_h": -0.03790610518301696,
+   "pct": -4.3730155220250175,
+   "surface": "results/postpro_latest/SWM_r2_trim/surfaces/r2/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.38883249501594597
+  },
+  "Condition CR, M = 0.10/W": {
+   "C_Mh": -0.03672842704112916,
+   "M_h": -0.8847616659463673,
+   "case": "SWW_trim",
+   "dM_h": -0.01794322013706151,
+   "pct": -2.070009034049663,
+   "surface": "results/postpro_latest/SWW_r2_trim/surfaces/r2/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.4427797493051968
+  },
+  "Early cruise, M = 0.78/B": {
+   "C_Mh": -0.04376254428376176,
+   "M_h": -16.818846549885368,
+   "case": "CMPB_trim",
+   "dM_h": 0.0,
+   "pct": 0.0,
+   "surface": "results/postpro_latest/CMPB_welded/surfaces/conv/argusWingSurface/4000/wingSurface.vtk",
+   "visc_pct": 0.14688724679621445
+  },
+  "Early cruise, M = 0.78/C": {
+   "C_Mh": -0.04595244585706453,
+   "M_h": -17.65368096351979,
+   "case": "CMPC_trim",
+   "dM_h": -0.8348344136344217,
+   "pct": -4.963684109717451,
+   "surface": "results/postpro_latest/CMPC_welded/surfaces/conv/argusWingSurface/4000/wingSurface.vtk",
+   "visc_pct": 0.13492223634968795
+  },
+  "Early cruise, M = 0.78/F": {
+   "C_Mh": -0.044531338961232604,
+   "M_h": -17.110859850846587,
+   "case": "CMPF_trim",
+   "dM_h": -0.29201330096121936,
+   "pct": -1.7362266793688632,
+   "surface": "results/postpro_latest/CMPF_welded/surfaces/conv/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.1410534457246809
+  },
+  "Early cruise, M = 0.78/H": {
+   "C_Mh": -0.04650473949890215,
+   "M_h": -17.871098566199205,
+   "case": "CMPH_trim",
+   "dM_h": -1.0522520163138367,
+   "pct": -6.25638632942405,
+   "surface": "results/postpro_latest/CMPH_welded/surfaces/conv/argusWingSurface/4000/wingSurface.vtk",
+   "visc_pct": 0.1329342250951492
+  },
+  "Early cruise, M = 0.78/M": {
+   "C_Mh": -0.04611527965755291,
+   "M_h": -17.7165038072907,
+   "case": "CMPM_trim",
+   "dM_h": -0.8976572574053314,
+   "pct": -5.337210579470145,
+   "surface": "results/postpro_latest/CMPM_welded/surfaces/conv/argusWingSurface/4000/wingSurface.vtk",
+   "visc_pct": 0.134825188411803
+  },
+  "Early cruise, M = 0.78/W": {
+   "C_Mh": -0.044030441608724886,
+   "M_h": -16.908651439413642,
+   "case": "CMPW_trim",
+   "dM_h": -0.08980488952827415,
+   "pct": -0.5339539145084015,
+   "surface": "results/postpro_latest/CMPW_welded/surfaces/conv/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.1632457100855704
+  },
+  "Late cruise, M = 0.78/B": {
+   "C_Mh": -0.04299872266207343,
+   "M_h": -12.08339406909425,
+   "case": "LCB_trim",
+   "dM_h": 0.0,
+   "pct": 0.0,
+   "surface": "results/postpro_latest/LCB_welded/surfaces/conv/argusWingSurface/4000/wingSurface.vtk",
+   "visc_pct": 0.15271147230515933
+  },
+  "Late cruise, M = 0.78/C": {
+   "C_Mh": -0.04518041301194161,
+   "M_h": -12.691605905920984,
+   "case": "LCC_trim",
+   "dM_h": -0.6082118368267331,
+   "pct": -5.033451970107961,
+   "surface": "results/postpro_latest/LCC_welded/surfaces/conv/argusWingSurface/4000/wingSurface.vtk",
+   "visc_pct": 0.13845438703833932
+  },
+  "Late cruise, M = 0.78/F": {
+   "C_Mh": -0.043740061342813524,
+   "M_h": -12.289245156956596,
+   "case": "LCF_trim",
+   "dM_h": -0.20585108786234585,
+   "pct": -1.7035866469740657,
+   "surface": "results/postpro_latest/LCF_welded/surfaces/conv/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.14718322160732783
+  },
+  "Late cruise, M = 0.78/H": {
+   "C_Mh": -0.045662102869264365,
+   "M_h": -12.830680244131326,
+   "case": "LCH_trim",
+   "dM_h": -0.7472861750370754,
+   "pct": -6.184406225303969,
+   "surface": "results/postpro_latest/LCH_welded/surfaces/conv/argusWingSurface/6000/wingSurface.vtk",
+   "visc_pct": 0.1369257676093281
+  },
+  "Late cruise, M = 0.78/M": {
+   "C_Mh": -0.0453403663132627,
+   "M_h": -12.736729911240458,
+   "case": "LCM_trim",
+   "dM_h": -0.6533358421462072,
+   "pct": -5.40689013707868,
+   "surface": "results/postpro_latest/LCM_welded/surfaces/conv/argusWingSurface/4000/wingSurface.vtk",
+   "visc_pct": 0.13759853594050467
+  },
+  "Late cruise, M = 0.78/W": {
+   "C_Mh": -0.04321740757219835,
+   "M_h": -12.13540799011184,
+   "case": "LCW_trim",
+   "dM_h": -0.05201392101758984,
+   "pct": -0.4304578723508329,
+   "surface": "results/postpro_latest/LCW_welded/surfaces/conv/argusWingSurface/4000/wingSurface.vtk",
+   "visc_pct": 0.16602261422304493
+  }
+ },
+ "late_cruise": {
+  "Cd": {
+   "B": 187.959,
+   "C": 200.173,
+   "F": 189.307,
+   "H": 189.886,
+   "M": 201.687,
+   "W": 187.178
+  },
+  "Cl_minus_target": {
+   "B": 0.53699790000028,
+   "C": 0.751997899999246,
+   "F": -0.22000209999983866,
+   "H": -0.37200209999976863,
+   "M": 0.5449978999993998,
+   "W": -0.8950020999998198
+  },
+  "LD": {
+   "B": 28.951446858091394,
+   "C": 27.185984123732972,
+   "F": 28.741293243250382,
+   "H": 28.65285487081723,
+   "M": 26.980881266516928,
+   "W": 29.064596266655272
+  },
+  "alpha": {
+   "B": 1.263549273647813,
+   "C": 0.9087282067985086,
+   "F": 1.0217311888616425,
+   "H": 1.0985501628292316,
+   "M": 0.9177355759427902,
+   "W": 1.0567300626064404
+  },
+  "baseline_Cd_counts": 187.959,
+  "bias": {
+   "B": -0.018029253761164873,
+   "C": -0.019806792800677424,
+   "F": 0.008697789701082953,
+   "H": 0.014865647194356535,
+   "M": -0.011766035232573387,
+   "W": 0.036294358199663763
+  },
+  "delta": {
+   "B": 0.0,
+   "C": 12.214,
+   "F": 1.348,
+   "H": 1.927,
+   "M": 13.728,
+   "W": -0.781
+  },
+  "incidence_below_B": {
+   "C": 0.3548210668493045,
+   "F": 0.24181808478617062,
+   "H": 0.16499911081858154,
+   "M": 0.3458136977050229,
+   "W": 0.20681921104137269
+  },
+  "order": [
+   "W",
+   "F",
+   "H",
+   "C",
+   "M"
+  ],
+  "target_CL": 0.54411480021,
+  "worst_abs_Cl_residual": 0.8950020999998198
+ },
+ "mesh": {
+  "cells": {
+   "CMPB_trim": 73644516,
+   "CMPC_trim": 73704220,
+   "CMPF_trim": 73660573,
+   "CMPH_trim": 73669659,
+   "CMPM_trim": 73727346,
+   "CMPW_trim": 73668547,
+   "LCB_trim": 73673859,
+   "LCC_trim": 73728353,
+   "LCF_trim": 73684317,
+   "LCH_trim": 73693511,
+   "LCM_trim": 73751122,
+   "LCW_trim": 73691820
+  },
+  "cells_range": [
+   73644516,
+   73751122
+  ],
+  "checkmesh_failed_range": [
+   3,
+   5
+  ],
+  "layer_thickness_pct": [
+   "99.5",
+   "99.6"
+  ],
+  "layers_achieved": [
+   "4.96",
+   "4.97"
+  ],
+  "nonortho_max_range": [
+   72.350683,
+   74.86468
+  ],
+  "wing_faces_range": [
+   5276562,
+   5277084
+  ]
+ },
+ "mesh_cr_r2_cells": {
+  "cells": {
+   "B": 99111506,
+   "C": 99171693,
+   "F": 99150200,
+   "H": 99121164,
+   "M": 99208470,
+   "W": 99203781
+  },
+  "range": [
+   99111506,
+   99208470
+  ]
+ },
+ "rbm": {
+  "early_cruise": {
+   "Mx": {
+    "B": 2632.2215014092253,
+    "C": 2803.090139134685,
+    "F": 2748.729192743645,
+    "H": 2727.703646760985,
+    "M": 2803.505103048125,
+    "W": 2720.5644036700046
+   },
+   "pct": {
+    "B": 0.0,
+    "C": 6.491423219283821,
+    "F": 4.426211520270784,
+    "H": 3.62743581042253,
+    "M": 6.507187998699915,
+    "W": 3.3562107981217615
+   },
+   "utilisation": {
+    "B": 1.0,
+    "C": 1.0649142321928382,
+    "F": 1.0442621152027078,
+    "H": 1.0362743581042253,
+    "M": 1.0650718799869991,
+    "W": 1.0335621079812176
+   }
+  },
+  "late_cruise": {
+   "Mx": {
+    "B": 1978.5947958645002,
+    "C": 2102.15260503166,
+    "F": 2063.14052518105,
+    "H": 2047.2298420196,
+    "M": 2101.7163376910294,
+    "W": 2042.9746491194649
+   },
+   "pct": {
+    "B": 0.0,
+    "C": 6.2447252679230125,
+    "F": 4.273018886598745,
+    "H": 3.4688783321656036,
+    "M": 6.222675915446052,
+    "W": 3.253816970990031
+   },
+   "utilisation": {
+    "B": 1.0,
+    "C": 1.0624472526792301,
+    "F": 1.0427301888659875,
+    "H": 1.034688783321656,
+    "M": 1.0622267591544605,
+    "W": 1.0325381697099003
+   }
+  }
+ },
+ "trim_legs": {
+  "early_cruise/B": {
+   "final_residual_counts": 0.19412549999930917,
+   "first_residual_counts": -8.212874499999856,
+   "n_legs": 2,
+   "total_nudge_deg": 0.005905143787223288
+  },
+  "early_cruise/C": {
+   "final_residual_counts": -0.3048745000000519,
+   "first_residual_counts": -3.491874500000103,
+   "n_legs": 2,
+   "total_nudge_deg": 0.0025658567842916646
+  },
+  "early_cruise/F": {
+   "final_residual_counts": -0.01687450000065205,
+   "first_residual_counts": 106.27412549999993,
+   "n_legs": 3,
+   "total_nudge_deg": -0.07718206046815368
+  },
+  "early_cruise/H": {
+   "final_residual_counts": 0.0871255000001181,
+   "first_residual_counts": 99.21912549999968,
+   "n_legs": 2,
+   "total_nudge_deg": -0.07235406220206997
+  },
+  "early_cruise/M": {
+   "final_residual_counts": 0.3801254999991066,
+   "first_residual_counts": -2.807874500000418,
+   "n_legs": 2,
+   "total_nudge_deg": 0.002064006544624908
+  },
+  "early_cruise/W": {
+   "final_residual_counts": -0.564874500000867,
+   "first_residual_counts": 96.18112550000002,
+   "n_legs": 2,
+   "total_nudge_deg": -0.06950507652092164
+  },
+  "late_cruise/B": {
+   "final_residual_counts": 0.53699790000028,
+   "first_residual_counts": -6.5220021000000905,
+   "n_legs": 2,
+   "total_nudge_deg": 0.0047202736478131335
+  },
+  "late_cruise/C": {
+   "final_residual_counts": 0.751997899999246,
+   "first_residual_counts": -4.94300210000076,
+   "n_legs": 2,
+   "total_nudge_deg": 0.0036442067985086313
+  },
+  "late_cruise/F": {
+   "final_residual_counts": -0.22000209999983866,
+   "first_residual_counts": 110.91499790000015,
+   "n_legs": 3,
+   "total_nudge_deg": -0.08097081113835758
+  },
+  "late_cruise/H": {
+   "final_residual_counts": -0.37200209999976863,
+   "first_residual_counts": 103.45199789999926,
+   "n_legs": 3,
+   "total_nudge_deg": -0.07508283717076836
+  },
+  "late_cruise/M": {
+   "final_residual_counts": 0.5449978999993998,
+   "first_residual_counts": -3.9480021000004584,
+   "n_legs": 2,
+   "total_nudge_deg": 0.0029065759427902016
+  },
+  "late_cruise/W": {
+   "final_residual_counts": -0.8950020999998198,
+   "first_residual_counts": 99.41999789999988,
+   "n_legs": 2,
+   "total_nudge_deg": -0.07229493739355952
+  }
+ }
+}

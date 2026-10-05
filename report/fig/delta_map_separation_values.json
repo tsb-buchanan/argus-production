@@ -1,0 +1,133 @@
+{
+ "_estimator": "cf_s < 0 over filled bins; eta 0.80 band is |eta - 0.80| <= 0.004",
+ "_generator": "scripts/delta_map_separation_values.py",
+ "_known_answer": "reproduces the published-mesh C and M values exactly",
+ "cases": {
+  "CR|B": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 10,
+   "upper_filled": 76797,
+   "upper_pct": 0.013021341979504407
+  },
+  "CR|C": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 9,
+   "upper_filled": 76797,
+   "upper_pct": 0.011719207781553966
+  },
+  "CR|F": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 0,
+   "upper_filled": 76797,
+   "upper_pct": 0.0
+  },
+  "CR|H": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 9,
+   "upper_filled": 76797,
+   "upper_pct": 0.011719207781553966
+  },
+  "CR|M": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 5,
+   "upper_filled": 76797,
+   "upper_pct": 0.0065106709897522035
+  },
+  "CR|W": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 9,
+   "upper_filled": 76797,
+   "upper_pct": 0.011719207781553966
+  },
+  "EC|B": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 3,
+   "upper_filled": 76797,
+   "upper_pct": 0.003906402593851322
+  },
+  "EC|C": {
+   "eta080_upper_pct": 22.96875,
+   "lower_pct": 0.0,
+   "upper_bins": 1167,
+   "upper_filled": 76797,
+   "upper_pct": 1.5195906090081643
+  },
+  "EC|F": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 3,
+   "upper_filled": 76797,
+   "upper_pct": 0.003906402593851322
+  },
+  "EC|H": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 3,
+   "upper_filled": 76797,
+   "upper_pct": 0.003906402593851322
+  },
+  "EC|M": {
+   "eta080_upper_pct": 23.28125,
+   "lower_pct": 0.0,
+   "upper_bins": 1630,
+   "upper_filled": 76797,
+   "upper_pct": 2.1224787426592187
+  },
+  "EC|W": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 0,
+   "upper_filled": 76797,
+   "upper_pct": 0.0
+  },
+  "LC|B": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 3,
+   "upper_filled": 76797,
+   "upper_pct": 0.003906402593851322
+  },
+  "LC|C": {
+   "eta080_upper_pct": 23.90625,
+   "lower_pct": 0.0,
+   "upper_bins": 1385,
+   "upper_filled": 76797,
+   "upper_pct": 1.8034558641613605
+  },
+  "LC|F": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 3,
+   "upper_filled": 76797,
+   "upper_pct": 0.003906402593851322
+  },
+  "LC|H": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 3,
+   "upper_filled": 76797,
+   "upper_pct": 0.003906402593851322
+  },
+  "LC|M": {
+   "eta080_upper_pct": 25.15625,
+   "lower_pct": 0.0,
+   "upper_bins": 1793,
+   "upper_filled": 76797,
+   "upper_pct": 2.33472661692514
+  },
+  "LC|W": {
+   "eta080_upper_pct": 0.0,
+   "lower_pct": 0.0,
+   "upper_bins": 0,
+   "upper_filled": 76797,
+   "upper_pct": 0.0
+  }
+ }
+}

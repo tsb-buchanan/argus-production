@@ -1,0 +1,21 @@
+/*  ARGUS airfoil2d template, OpenFOAM-org 7 (D009). x streamwise, z vertical, y spanwise.
+    2D snappy slab: ONE 0.425 m base cell across y; extrudeMesh flattens to a single 1 m
+    cell after snapping (see Allmesh / README). Chord 0.3404 m: domain 50c up, 75c down,
+    +/-50c vertically. Base cell and domain are GRID-STUDY VARIABLES (D011/D012).  */
+FoamFile { version 2.0; format ascii; class dictionary; object blockMeshDict; }
+convertToMeters 1;
+vertices
+(
+    (-17 0     -17) (25.5 0     -17) (25.5 0.425 -17) (-17 0.425 -17)
+    (-17 0      17) (25.5 0      17) (25.5 0.425  17) (-17 0.425  17)
+);
+blocks ( hex (0 1 2 3 4 5 6 7) (100 1 80) simpleGrading (1 1 1) );  // 0.425 m cubes
+edges ();
+boundary
+(
+    inlet    { type patch; faces ((0 4 7 3)); }
+    outlet   { type patch; faces ((1 2 6 5)); }
+    farfield { type patch; faces ((0 3 2 1)(4 5 6 7)); }   // bottom + top
+    front    { type patch; faces ((0 1 5 4)); }   // y=0 plane; becomes empty after extrude
+    back     { type patch; faces ((3 7 6 2)); }   // y=0.425; discarded by extrudeMesh
+);

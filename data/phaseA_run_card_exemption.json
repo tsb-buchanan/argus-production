@@ -1,0 +1,53 @@
+{
+  "_what": "A RECORDED EXEMPTION from record-keeping rule 8 for the phaseA cluster campaign, and the reason it is an exemption rather than a fix.",
+  "recorded": "2026-08-21",
+  "record": "ARG-164 (raised the two options), ARG-172 (this decision)",
+  "decision": "RECORD THE EXEMPTION. Do not reconstruct.",
+
+  "why_no_card_can_be_completed": {
+    "missing_artefact": "MANIFEST.json",
+    "written_by": "the cluster bundling step, at package time",
+    "consumed_by": "hpc/make_run_card.py for case_config (turbulence model, wall treatment), case_name, source_case and openfoam_version",
+    "also_missing": "the job log's provenance block, which is where git_commit at RUN TIME comes from"
+  },
+
+  "what_is_recoverable_and_what_is_not": {
+    "geometry_sha256": "RECOVERABLE. Each case's own constant/triSurface/wing.stl is on the cluster and can be hashed; that is the GEO-102 input gate and it reads the file snappyHexMesh actually used.",
+    "turbulence_model_and_wall_treatment": "RECOVERABLE. scripts/derive_run_card_fields.py reads them from constant/turbulenceProperties and 0/nut, and HALTS rather than relabelling an off-recipe value.",
+    "openfoam_version": "RECOVERABLE from the solver log's Build line.",
+    "forces_residuals_mesh_metrics": "RECOVERABLE from postProcessing and the checkMesh log, both of which survived the 2026-08-21 processor purge.",
+    "git_commit_at_run_time": "NOT RECOVERABLE. Nothing on disk recorded it, the runs are weeks old, and the repository has moved a long way since. There is no artefact from which it can be derived."
+  },
+
+  "why_not_reconstruct": "A reconstruction would produce cards that look complete while carrying ONE INVENTED FIELD. That is worse than an honest gap: a card is trusted precisely because every field in it was read from the case, and a single hand-authored provenance value silently voids that guarantee for the whole artefact. GEO-080 item 4 records run-card literals as a named instance of vouched success, and hand-writing a commit hash is the same defect in the field where it matters most. An exemption that says WHICH field is missing and WHY leaves the reader able to judge; a complete-looking card does not.",
+
+  "scope": {
+    "exempt_and_NOT_quotable": [
+      "phaseA/KR_wake", "phaseA/MR_mcv2", "phaseA/KM_wake",
+      "phaseA/TM1_a195", "phaseA/TM2_a205", "phaseA/L12_mcv2_a1p30",
+      "phaseA/CRB_a1p75", "phaseA/CRB_a1p90",
+      "phaseA/CRC_a1p30", "phaseA/CRC_a1p50",
+      "phaseA/CRM_a1p30", "phaseA/CRM_a1p50",
+      "phaseA/CTE_a1p30", "phaseA/CTE_a1p40", "phaseA/CTE_a1p50",
+      "phaseA/WR_mcv2_a1p30", "phaseA/WR_mcv2_a1p50"
+    ],
+    "exempt_note": "These are the production runs whose numbers anyone would want to quote. The exemption does NOT make them quotable. It records that rule 8 blocks them for a MISSING PROVENANCE FILE rather than for any doubt about the values, so that the block is understood rather than mistaken for a quality verdict.",
+
+    "no_card_needed": [
+      "phaseA/A1_er133", "phaseA/A1b_n18er125", "phaseA/A2_relax",
+      "phaseA/B1_n30", "phaseA/B2_n40", "phaseA/H2_n10", "phaseA/W2_a205",
+      "phaseA/G1_WM_full",
+      "phaseA/WM_mcv2_a1p55", "phaseA/WM_mcv2_a1p65", "phaseA/WM_mcv2_a1p75"
+    ],
+    "no_card_note": "Mesh, layer and wall-treatment DIAGNOSTICS. Their findings are already in the decision log as measured statements (ARG-117, ARG-118, ARG-125, ARG-126) and none of them produces a reportable aerodynamic coefficient, so no card was ever owed."
+  },
+
+  "how_the_exemption_ends": "Any case RE-RUN from now on gets a complete card, because hpc/submit.sh records the ARGUS_* environment as of 2026-08-21 (ARG-167) and the eight continuation jobs queued that day carry SUBMITTED_ENV.json. The exemption is therefore CLOSED-ENDED: it covers a fixed, named set of historical runs and nothing future.",
+
+  "counted": {
+    "exempt_and_not_quotable": 17,
+    "no_card_needed": 11,
+    "total_phaseA_cases_covered": 28,
+    "partition_note": "These two buckets are asserted to cover every phaseA case that ever ran. A phaseA case in neither bucket is an omission and should be treated as a defect in this record (GEO-089)."
+  }
+}

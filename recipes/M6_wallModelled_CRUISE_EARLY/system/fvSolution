@@ -1,0 +1,90 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| =========                 |                                                 |
+| \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox           |
+|  \\    /   O peration     | Version:  v2006                                 |
+|   \\  /    A nd           | Website:  www.openfoam.com                      |
+|    \\/     M anipulation  |                                                 |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    location    "system";
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        tolerance       1e-08;
+        relTol          0.1;
+        smoother        GaussSeidel;
+        nCellsInCoarsestLevel 20;
+    }
+
+    "(U|e|k|epsilon|nuTilda)"
+    {
+        solver          GAMG;
+        tolerance       1e-08;
+        relTol          0.1;
+        smoother        GaussSeidel;
+        nCellsInCoarsestLevel 20;
+    }
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 0;
+    transonic       yes;
+    consistent      yes;
+
+    residualControl
+    {
+        // WAS p 1e-5, U 1e-6, e 1e-5, (k|epsilon|nuTilda) 1e-5, WHICH LET THE SOLVER
+        // STOP ITSELF BEFORE THE FORCES SETTLED. Measured on CMPB_a0p87: SIMPLE printed
+        // "solution converged in 1031 iterations" and exited 0 on three of four legs,
+        // which ran 36, 28, 44 and 39 iterations. 147 iterations across four legs, and
+        // each time our force-drift gate then said NOT CONVERGED and requeued, so the
+        // case cycled without ever approaching a stationary force.
+        //
+        // RESIDUAL CONVERGENCE AND FORCE CONVERGENCE ARE DIFFERENT CLAIMS. The residual
+        // says the linear system stopped moving; the force gate says the integrated
+        // load stopped moving, and it is the second one this project reports. Whichever
+        // criterion is LOOSER wins by stopping first, so a loose residualControl
+        // silently overrides a strict force gate.
+        //
+        // These targets are therefore set below anything the solve will reach, exactly
+        // as the incompressible recipe already does (p 1e-9, U 1e-10, k/omega 1e-10),
+        // so the run ends at endTime and OUR gate decides. This is a STOPPING rule, not
+        // a discretisation or physics change: it moves when the solver stops, never
+        // what it converges to, so no previously quoted CMPB value changes meaning.
+        // Those values stay what they were: residual-converged, NOT force-converged.
+        p               1e-9;
+        U               1e-10;
+        e               1e-9;
+        "(k|epsilon|nuTilda)" 1e-10;
+    }
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p               1;
+    }
+    equations
+    {
+        p               1;
+        U               0.9;
+        e               0.8;
+        k               0.9;
+        epsilon         0.9;
+        nuTilda         0.8;
+    }
+}
+
+// ************************************************************************* //

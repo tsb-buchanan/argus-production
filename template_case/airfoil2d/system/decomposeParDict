@@ -1,0 +1,5 @@
+/* ARGUS airfoil2d, OpenFOAM-org 7. 8 ranks for the slab snappy stage (environment.md);
+   the flattened 2D solve runs serial or re-decomposed by the case builder. */
+FoamFile { version 2.0; format ascii; class dictionary; object decomposeParDict; }
+numberOfSubdomains 8;
+method scotch;

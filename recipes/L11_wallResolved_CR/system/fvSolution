@@ -1,0 +1,69 @@
+FoamFile { version 2.0; format ascii; class dictionary; object fvSolution; }
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        // Tolerances are TIGHTER than the usual 1e-6.  CFD Direct, Notes on CFD
+        // (aspect ratio): matrix coefficients differ by the square of the cell
+        // aspect ratio, so "to maintain an equivalent level of convergence with
+        // high aspect ratio cells, tolerance controls need to be reduced, often
+        // by a few orders of magnitude".  The wall-resolved stack reaches
+        // AR ~ 1e3 to 1e5.
+        tolerance       1e-08;
+        relTol          0.01;
+        smoother        GaussSeidel;
+        nCellsInCoarsestLevel 100;
+    }
+
+    "(U|k|omega)"
+    {
+        solver          smoothSolver;
+        smoother        symGaussSeidel;
+        tolerance       1e-09;
+        relTol          0.01;
+        nSweeps         2;
+    }
+
+    // potentialFoam SOLVES FOR Phi AND NEEDS ITS OWN SOLVER ENTRY. Adding the
+    // potentialFlow block alone is NOT enough: V1_tipvol and V3_tevol_outboard both
+    // meshed successfully and then died on
+    //     "keyword Phi is undefined in dictionary system/fvSolution.solvers"
+    // Inherits the p solver (GAMG, tolerance 1e-8 for the high-aspect stack) but with
+    // relTol 0, because the potential solution is a one-shot initialisation and there
+    // is no outer loop to converge it in.
+    Phi
+    {
+        $p;
+        relTol          0;
+    }
+}
+
+// REQUIRED BY potentialFoam, AND potentialFoam IS NOT OPTIONAL HERE.
+// Without this block potentialFoam aborts on every rank with "keyword potentialFlow is
+// undefined", which is how it was missing: nothing had ever run potentialFoam.
+// THE CONSEQUENCE WAS MEASURED, not guessed. WR_L9_n23 (124.5 M, wall-resolved) started
+// from a uniform freestream and died at ITERATION 7 with a floating-point exception on
+// 11 ranks. A 4.5 um first cell at aspect ratio 111 with FOAM_SIGFPE enabled does not
+// survive the cold-start transient; the potential solution removes most of it. The
+// wall-MODELLED case at the same settings completed 300 iterations, so this is a
+// wall-resolved fragility, not a general one.
+potentialFlow
+{
+    nNonOrthogonalCorrectors 10;
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 1;
+    consistent      yes;                 // SIMPLEC
+    residualControl { p 1e-9; U 1e-10; "(k|omega)" 1e-10; }
+}
+
+relaxationFactors
+{
+    equations { U 0.5; ".*" 0.5; }
+}
+
+cache { grad(U); }

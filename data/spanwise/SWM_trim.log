@@ -1,0 +1,9 @@
+reading /home/scratch/$USER/argus/solve_r2/SWM_trim/postProcessing/argusWingSurface/6000/wingSurface.vtk
+  5276994 faces, fields: cp, p, wallShearStress, yPlus
+  DERIVED FROM THIS FILE: q = 578, p_inf = 9.37052e-08 (resid max 5.78e-06, p99 1.21e-06)
+  dragDir [ 0.999759193  0.           0.021944404] -> alpha 1.257423 deg (from forceCoeffs.dat)
+  semispan from surface 1.825395 m (registered 1.828800)
+  stations: 78 asked = 78 integrated + 0 skipped
+  CL from strips (2x half-wing / Sref 1.24092) = 0.408063
+  CL from forceCoeffs = 0.428278, closure gap -4.720%
+  wrote SWM_trim_spanwise_dense.csv and SWM_trim_spanwise_dense.json

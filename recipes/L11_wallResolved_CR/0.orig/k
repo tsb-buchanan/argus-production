@@ -1,0 +1,19 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object k; }
+// Turbulence intensity 0.1 % (low-turbulence tunnel):
+//   k = 1.5*(U*I)^2 = 1.5*(40.8*0.001)^2 = 2.497e-3
+dimensions      [0 2 -2 0 0 0 0];
+kInf            1.734e-3;
+internalField   uniform $kInf;
+
+boundaryField
+{
+    inlet     { type inletOutlet; inletValue uniform $kInf; value uniform $kInf; }
+    topBottom { type inletOutlet; inletValue uniform $kInf; value uniform $kInf; }
+    outboard  { type inletOutlet; inletValue uniform $kInf; value uniform $kInf; }
+    outlet    { type inletOutlet; inletValue uniform $kInf; value uniform $kInf; }
+    symmetry  { type symmetry; }
+    // WALL RESOLVED : kLowReWallFunction
+    // WALL MODELLED : kqRWallFunction
+    wing      { type kLowReWallFunction; value uniform $kInf; }
+    #includeEtc "caseDicts/setConstraintTypes"
+}

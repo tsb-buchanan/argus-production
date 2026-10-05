@@ -1,0 +1,19 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object p; }
+// Kinematic pressure (p/rho).  Cp = (p - p_inf)/(0.5*U_inf^2), NO rho.
+// State that in every results-file header.
+dimensions      [0 2 -2 0 0 0 0];
+internalField   uniform 0;
+
+boundaryField
+{
+    // The pressure LEVEL is fixed at exactly one boundary.  Lecture 4 slide 11:
+    // velocity inlet plus zeroGradient pressure everywhere "should be avoided
+    // because the static pressure level is not fixed ... will eventually crash".
+    inlet     { type zeroGradient; }
+    topBottom { type zeroGradient; }
+    outboard  { type zeroGradient; }
+    outlet    { type fixedValue; value uniform 0; }
+    symmetry  { type symmetry; }
+    wing      { type zeroGradient; }
+    #includeEtc "caseDicts/setConstraintTypes"
+}

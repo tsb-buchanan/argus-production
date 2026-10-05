@@ -1,0 +1,11 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object surfaceFeaturesDict; }
+// org-7 utility is `surfaceFeatures`.  `surfaceFeatureExtract` is the ESI name.
+
+surfaces ( "wing.stl" );
+
+includedAngle   150;
+
+subsetFeatures { nonManifoldEdges no; openEdges yes; }
+
+writeObj        yes;

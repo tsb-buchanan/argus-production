@@ -1,0 +1,7 @@
+id,case,mesh_generation,CDi_counts_first,CDi_counts_last,decay_percent,e_last,CL_minus_target_counts
+B,SWB_trim,wake-refined,61.8338,55.9836,9.461,0.96732,-0.0944
+C,SWC_trim,wake-refined,61.7018,55.4141,10.190,0.97731,-0.0054
+F,SWF_trim,wake-refined,61.0006,54.9318,9.949,0.98587,-0.0384
+H,SWH_trim,wake-refined,61.5626,55.4163,9.984,0.97725,-0.0394
+M,SWM_trim,wake-refined,62.0347,55.6958,10.218,0.97237,0.0006
+W,SWW_trim,wake-refined,60.9558,55.0545,9.681,0.98368,-0.0374

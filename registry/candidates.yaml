@@ -1,0 +1,779 @@
+# Candidate registry. No case runs on an unregistered geometry.
+# status: reference | awaiting_geometry | ingested | derived | frozen
+# All numeric values from docs/ARGUS_reference_data.md (do not edit values here without updating there).
+# sha256 values filled 2026-07-21 (sha256sum, cross-checked against pipeline sidecar JSONs).
+
+baseline:
+  description: EET AR12 cruise wing, wing-only
+  # AS-DELIVERED (D070 amendment 1, 2026-07-29). MANDATORY RESULT LABEL, travels on every
+  # run card and every plot produced from this geometry:
+  #   "geometry: as-delivered .vsp3. Aerofoil transitions compressed by the 9-to-19
+  #    refinement: 9 distinct aerofoils across 19 stations, largest loft discontinuity
+  #    6.597e-3 c, worst t/c deviation 0.495 %pt at eta 0.7100. Identical in baseline and
+  #    all candidates, so it cancels EXACTLY from the inviscid differential and only
+  #    APPROXIMATELY from the viscous one. The viscous residual is bounded by the four 2D
+  #    section-sensitivity cases and is not yet quantified. Corrected pair to be re-run
+  #    when available."
+  # MESH IN 3D AS NORMAL. The earlier "do not mesh" note is WITHDRAWN: the DSO VSPAERO ran
+  # on THIS geometry, so meshing a corrected wing would make the comparison worse by
+  # removing the shared object. All six gates pass and none can detect this defect,
+  # because every gate measures a planform or placement quantity (D070 item 6).
+  # D017 verdict-3 ruling 2026-07-24: 3D baseline OML = delivered_vsp3 (one baseline geometry);
+  # <=2.2e-3 c thickness deviation vs WT loft at eta ~0.515 is a Phase 1 caveat line, not a second baseline
+  # Phase 1 meshable OML, built 2026-07-25 by scripts/vsp3_to_stl.py from delivered_vsp3.
+  # PROVISIONAL ROUTE, needs a ruling: OpenVSP is not installed and could not be obtained, so
+  # this is an IN-HOUSE LOFT of the delivered sections, not a VSP tessellator export. Exact at
+  # the 19 defining stations by construction; LINEAR between them. TE BLUNTED to 0.63%c by
+  # inverting VSP's full-chord linear closure (D031); planform unmoved. Planform validates against
+  # the registered references: span 3.657598 m vs bref 3.6576 (rel 6.0e-07),
+  # area 1.240926 m2 vs Sref_dso 1.24092 (rel 5.2e-06), root/tip chords exact.
+  # PRODUCTION 3D OML (D049, 2026-07-27). ROUTE, and mbr_c01_l011 takes the IDENTICAL one:
+  #   FILE airfoils in delivered_vsp3
+  #     -> scripts/vsp3_to_stl.py --nchord 200 --nspan 240 --blunt-te 0.0063 --scale 0.3048
+  #     -> scripts/apply_placement_transform.py, rigid Rx(5.000 deg) @ Ry(1.873 deg) about the
+  #        root LE, translation (3.860, 0, -0.400) ft, order Rx@Ry DECIDED BY MEASUREMENT
+  #        (landmark RMS vs the OpenVSP export: 1.0405 mm for xy against 4.4970 mm for yx).
+  # The rotation comes from the PARENT Blank geom 'wing_comps'; the wing geom's own sections
+  # all report Dihedral = 0.0, which is why the untransformed loft was internally consistent
+  # and wrong. All six gates PASS (te_ref midpoint). TE is BLUNT 0.63%c: the OpenVSP export is
+  # SHARP-TE and is NOT interchangeable with this file.
+  geometry_3d: {file: geometry/derived/wing3d/superseded/baseline_oml_placed.stl, sha256: 8c738435f1058bb1339a3bc0ab338ea32f47080d9f8d5739bae99c9b3361328f, status: derived_superseded_by_corrected_pair, units_source: feet, units_output: metres, scale_applied: 0.3048, oml_source: delivered_vsp3, tessellation: "200 chordwise per surface (cosine), 240 spanwise stations", sidecar: geometry/derived/wing3d/baseline_oml_placed.json, half_model: true, te_convention: "blunt 0.63%c (D031)", route: "vsp3_to_stl.py + apply_placement_transform.py (IDENTICAL to mbr_c01_l011)", gates: "all six PASS, te_ref midpoint", record: D049}
+  # NAMED UNCERTAINTY on the ABSOLUTE surface, REVISED (D056, 2026-07-28) and SPLIT BY TARGET.
+  # SUPERSEDED: the earlier figure of camber RMS 0.277%c / worst 0.437%c / maxima 2.23%c at
+  # x/c 0.770-0.861 (D049 item 6, D052 item 3) is WITHDRAWN. It was inflated about threefold by
+  # an upper/lower split done on the SIGN of z, which mislabels the aft-cambered lower surface
+  # (above the chord line from x/c 0.78 to the TE) as upper. The artefact band and the reported
+  # location were the same band. Measured at all 19 defining stations with a validated splitter
+  # and both null cases at exactly zero.
+  # D031 IS CLOSED: the difference is VSP's representation of its own input, not our lofting
+  # (loft-file 0.0220%c, export-file 0.1331%c, correlation of the two signatures 0.981).
+  # DOES NOT APPLY TO baseline-vs-candidate deltas: same route both sides, equivalence 3.0e-4 deg.
+  oml_absolute_uncertainty: {vs_nasa_tabulated_sections_pct_c: 0.0220, vs_vsp_surface_pct_c: 0.0930, basis_note: "use the NASA figure for TP-1580 and TM-80048 comparisons, the VSP figure for Zheng .lod strip loads and CDi (authority split, D052 item 2)", margin_over_smallest_morph_increment: "A/c 0.358%c gives 16x on the NASA basis, 3.9x on the VSP basis", supersedes: "0.277%c (D049 item 6), withdrawn as a surface-split artefact", record: D056}
+  # SUPERSEDED 2026-07-27 (D048/D049). RETAINED, DO NOT DELETE: the A1 noise-floor test in
+  # flight was meshed from this file. Defect: the parent-Blank rigid transform was never
+  # applied, so it is missing the 5 deg dihedral and 1.873 deg incidence. It reproduces
+  # span 3.657598 m and area 1.240926 m2 EXACTLY, so a planform check PASSES ON THE DEFECT;
+  # it fails gates 1 and 2. Its twist distribution was never wrong (D048 amendment 1 item 1).
+  # RECOVERABLE, not merely retained (D050): regenerable from vsp3_to_stl.py at the commit
+  # below. It cannot be rebuilt from current code, which applies the placement transform.
+  geometry_3d_superseded: {file: geometry/derived/wing3d/superseded/baseline_oml.stl, sha256: 1e1eb097f0eea1ee11567bf4ec69f5589f99a7708b890a7800537b14f2a703ec, status: superseded_retained, superseded_by: geometry/derived/wing3d/superseded/baseline_oml_placed.stl, reason: "missing parent-Blank rigid transform (5 deg dihedral, 1.873 deg incidence)", retained_because: "A1 noise-floor test was meshed from it", regenerable_from_commit: 25db7509a4f0485626224ceddc3d5975260471b4, regenerate_with: "scripts/vsp3_to_stl.py --nchord 200 --nspan 240 --blunt-te 0.0063 at that commit", sidecar: geometry/derived/wing3d/baseline_oml.json, record: D050}
+  # ---- THE SURFACE THE ENTIRE PHASE A BASELINE LEG WAS ACTUALLY MESHED ON (ARG-099). ----
+  # THIS IS THE UNCORRECTED LINEAGE. It was meshed and solved as though it were
+  # baseline_corrected, and it is not: G1_WM_full, TM1_a195, TM2_a205, KM_wake, KR_wake,
+  # TR1_a175 and TR2_a190 all carry this checksum. MR_mcv2 carries the CORRECTED-pair
+  # morphed candidate, so the pair is MIXED-LINEAGE and the D070 aerofoil correction does
+  # NOT cancel out of any baseline-minus-morphed difference taken across them.
+  # MEASURED SEPARATION from baseline_corrected at identical loft settings: max vertex
+  # deviation 6.269e-04 m (0.184% of cref 0.3404 m), mean 6.172e-05 m, 280,218 of 574,200
+  # vertices displaced. ZERO inboard of eta 0.4 and rising outboard, which is the
+  # signature of the 9-to-19 aerofoil-inheritance defect (D070), not a placement error.
+  geometry_3d_laddercap: {file: geometry/derived/wing3d/baseline_oml_placed_laddercap.stl, sha256: 20bd6acdee770b8241930d3f81dedac4dedd33f78f57dc0abc09dca8b006c641, referred_to_as: baseline_w_root, role: meshing_surface_with_root_extension, root_extension_mm: 20.0, wetted_area_m2: 1.2794, stl_area_m2: 1.3497, area_warning: "MESHING SURFACE NOT OML. Root extended 20.0 mm through the symmetry plane and capped so snappy cuts solid material at y=0 rather than a 4.679 mm slot (ARG-096). Scaffolding is outside the domain and is cut away. CONSEQUENCE: this file own area/span/volume are NOT the wing values. STL area overstates wetted area by 5.49 pct (1.3497 vs 1.2794 m2) and the bbox overstates span by 20 mm. Take wetted area from the solver wing patch or from the OML.", triangles: 192588, status: SANCTIONED_PRODUCTION_BASELINE, display_name: 'baseline (as-run, tip-cap repaired)', superseded_status: derived_UNCORRECTED_lineage_meshed_in_error, status_note: 'THIS IS THE BASELINE. 13 cluster cases are built on it and every 3D result in the project rests on it. The previous status said meshed_in_error, which contradicted ARG-099 item 4 (A project decision of 2026-08-03 ruled that the tip-cap-repaired pair IS the baseline and NO CASE IS RE-RUN ON LINEAGE GROUNDS). That wrong status was read at face value on 2026-08-05 and sent a campaign job to mesh the other wing.', half_model: true, record: ARG-099,
+    gates: "surfaceCheck on the CASE copy: closed (all edges connected to two faces), 1 zone, one normal orientation, no illegal triangles. THE GEOMETRY IS SOUND; THE LINEAGE IS WRONG.",
+    verified_against: "byte-identical to constant/triSurface/wing.stl in cluster cases G1_WM_full, TM1_a195, TM2_a205, KM_wake, KR_wake, TR1_a175 and TR2_a190",
+    route: "vsp3_to_stl.py dso_reference/baseline_wing_only_refined.vsp3 --nchord 200 --nspan 240 --blunt-te 0.0063 --cap delaunay --cap-edge 0.0030 + apply_placement_transform.py --order xy + close_wing_surface.py --write + weld_surface.py --in-place",
+    route_status: "VERIFIED BIT-FOR-BIT 2026-08-03. Identifying the SOURCE .vsp3 is what exposed the mix-up: the chain reproduced this file only from baseline_wing_only_refined.vsp3, never from baseline_corrected.vsp3.",
+    MUST_NOT: "supply the baseline half of any dCD against a corrected-pair candidate"}
+  # VERIFICATION INSTRUMENT, NOT a production geometry and NOT promoted (D049 inverts what
+  # D048 item 14 anticipated). Sharp-TE, so it cannot carry the meshing convention; its role
+  # is to gate the in-house route, which stays as the production route.
+  oml_verification_instrument: {file: "scratch only, not committed (91 MB)", sha256: d6cfe80dc6c8adf4a22afbf2bfe0ddc56a378600c6448957872277834419e711, generator: scripts/export_vsp_stl.py, tool: OpenVSP 3.51.2, container_image_id: sha256:c0da243f617ac1cb0dbce1247afe14fc4a4ad046d7225b35dd2be6baf71ef9c9, openvsp_deb_sha256: da7f40856e0c905bc6bb32bee83f7a1096c5a714c7f5398405c594e8639dace5, te_convention: "SHARP (VSP full-chord linear closure)", status: verification_only, record: D049}
+  # 6,240-facet STL and .vsp3 are provenance sources only (D007: NOT meshable); units FEET
+  source_stl: {file: geometry/source/cruise_wing.stl, sha256: a33602c242dcf508ae3889babb3df41b72d29c08aa785e66cf2e5cf926ee208b, status: reference, units_source: feet}
+  source_vsp3: {file: geometry/source/eetar12lowspeedwindtunnelmodel.vsp3, sha256: 3c012d15a7c80f057828822a752b8508b0161b715259fd9993a482e8d6ba8872, status: reference, units_source: feet}
+  # Zheng delivery 2026-07-24 (email = provenance document; strict-run geometry, Mach 0.1 author-confirmed).
+  # NO author manifest/checksums: sha256 self-computed, D007 deviation authorized by project decision 2026-07-24.
+  delivered_vsp3: {file: dso_reference/baseline_wing_only_refined.vsp3, sha256: 55cbdc7c48a15d847da602b540b95712b38e893490823aa7b5b997302100ba02, status: delivered, units_source: feet, provenance: dso_reference/README.txt + Zheng email 2026-07-24, note: canonical path is the author-checksummed package; geometry/source copy is a byte-identical duplicate}
+  dso_package: {path: dso_reference/, manifest: SHA256SUMS.csv verified 22/22 2026-07-24 (closes the D007 checksum deviation), gate: CDi/alpha/CL match published values (D017), loads: results/dso_reference/baseline_wing_only_refined_strips.csv}
+  # TP-1580 experimental package, ingested 2026-07-27 (D041). PDF is gitignored as large and
+  # re-fetchable (naca0012_tmr precedent); sha256 and URL in validation_data/tp1580/PROVENANCE.json.
+  tp1580_package: {path: validation_data/tp1580/, source: NTRS 19820007142, ntrs_document_id: '19820007142', url_note: NTRS URL formats have changed before; the DOCUMENT ID is the durable key, sha256: b2089d5d86792c43b0fc2269c9bb161a0978039e60b5f74b94ae1c4598b3bb84, retrieved: 2026-07-27, rights: public domain (US Gov), status: PROVISIONAL, ar12_cruise_runs: [1, 2, 3, 4], ar12_cruise_nacelles: off, ar12_cruise_csv: validation_data/tp1580/csv/ar12_cruise_longitudinal.csv, read_method: visual at 300 DPI native from PDF page 21, OCR layer QUARANTINED (D042), status_note: AR-12 cruise longitudinal COMPLETE (runs 1-4, 44 rows); nothing further exists to extract}
+  geometry_2d: {file: geometry/reference/eet_section/eet_cruise_nested.dat, sha256: ad794433060c8188bdf9838ae1d0ee4cf9e2ee03e7f89002d8c7bf412a8f2420, status: reference, note: blunt TE, raw extraction; faired via fair_section.py (D004), see geometry_2d_faired}
+  # canonical 2D meshing baseline (derotated, step-faired, blunt TE kept; D003/D004)
+  geometry_2d_faired: {file: geometry/derived/eet_section/eet_cruise_faired.dat, sha256: b06c6a4e8b0da6f2825561a968d1bc7d51f6388219e6157c81156ac619db40a6, status: derived, provenance: fair_section.py D004 closure 2026-07-21}
+  dso_strict: {CDi: 0.00916763}
+
+mbr_c01_l011:
+  description: constrained trailing-edge engineering candidate (PRIMARY)
+  amplitudes_A_over_c: [0.01334, 0.01354, 0.01809, 0.01268, 0.00358]
+  eta_stations: [0.60, 0.70, 0.80, 0.90, 1.00]
+  xh_over_c: 0.62
+  # PRODUCTION 3D OML (D049, 2026-07-27). ROUTE IS IDENTICAL TO THE BASELINE'S, step for step:
+  # same vsp3_to_stl.py at 200x240 with --blunt-te 0.0063, same apply_placement_transform.py
+  # with Rx(5.000) @ Ry(1.873) about the root LE, order re-derived INDEPENDENTLY on this
+  # geometry and landing on xy with the same 3.4565 mm margin. THAT IDENTITY IS THE BINDING
+  # CONDITION FOR PHASE 2 DELTAS: do not remesh or re-export one side by a different path.
+  # Route equivalence is demonstrated, not assumed: the baseline-to-candidate tip-twist delta
+  # is +0.205515 deg by this route and +0.205814 deg by the OpenVSP route, against +0.205300
+  # predicted from A/c = 0.00358 at eta 1.00. Agreement 3.0e-4 deg.
+  # All six gates PASS; gate 4's target is morph-corrected to -3.909650 deg (baseline target
+  # -4.114950 plus the +0.2053 deg chord-line rotation the tip morph produces).
+  geometry_3d: {file: geometry/derived/wing3d/superseded/mbr_c01_l011_oml_placed.stl, sha256: 3273049a38b3b4687097fe74a1eae6c9214915921c5849120ae33cb965dd6bb4, status: derived_superseded_by_corrected_pair, units_source: feet, units_output: metres, scale_applied: 0.3048, oml_source: delivered_vsp3, tessellation: "200 chordwise per surface (cosine), 240 spanwise stations", sidecar: geometry/derived/wing3d/mbr_c01_l011_oml_placed.json, half_model: true, te_convention: "blunt 0.63%c (D031)", route: "vsp3_to_stl.py + apply_placement_transform.py (IDENTICAL to baseline)", route_equivalence: "morph delta 3.0e-4 deg between in-house and OpenVSP routes", gates: "all six PASS, te_ref midpoint, gate 4 target morph-corrected", record: D049}
+  # Zheng delivery 2026-07-24 (no author manifest, D007 deviation authorized; email = provenance; strict-run, eta 0.60-1.00, xh/c 0.62)
+  delivered_vsp3: {file: dso_reference/mbr_c01_l011.vsp3, sha256: 83556a79f126c58a02d447bea726f066f92990064fd83600df4a802ec19be1a3, status: delivered, units_source: feet, provenance: dso_reference/README.txt + Zheng email 2026-07-24, note: canonical path is the author-checksummed package; geometry/source copy is a byte-identical duplicate}
+  dso_package: {path: dso_reference/, manifest: SHA256SUMS.csv verified 22/22 2026-07-24, gate: CDi/alpha/CL match published values (D017), loads: results/dso_reference/mbr_c01_l011_strips.csv}
+  # 2D morphed sections generated by morph2d.py from baseline geometry_2d_faired (A/c interpolated from control points above)
+  geometry_2d_morphed:
+    - {eta: 0.70, A_over_c: 0.01354, file: geometry/derived/eet_section/morphed/mbr_c01_l011_eta0p70.dat, sha256: b612716ac80bffb52f601e17dcecca02d60fe0b09c3dc353f1297632fa2e1460, status: derived}
+    - {eta: 0.80, A_over_c: 0.01809, file: geometry/derived/eet_section/morphed/mbr_c01_l011_eta0p80.dat, sha256: e04e689150e7c369ea9c420b923eadf2ec061db88b0776c3323783b70a796246, status: derived}
+    - {eta: 0.90, A_over_c: 0.01268, file: geometry/derived/eet_section/morphed/mbr_c01_l011_eta0p90.dat, sha256: 9ec9e5b5b7c730b787b91cf5398b295978d7471457372bfb7795dfafe1ee5b7f, status: derived}
+  # AMPLITUDE LADDER (D057, 2026-07-28). Pre-generated so the A1/A2 noise work never
+  # stalls on a geometry handover: A2 sizes its small-amplitude case from a noise figure
+  # that does not exist yet, and geometry is cheap where solves are not.
+  # IDENTICAL route to baseline and full-amplitude mbr_c01_l011 at every step. The morph
+  # law is a pure additive z-displacement, so blending the FILE ordinates by f is EXACTLY
+  # f times the amplitude schedule; planform quantities are asserted equal, never blended.
+  # KNOWN-ANSWER GATE on the blend: f = 1.0 reproduces the committed mbr_c01_l011 surface
+  # with max vertex deviation 0.000e+00 m.
+  # All three PASS all six gates (te_ref midpoint, gate 4 target morph-corrected).
+  # TE gap MEASURED at 0.6768 %c mean on all three, identical to baseline within 0.0008 %c.
+  # Tip chord-line rotation LINEAR in f to 2.0e-07 deg across f = 0.10/0.25/0.50/1.00.
+  amplitude_ladder:
+    - {fraction: 0.10, candidate_id: mbr_c01_l011_a010, file: geometry/derived/wing3d/superseded/mbr_c01_l011_a010_oml_placed.stl, sha256: 8936eeb7d1526a9a952c0c64bc523e8944fe72539e8b7c708da6bb09aecf1716, status: derived_superseded_by_corrected_pair, sidecar: geometry/derived/wing3d/mbr_c01_l011_a010_oml_placed.json, gates: "all six PASS", record: "D057; superseded GEO-083", superseded_by: "the corrected pair (baseline_corrected / mcv2_i002_c01 / cte_i002_c04)", superseded_reason: "built on mbr_c01_l011, which sits on the RETIRED pre-correction base (D070). The registry was STALE: these carried derived_production after the base was retired.", STILL_VALID_AS: "CALIBRATION. The A1 noise floor is a property of the MESHER, not of the geometry, so the ladder remains a valid noise-floor instrument and its measured floor stands.", MUST_NOT: "be packaged for new work, or supply any geometry-dependent quantity"}
+    - {fraction: 0.25, candidate_id: mbr_c01_l011_a025, file: geometry/derived/wing3d/superseded/mbr_c01_l011_a025_oml_placed.stl, sha256: 658c77e57c9d31631a8bb0045e02dad728ac9de1ed8e9ca98bbd9a24ba135b11, status: derived_superseded_by_corrected_pair, sidecar: geometry/derived/wing3d/mbr_c01_l011_a025_oml_placed.json, gates: "all six PASS", record: "D057; superseded GEO-083", superseded_by: "the corrected pair (baseline_corrected / mcv2_i002_c01 / cte_i002_c04)", superseded_reason: "built on mbr_c01_l011, which sits on the RETIRED pre-correction base (D070). The registry was STALE: these carried derived_production after the base was retired.", STILL_VALID_AS: "CALIBRATION. The A1 noise floor is a property of the MESHER, not of the geometry, so the ladder remains a valid noise-floor instrument and its measured floor stands.", MUST_NOT: "be packaged for new work, or supply any geometry-dependent quantity"}
+    - {fraction: 0.50, candidate_id: mbr_c01_l011_a050, file: geometry/derived/wing3d/superseded/mbr_c01_l011_a050_oml_placed.stl, sha256: 0d50939082fbf44839cc21706f9ae6138ce8f9a613b73807c56ca8e09689862a, status: derived_superseded_by_corrected_pair, sidecar: geometry/derived/wing3d/mbr_c01_l011_a050_oml_placed.json, gates: "all six PASS", record: "D057; superseded GEO-083", superseded_by: "the corrected pair (baseline_corrected / mcv2_i002_c01 / cte_i002_c04)", superseded_reason: "built on mbr_c01_l011, which sits on the RETIRED pre-correction base (D070). The registry was STALE: these carried derived_production after the base was retired.", STILL_VALID_AS: "CALIBRATION. The A1 noise floor is a property of the MESHER, not of the geometry, so the ladder remains a valid noise-floor instrument and its measured floor stands.", MUST_NOT: "be packaged for new work, or supply any geometry-dependent quantity"}
+  # hinge_Nm WITHDRAWN (D071, author's correction notice 2026-07-28). It was neither a hinge
+  # moment nor in N m: it is the morph-region lift moment about the GLOBAL Xcg = 5.5 ft in
+  # NEWTON-FEET (D053), and the 1050 bound it was measured against was an illustrative
+  # optimisation bound, not a traceable actuator spec. mbr_c01_l011 is therefore A
+  # REPRESENTATIVE FEASIBLE CANDIDATE, not 'the constrained optimum at 99.98% utilisation'.
+  # root_bend_pct IS RETAINED: a same-condition RELATIVE metric, so the frame cancels. It
+  # must NOT be converted back to an absolute load using any withdrawn N m value.
+  dso_strict: {CDi: 0.00883845, dCDi_pct: -3.59, root_bend_pct: 4.126, hinge_Nm: WITHDRAWN_D071}
+
+ph2b_i001_c03:
+  description: legacy phase-2 presentation candidate (eta 0.60-0.95)
+  geometry_3d: {file: null, sha256: null, status: awaiting_geometry}
+  dso_strict: {CDi: 0.008761262, dCDi_pct: -4.433, root_bend_pct: 6.080}
+
+wsu_i002_c02:
+  description: whole-wing unconstrained SANITY CHECK ONLY (never an engineering design)
+  amplitudes_A_over_c: [0.00567, 0.04000, 0.04000, 0.03894, 0.04000]
+  eta_stations: [0.00, 0.25, 0.50, 0.75, 1.00]
+  geometry_3d: {file: null, sha256: null, status: awaiting_geometry}
+  dso_strict: {CDi: 0.00799662, dCDi_pct: -12.77}
+
+tmr_naca0012:
+  description: NASA TMR 2D NACA 0012 solver-verification case (D012 Layer 1); sharp-TE scaled 0012, unit chord; NOT an ARGUS candidate
+  # grids gitignored (14 MB); re-fetch per validation_data/naca0012_tmr/grids/MANIFEST.json
+  grids:
+    - {file: validation_data/naca0012_tmr/grids/n0012_113-33.p2dfmt, sha256: 669fff259b59ac4df557ad3bfef6be0794ac5eacc0f45ec1ce9715f75dfd1654, status: reference}
+    - {file: validation_data/naca0012_tmr/grids/n0012_225-65.p2dfmt, sha256: 66817d6bbc9353cb0ca9867f958da1bcce6485f7d68ec7038362a341bdb0fa8c, status: reference}
+    - {file: validation_data/naca0012_tmr/grids/n0012_449-129.p2dfmt, sha256: 52cc31698ec20c00aa1431b16cc5c8724e698fc1d4372752ab19e4ca5c0439e5, status: reference}
+    - {file: validation_data/naca0012_tmr/grids/n0012_897-257.p2dfmt, sha256: 7270aa58c6ca6f88f9c0fcd2c4f723c0a8a73e5e58e4a43e865554fc55297782, status: reference}
+  # D015 O-grid campaign geometry: TMR modified sharp-TE 0012, generated by make_naca0012.py
+  geometry_2d_sharp: {file: geometry/derived/naca0012_tmr/naca0012_tmr_sharp.dat, sha256: a75b628dc20c0d42a623e487031c5f85ab6358fc137444d99af0279684c30997, status: derived}
+  reference_cfd: validation_data/naca0012_tmr/reference/n0012clcd_cfl3d_sst.dat
+  experiment: validation_data/naca0012_tmr/reference/CLCD_Ladson_expdata.dat
+
+twoi_i001_c01:
+  description: distributed-twist candidate, rotation about x/c 0.25
+  twist_deg: [0.0, 2.5, 2.5, 2.5, 0.0]
+  eta_stations: [0.60, 0.6875, 0.775, 0.8625, 0.95]
+  geometry_3d: {file: null, sha256: null, status: awaiting_geometry}
+  dso_strict: {CDi: 0.00880576, dCDi_pct: -3.955, root_bend_pct: 5.913}
+
+chc_g02_c06:
+  description: conventional hinged concept from the DSO corrected low-speed selection (M 0.10, CL 0.428277635108). the hinged concept; a discrete flap deflection rather than a continuous camber law
+  hardware_identity: "design candidate, no physical counterpart"
+  delivered_vsp3: {file: dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current/native_cases/chc_g02_c06/chc_g02_c06.vsp3, sha256: fd591b0c3064aa4fa8610c15d2988c664dce140b03aeb7571c56a3ea7d4b4bee, source: "ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current", units: feet}
+  geometry_3d_laddercap: {file: geometry/derived/wing3d/chc_g02_c06_oml_placed_laddercap.stl, sha256: 18329aa33c0c1d971b85b40bffe588cd45eb25cba83683715816e5be29186fc3, triangles: 195266, status: derived_production_3d_meshing, half_model: true, units_output: metres, scale_applied: 0.3048,
+    route: "scripts/vsp3_to_stl.py --nchord 200 --nspan 240 --blunt-te 0.0063 --cap delaunay + apply_placement_transform.py --order xy + close_wing_surface.py, IDENTICAL step for step to the sanctioned baseline",
+    cap_note: "--cap delaunay, NOT the default --cap fan. The fan cap is the bit-for-bit REGENERATION ANCHOR and is a MEASURED defect as a meshing surface (ARG-098). Built with fan first on 2026-08-22 and rejected by measurement: longest tip edge 68.05 to 70.53 mm and aspect ratio to 146, against the repaired baseline's 7.80 mm and 14. Rebuilt with delaunay: 7.80 to 7.81 mm and 14 to 16, matching the baseline.",
+    gates: "closed surface, 0 open edges at 1e-6 vertex unification; root overhang to y = -0.020 m so snappy cuts solid material at the symmetry plane rather than a slot (GEO-101); tip cap measured against the sanctioned baseline",
+    record: ARG-175}
+  # CORRECTED 2026-09-22. This read NOT_YET "meshed, run, or trim-swept ... no case
+  # exists", which was already false and is load-bearing: a guard that reads this
+  # registry inherits its correctness (GEO-083), so a stale entry here is not a
+  # documentation error but a source of confidently wrong machine verdicts.
+  STATUS: "MESHED, RUN AND TRIM-SWEPT at Condition CR. Case SWW_trim carries this
+    exact geometry_3d_laddercap sha256, verified byte-identical in
+    constant/triSurface/wing.stl. Run card: results/run_cards_r2/SWW_r2_trim.json.
+    NOTE: the copy under the MESH directory is the same surface written at 7
+    significant figures, so its sha256 differs from the one recorded here; measured
+    agreement is bbox identical to 0.000e+00 and worst vertex deviation 5.0e-07 m."
+
+cfft_b02_c01:
+  description: continuous trailing-edge camber concept from the DSO corrected low-speed selection (M 0.10, CL 0.428277635108). the CURRENT selected TE concept. Its amplitude is A_max/c 0.0139, DOWN from the 0.0337 of mcv2_i002_c01, because the DSO reselected on CDiw (far field) after abandoning CDi (near field)
+  hardware_identity: "design candidate, no physical counterpart"
+  delivered_vsp3: {file: dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current/native_cases/cfft_b02_c01/cfft_b02_c01.vsp3, sha256: b3712ac50df554d17b37b851c02072cdc53c4794aab4e703cdbaf1ea1bf75a6f, source: "ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current", units: feet}
+  geometry_3d_laddercap: {file: geometry/derived/wing3d/cfft_b02_c01_oml_placed_laddercap.stl, sha256: 82bf2e1e570187ab5b3dfa987f122142ab01415995ef5c47fd27838901d0037b, triangles: 195266, status: derived_production_3d_meshing, half_model: true, units_output: metres, scale_applied: 0.3048,
+    route: "scripts/vsp3_to_stl.py --nchord 200 --nspan 240 --blunt-te 0.0063 --cap delaunay + apply_placement_transform.py --order xy + close_wing_surface.py, IDENTICAL step for step to the sanctioned baseline",
+    cap_note: "--cap delaunay, NOT the default --cap fan. The fan cap is the bit-for-bit REGENERATION ANCHOR and is a MEASURED defect as a meshing surface (ARG-098). Built with fan first on 2026-08-22 and rejected by measurement: longest tip edge 68.05 to 70.53 mm and aspect ratio to 146, against the repaired baseline's 7.80 mm and 14. Rebuilt with delaunay: 7.80 to 7.81 mm and 14 to 16, matching the baseline.",
+    gates: "closed surface, 0 open edges at 1e-6 vertex unification; root overhang to y = -0.020 m so snappy cuts solid material at the symmetry plane rather than a slot (GEO-101); tip cap measured against the sanctioned baseline",
+    record: ARG-175}
+  # CORRECTED 2026-09-22. This read NOT_YET "meshed, run, or trim-swept ... no case
+  # exists", which was already false and is load-bearing: a guard that reads this
+  # registry inherits its correctness (GEO-083), so a stale entry here is not a
+  # documentation error but a source of confidently wrong machine verdicts.
+  STATUS: "MESHED, RUN AND TRIM-SWEPT at Condition CR. Case SWH_trim carries this
+    exact geometry_3d_laddercap sha256, verified byte-identical in
+    constant/triSurface/wing.stl. Run card: results/run_cards_r2/SWH_r2_trim.json.
+    NOTE: the copy under the MESH directory is the same surface written at 7
+    significant figures, so its sha256 differs from the one recorded here; measured
+    agreement is bbox identical to 0.000e+00 and worst vertex deviation 5.0e-07 m."
+
+cffw_b01_c01:
+  description: distributed twist concept from the DSO corrected low-speed selection (M 0.10, CL 0.428277635108). a TWIST concept, +1.80 to -1.00 deg about x/c 0.25 over eta 0.68-1.00. THE FIRST TWIST GEOMETRY THIS PROJECT HAS EVER HELD; every prior candidate was a camber morph
+  hardware_identity: "design candidate, no physical counterpart"
+  delivered_vsp3: {file: dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current/native_cases/cffw_b01_c01/cffw_b01_c01.vsp3, sha256: 69d2be9b515283a5980a55bf8ede9a7d01a420efddbb27f667683425fbb02652, source: "ARGUS_CDIW_audit_delivery_2026-08-19/02_corrected_low_speed_current", units: feet}
+  geometry_3d_laddercap: {file: geometry/derived/wing3d/cffw_b01_c01_oml_placed_laddercap.stl, sha256: 200fa64ca9d6eecc54bbecaa62c384edeab95c2560ce5f514c4a9ffc830de692, triangles: 195266, status: derived_production_3d_meshing, half_model: true, units_output: metres, scale_applied: 0.3048,
+    route: "scripts/vsp3_to_stl.py --nchord 200 --nspan 240 --blunt-te 0.0063 --cap delaunay + apply_placement_transform.py --order xy + close_wing_surface.py, IDENTICAL step for step to the sanctioned baseline",
+    cap_note: "--cap delaunay, NOT the default --cap fan. The fan cap is the bit-for-bit REGENERATION ANCHOR and is a MEASURED defect as a meshing surface (ARG-098). Built with fan first on 2026-08-22 and rejected by measurement: longest tip edge 68.05 to 70.53 mm and aspect ratio to 146, against the repaired baseline's 7.80 mm and 14. Rebuilt with delaunay: 7.80 to 7.81 mm and 14 to 16, matching the baseline.",
+    gates: "closed surface, 0 open edges at 1e-6 vertex unification; root overhang to y = -0.020 m so snappy cuts solid material at the symmetry plane rather than a slot (GEO-101); tip cap measured against the sanctioned baseline",
+    record: ARG-175}
+  # CORRECTED 2026-09-22. This read NOT_YET "meshed, run, or trim-swept ... no case
+  # exists", which was already false and is load-bearing: a guard that reads this
+  # registry inherits its correctness (GEO-083), so a stale entry here is not a
+  # documentation error but a source of confidently wrong machine verdicts.
+  STATUS: "MESHED, RUN AND TRIM-SWEPT at Condition CR. Case SWF_trim carries this
+    exact geometry_3d_laddercap sha256, verified byte-identical in
+    constant/triSurface/wing.stl. Run card: results/run_cards_r2/SWF_r2_trim.json.
+    NOTE: the copy under the MESH directory is the same surface written at 7
+    significant figures, so its sha256 differs from the one recorded here; measured
+    agreement is bbox identical to 0.000e+00 and worst vertex deviation 5.0e-07 m."
+
+benchmarks:
+  # DISTINCT 2D benchmark sections (validation references, not design candidates); do not conflate.
+  # Folded in from the CR-2215 package registry 2026-07-25 (D020). Provenance (non-authoritative,
+  # package-side): validation_data/cr2215/benchmark_geometry_registry.yaml,
+  # sha256 98708c8026130bb86337d6ea6dfbba9a3fc4c2279098f302dbd4ee50e9060fa8.
+  # Run cards may cite benchmark IDs as candidate (validate_run_card.py resolves this section too).
+  eet_cruise_12pct:
+    description: 3D wing break-station section (Langley EET supercritical, t/c 11.97%); grid-convergence and morphed-section studies. IS the wing section, not an airfoil benchmark with 2D data.
+    geometry: see baseline.geometry_2d (raw) and baseline.geometry_2d_faired (canonical meshing variant); sha256 registered there
+    experimental_2d_data: none (TM-2002-211780 tested deployed configs only)
+  onera_m6:
+    description: ONERA M6 wing, the 3D TRANSONIC validation anchor. FIRST 3D benchmark in this section; every other entry here is 2D. Closes the code-to-code anchor PROJECT_STATE 0.4 item 6d called not closeable (ARG-165).
+    dimensionality: 3D
+    geometry: {file: validation_data/onera_m6/alletto_case/constant/triSurface/AileM6_with_sharp_TE.stl, sha256: 4be02de7f5ab8f504e5249d3aba65ca6df92a13b60965f80624c905ee5d84726, units_source: millimetres, units_output: metres, scale_applied: 0.001, scale_note: "THE STL IS IN MILLIMETRES and the MESH is scaled after snappyHexMesh by transformPoints -scale (0.001 0.001 0.001), as the upstream Allrun does. Omitting it gives a domain 1000x oversized, wetted area 1e6x, and forces at 1.3e8 drag counts on a perfectly converged flow. Same class as project rules, hard fact 1 (OpenVSP exports are in FEET).", te_convention: "SHARP, which is what TMR specifies for this exercise; the original wing has a moderately thick TE"}
+    source: {package: validation_data/onera_m6/alletto_case, upstream: "gitlab.com/mAlletto/openfoamtutorials @ e72b42c5eb7baba85a138ae207b2b6a8ac2ed518", provenance: validation_data/onera_m6/alletto_case/PROVENANCE.txt}
+    reference_quantities: {Sref_m2: 0.75320, MAC_m: 0.64607, root_chord_m: 0.810491484086, semispan_m: 1.196300000084, moment_centre_m: [0.0, 0.0, 0.0], source: "NASA Turbulence Modeling Resource, validation_data/onera_m6/tmr/PROVENANCE.txt", frame_warning: "Our cases run forces1 with CofR (0.25 0 0), NOT this moment centre. Cm is therefore in a DIFFERENT FRAME from TMR's CM and may not be compared without transfer. Forces are unaffected."}
+    condition: {name: "AGARD AR-138 run 308", mach: 0.8395, alpha_deg: 3.06, Re_MAC: 11.72e6, Re_c_root: 14.6e6, reynolds_note: "Two Reynolds numbers, both correct, different length scales: 14.6e6 x (646.07/810.49) = 11.64e6. A Reynolds number without its length scale is not a Reynolds number."}
+    experimental_data: {file: validation_data/onera_m6/case_2308.dat, stations_eta: [0.20, 0.44, 0.65, 0.80, 0.90, 0.96, 0.99], station_note: "The 6th station is 0.96, not the 0.95 the original reference lists; TMR corrected it from later measurements on the model.", decode_check: "byte-identical to the TMR copy and to Alletto's expy=*.dat. That confirms our DECODER, not the DATA: all three descend from the same AGARD tables, so a common source error would cancel."}
+    geometry_acceptance: {method: "STL cut at each of the seven measured stations against the tap coordinates decoded from case_2308.dat", max_dz_over_c: 0.00110, t_over_c: 0.0973, verdict: "0.11% of chord at worst, at the level of the tap data's own section-to-section scatter (0.094%c). The surface meshed IS the surface the pressures were measured on, established by measurement rather than assumed from a shared case name."}
+    status: validated_3d_compressible_anchor
+    record: ARG-139 (acquired and gated), ARG-165 (run and closed), ARG-170 (run cards)
+
+  tm89125_large_vane:
+    description: methodology-validation airfoil (TM-89125 large-vane cruise, t/c 11.55%, chord 22 in); NOT the wing section
+    geometry: {file: null, sha256: null, status: awaiting_geometry, note: geometry via CR-159389 (D012 Layer 3 external gate)}
+    experimental_2d_data: nested-cruise cl-alpha, Mach sweep, wake-rake drag (plotted figures; targets docs/reports/tm89125_validation_targets.md)
+    source: NTRS 19900000686 (TM-89125)
+  cr2215_n1wt_9p3pct_bluntbase:
+    description: D012 Layer-2 gate section - NASA 9.3% blunt-based supercritical (Boeing N1WT), blunt base 0.98%c, chord 0.6096 m; THIRD benchmark, distinct from both sections above
+    geometry_coordinates: {file: validation_data/cr2215/csv/geometry_basic_airfoil_coordinates.csv, sha256: d2739032ea569d5440ae5e737c34b9ff5a692f0a53807d6ee82dabcce53547da, status: ingested}
+    geometry_contour: {file: validation_data/cr2215/csv/geometry_basic_airfoil_contour_meshing.csv, sha256: e530ca4d8b3f25df4b42a4be6ee39ad87d5bbe3cf27a75c08676e95e6a49be19, status: ingested, note: single open loop, blunt base preserved; spline-fit and redistribute before meshing}
+    conditions: 6 clean-airfoil (M 0.080-0.284, Re 1.10-4.02e6, free + A-06 tripped at 0.10c); PG-scale M>=0.2 before comparison (Cp_inc = Cp_M x beta)
+    gate: cd LEVEL within RSS +/-0.0016 band vs A-06 (tripped, PG-scaled) plus Cp rooftop/aft-loading SHAPE vs A-05/A-06; family physics, not absolute counts (Layer 1 owns count-level cd)
+    source: NASA CR-2215 Vol II, NTRS 19800003805; package validation_data/cr2215/ (MANIFEST verified 35/35, consistency_check 18/18, 2026-07-25)
+    status: ACCEPTED 2026-07-25 (validation_data/cr2215/ACCEPTANCE.md, D025); the A06_tripped
+      polar was rejected and replaced by csv/forces_polar_A06_tripped.csv after an independent
+      spot-check and a blind re-read; tabulated quantities unaffected
+
+# =====================================================================================
+# CORRECTED PAIR (D074, 2026-07-29). THE PRODUCTION GEOMETRY FROM HERE ON.
+# The 2026-07-29 delivery regenerates baseline and candidate from ONE corrected script:
+# SplitWingXSec-inserted aerofoils are now LINEARLY BLENDED between their original
+# bracketing profiles on a cosine x/c grid; original sections are not replaced.
+# RECEIVING INSPECTION, all six checks reproduced here, not inherited:
+#   1 SHA256SUMS      41/42 verified, 0 mismatched, byte counts exact. TEAMS_REPLY.txt
+#                     is LISTED IN THE MANIFEST AND WAS NOT DELIVERED.
+#   2 .lod x2 closure CL, CDtot, CDi on all three cases, worst rel err 8.2e-05.
+#   3 blend linearity f_fitted vs f_geom worst |df| 4.4e-16, residual RMS 3.9e-18 c.
+#                     EXACT linear blending, fractions are clean quarters and eighths.
+#   4 point counts    10 INSERTED stations uniform at 161/161 (= split_count 10); the 9
+#                     originals retain native counts, which is what "originals are not
+#                     replaced" requires. 19 distinct aerofoil arrays, was 9 of 19.
+#   5 planform        IDENTICAL to 0.00e+00 on span, area, AR, root/tip chord, and on
+#                     every per-station eta, chord, twist, sweep and span.
+#   6 dictionary      both directions; no row points at a missing file.
+# THE AS-DELIVERED RESULT LABEL IS RETIRED for these surfaces.
+# =====================================================================================
+baseline_corrected:
+  description: EET AR12 cruise wing, wing-only, CORRECTED aerofoil interpolation
+  geometry_3d: {file: geometry/derived/wing3d/superseded/baseline_corrected_oml_placed.stl, sha256: 2b65bc9ebb6aa47e614cc686739cdeb62411ae17230a436cc5fb15bd4d0babc0, status: derived_production_NOT_FOR_3D_MESHING, route: "vsp3_to_stl.py --nchord 200 --nspan 240 --blunt-te 0.0063 + apply_placement_transform.py --order xy (IDENTICAL to every other promoted surface)", gates: "all six PASS, te_ref midpoint", te_gap_pct_c: 0.6769, half_model: true, record: D074, amended: "ARG-098 2026-08-03: status was derived_production. It carries the FAN tip cap, a MEASURED defect (valence 398, tip aspect ratio to 35,212, longest edge 76.21 mm). SUPERSEDED AS THE MESHING SURFACE by geometry_3d_laddercap below. RETAINED, and deliberately: it is the bit-for-bit regeneration anchor that scripts/regenerate_oml.py --check reproduces with the default --cap fan, so retiring it would break the gate. USE IT FOR REGENERATION AND CALIBRATION; DO NOT MESH IT."}
+  # ---- TIP-CAP-REPAIRED SURFACE. THIS IS WHAT EVERY 3D CASE ACTUALLY MESHES. ----
+  # Registered 2026-08-03 under ARG-098. IT WAS UNREGISTERED FOR THE WHOLE PHASE A
+  # CAMPAIGN, which is a record-keeping rule 2 violation ("no case runs on an
+  # unregistered geometry"): KR_wake, TR1_a175, TR2_a190 and MR_mcv2 were all meshed and
+  # solved on checksums bound to no candidate id. The GEOMETRY was never in doubt, only
+  # its provenance; surfaceCheck is quoted below and was run on the case copies.
+  # WHY IT SLIPPED: --cap defaults to "fan" precisely so the regeneration gate keeps
+  # passing, so the repaired surfaces were always going to need their OWN entries, and
+  # that step was never taken.
+  geometry_3d_laddercap: {file: geometry/derived/wing3d/superseded/baseline_corrected_oml_placed_laddercap.stl, sha256: 64de51bf1b49ea214a9cd99d3aeace33ac83da4bf60a3b2ccefeb6e4e4833e64, triangles: 192588, status: NOT_USED_overruled_by_ARG-099, display_name: 'baseline (alt aerofoil interpolation, UNUSED)', superseded_status: derived_production_3d_meshing_NOT_YET_MESHED, status_note: 'DO NOT MESH. Differs from the sanctioned baseline only in aerofoil interpolation (0.18%c max, zero inboard of eta 0.4). Overruled by project decision 2026-08-03. No case has ever used it and none should without a new ruling.', half_model: true, record: ARG-098,
+    gates: "surfaceCheck: closed (all edges connected to two faces), 1 zone, one normal orientation, no illegal triangles",
+    route: "vsp3_to_stl.py --nchord 200 --nspan 240 --blunt-te 0.0063 --cap delaunay --cap-edge 0.0030 + apply_placement_transform.py --order xy + close_wing_surface.py --write + weld_surface.py --in-place",
+    route_status: "VERIFIED BIT-FOR-BIT 2026-08-03 from baseline_corrected.vsp3.",
+    WARNING: "NO CASE HAS BEEN MESHED ON THIS SURFACE. Every Phase A baseline case (G1_WM_full, TM1_a195, TM2_a205, KM_wake, KR_wake, TR1_a175, TR2_a190) was meshed on baseline::geometry_3d_laddercap, which is the UNCORRECTED lineage. See ARG-099."}
+  source_vsp3: {file: dso_reference/2026-07-29_correction_pair/baseline_corrected/baseline_corrected.vsp3, status: delivered, units_source: feet}
+  dso_strict: {CDi: 0.009878742, alpha_trim_deg: 1.6453592048966894, CL: 0.428278133112}
+
+  # RANKING STATEMENT, recorded in BOTH halves of the pair so it cannot be read from one.
+  # NUMERICALLY UNRANKABLE: cte minus mcv2 is 0.274 counts against the 0.35-count A1
+  # resolution. RANKED BY PROVENANCE INSTEAD: mcv2 is an OLD command re-applied to the
+  # corrected base; cte is a GENUINE RE-OPTIMISATION on it. mcv2 is the PRIMARY pair, both
+  # because the author asked for it in the chain for traceability and because the pipeline
+  # is built around it, and because the deliverable is a METHOD VALIDATION, not a design
+  # endorsement. cte is the SECOND pair; its real value is as the DROP-IN TEST of the
+  # pipeline claim that a new candidate costs one input file. IF IT IS NOT A DROP-IN, THAT
+  # FINDING IS WORTH MORE THAN ITS 6.445-COUNT NUMBER.
+mcv2_i002_c01:
+  description: corrected-pair morphing candidate (PRIMARY pair); RANS GEOMETRY-VALIDATION CASE, not a feasible optimum
+  # The author's own README: this unchanged mcv2 command produces 7.124%% more half-wing
+  # root bending than the matched corrected baseline, exceeding the illustrative 6.8%%
+  # screen, so it is a geometry-validation case. A new optimisation on the corrected base
+  # is required before it could replace the report's engineering candidate.
+  geometry_3d: {file: geometry/derived/wing3d/superseded/mcv2_i002_c01_oml_placed.stl, sha256: 61246c1096b4b870ec8cbee45568c9c71f9916a69d104fceb97a2216d4154bdf, status: derived_production_NOT_FOR_3D_MESHING, route: "IDENTICAL to baseline_corrected", gates: "all six PASS, te_ref midpoint", te_gap_pct_c: 0.6763, half_model: true, record: D074, amended: "ARG-098 2026-08-03: status was derived_production. FAN tip cap, same measured defect as the baseline half of the pair. SUPERSEDED AS THE MESHING SURFACE by geometry_3d_laddercap below; RETAINED as the bit-for-bit regeneration anchor. DO NOT MESH IT."}
+  # ---- TIP-CAP-REPAIRED SURFACE. THIS IS WHAT MR_mcv2 ACTUALLY MESHES. ----
+  # Registered 2026-08-03 under ARG-098, same story as the baseline half of the pair.
+  # THIS ONE'S ROUTE IS VERIFIED, which is what makes the baseline's failure to
+  # reproduce a LOFT difference rather than a chain defect.
+  geometry_3d_laddercap: {file: geometry/derived/wing3d/mcv2_i002_c01_oml_placed_laddercap.stl, sha256: dae22d0c4bf3cba849e39a3b59d84d1412ffed3430aa4e10c0ebdf92556941dc, referred_to_as: mcv2_w_root, role: meshing_surface_with_root_extension, root_extension_mm: 20.0, wetted_area_m2: 1.2794, stl_area_m2: 1.3497, area_warning: "MESHING SURFACE NOT OML. Root extended 20.0 mm through the symmetry plane and capped so snappy cuts solid material at y=0 rather than a 4.679 mm slot (ARG-096). Scaffolding is outside the domain and is cut away. CONSEQUENCE: this file own area/span/volume are NOT the wing values. STL area overstates wetted area by 5.49 pct (1.3497 vs 1.2794 m2) and the bbox overstates span by 20 mm. Take wetted area from the solver wing patch or from the OML.", triangles: 192588, status: derived_production_3d_meshing, half_model: true, record: ARG-098,
+    gates: "surfaceCheck on the CASE copy: closed (all edges connected to two faces), 1 zone, one normal orientation, no illegal triangles",
+    verified_against: "byte-identical to constant/triSurface/wing.stl in cluster case MR_mcv2",
+    route: "vsp3_to_stl.py --nchord 200 --nspan 240 --blunt-te 0.0063 --cap delaunay --cap-edge 0.0030 + apply_placement_transform.py --order xy + close_wing_surface.py --write + weld_surface.py --in-place",
+    route_status: "VERIFIED BIT-FOR-BIT 2026-08-03. The chain above was executed from mcv2_i002_c01.vsp3 and reproduced this sha256 exactly. NOTE THE LAST STEP: weld_surface.py --in-place merges near-coincident vertices and removes 4 degenerate triangles (192592 -> 192588). It is NOT part of scripts/regenerate_oml.py's chain, and omitting it is why the first three reproduction attempts missed by exactly 4 triangles."}
+  source_vsp3: {file: dso_reference/2026-07-29_correction_pair/mcv2_i002_c01/mcv2_i002_c01.vsp3, status: delivered, units_source: feet}
+  dso_strict: {CDi: 0.009261687, alpha_trim_deg: 1.249720412530536, CL: 0.428277505407, dCDi_counts_vs_corrected_baseline: -6.170542, root_bending_change_percent: 7.124387}
+
+  # ---- CAMBER SCHEDULE. TRANSCRIBED, NOT DERIVED. ----
+  # Registered 2026-08-03. IT WAS ABSENT UNTIL NOW, and that absence is exactly why the
+  # 2D morphed cases still looked current while running the WRONG candidate: the only
+  # registered schedule in this file belonged to mbr_c01_l011, so nothing contradicted
+  # the old sections. THE AMPLITUDES ARE ROUGHLY DOUBLE mbr's AT THE SAME STATIONS:
+  #     eta 0.70   mbr 0.01354  ->  mcv2 0.025978   (1.92x)
+  #     eta 0.80   mbr 0.01809  ->  mcv2 0.034968   (1.93x)
+  #     eta 0.90   mbr 0.01268  ->  mcv2 0.018199   (1.44x)
+  # so the mbr 2D sections are not an approximation of this candidate, they are a
+  # different one. x_h_over_c 0.62 matches the ARGUS camber law hinge (project rules, hard
+  # fact 5) exactly, so the law applies unchanged and only A/c moves.
+  camber_schedule: {source: dso_reference/2026-07-29_correction_pair/mcv2_i002_c01/mcv2_i002_c01_design.json,
+    source_sha256: e96da66ac34a2d848406f8b0b2a40dbc70973c1e796d877aad32c5496c4a3143,
+    status: transcribed_from_dso_delivery, record: ARG-098,
+    eta_start: 0.6, eta_end: 1.0, x_h_over_c: 0.62, shape_type: control_points,
+    control_etas: [0.6, 0.7, 0.8, 0.9, 1.0],
+    control_amplitudes_over_c: [0.00802664819714527, 0.02597787349928656, 0.03496782672156966, 0.018198741897711118, 0.0002180441893945284],
+    A_max_over_c: 0.03496782672156966,
+    dso_operating_point: {alpha_deg: 2.0, mach: 0.1},
+    built: "2026-08-03, all five control stations. See geometry_2d_morphed below."}
+
+  # 2D MORPHED SECTIONS, generated by geometry/scripts/morph2d.py from the schedule
+  # above. INDEX ORDER IS THE CASE-BUILDER'S ADDRESS: build_2d_case.py resolves
+  # 'mcv2_i002_c01:geometry_2d_morphed:N' by LIST POSITION, so reordering this list
+  # silently repoints existing cases at a different station. Append, do not reorder.
+  # QA at generation, from the sidecars: TE displacement equals -A/c to 1e-9 at every
+  # station, and t/c max change is EXACTLY 0.0 -- the camber law shifts both surfaces
+  # equally, so thickness is preserved by construction and this is its check.
+  geometry_2d_morphed:
+    - {eta: 0.6, A_over_c: 0.008027, file: geometry/derived/eet_section/morphed/mcv2_i002_c01_eta0p60.dat, sha256: 71327306ec1262123e72ec544e96d79130291b18aeb551ae61c13dcba270b7ef, status: derived, record: ARG-098}
+    - {eta: 0.7, A_over_c: 0.025978, file: geometry/derived/eet_section/morphed/mcv2_i002_c01_eta0p70.dat, sha256: 99fc9c9adceb6b890e15dbcb6a38807afbdb56f791b77152f6e2f96b6f4c9ff6, status: derived, record: ARG-098}
+    - {eta: 0.8, A_over_c: 0.034968, file: geometry/derived/eet_section/morphed/mcv2_i002_c01_eta0p80.dat, sha256: f3502391f6c4c1ac7af8075fa2570e193194dfc48ef3b5c4da4f276eacac0a8f, status: derived, record: ARG-098}
+    - {eta: 0.9, A_over_c: 0.018199, file: geometry/derived/eet_section/morphed/mcv2_i002_c01_eta0p90.dat, sha256: 25858d9c124b7920b15c66165799e32186ce8138a87c588b1e78cc7c862e846f, status: derived, record: ARG-098}
+    - {eta: 1.0, A_over_c: 0.000218, file: geometry/derived/eet_section/morphed/mcv2_i002_c01_eta1p00.dat, sha256: 93903b31155c73744d693b1e371bb3b147b02740d98d91a02deb1923b5030492, status: derived, record: ARG-098}
+
+cte_i002_c04:
+  description: re-optimised strict best on the CORRECTED baseline (SECOND pair, not run)
+  # ---- PROMOTED 2026-08-04 TO THE PRIMARY CANDIDATE POSITION (Liming, 2026-07-29). ----
+  # His words: "cte_i002_c04 is now the more relevant candidate for comparison with the
+  # corrected baseline", and mcv2_i002_c01 is "a RANS validation geometry rather than a
+  # corrected feasible optimum" because it breaks the illustrative 6.8%% bending screen at
+  # 7.124%%. cte is FEASIBLE: bending +6.796%%, max adjacent command 0.017771 against 0.018.
+  # mcv2 STAYS IN THE CHAIN for traceability, at the author's explicit request.
+  dso_strict_cte: {alpha_trim_deg: 1.2565172230781758, CL: 0.428277943081, CDi: 0.009234249693,
+    CDi_reduction_percent: 6.524, dCDi_counts_vs_corrected_baseline: -6.445,
+    root_bending_moment_Nm: 118.28068033276233, root_bending_increase_percent: 6.796298548947231,
+    max_adjacent_delta: 0.01777090522438226, feasible: true}
+  camber_schedule: {source: dso_reference/2026-07-29_correction_pair/cte_i002_c04/cte_i002_c04_design.json,
+    status: transcribed_from_dso_delivery, record: ARG-100,
+    control_etas: [0.6, 0.7, 0.8, 0.9, 1.0],
+    control_amplitudes_over_c: [0.016427, 0.021826, 0.033726, 0.015955, 0.000015],
+    A_max_over_c: 0.033726, x_h_over_c: 0.62}
+  geometry_3d_laddercap: {file: geometry/derived/wing3d/cte_i002_c04_oml_placed_laddercap.stl,
+    sha256: 790c3ded3568fa877bf8daf1a7296d7f66e7e865e42f4a1e9b90a14501c45d3b, referred_to_as: cte_w_root, role: meshing_surface_with_root_extension, root_extension_mm: 20.0, wetted_area_m2: 1.2794, stl_area_m2: 1.3497, area_warning: "MESHING SURFACE NOT OML. Root extended 20.0 mm through the symmetry plane and capped so snappy cuts solid material at y=0 rather than a 4.679 mm slot (ARG-096). Scaffolding is outside the domain and is cut away. CONSEQUENCE: this file own area/span/volume are NOT the wing values. STL area overstates wetted area by 5.49 pct (1.3497 vs 1.2794 m2) and the bbox overstates span by 20 mm. Take wetted area from the solver wing patch or from the OML.", triangles: 192588, status: derived_production_3d_meshing_NOT_YET_MESHED,
+    half_model: true, record: ARG-100,
+    gates: "surfaceCheck: closed (all edges connected to two faces), 1 zone, one normal orientation, no illegal triangles",
+    route: "vsp3_to_stl.py --nchord 200 --nspan 240 --blunt-te 0.0063 --cap delaunay --cap-edge 0.0030 + apply_placement_transform.py --order xy + close_wing_surface.py --write + weld_surface.py --in-place",
+    route_status: "BUILT BY THIS EXACT CHAIN 2026-08-04 (not merely reproducible by it).",
+    independent_check: "trailing-edge displacement measured against the author's own cte_i002_c04_section_schedule.csv at 12 stations: worst deviation 0.543 mm, most within 0.2 mm, 0.0000 mm at the tip. Validates the geometry chain against his numbers with no aerodynamics involved."}
+  # RANKING STATEMENT, recorded in BOTH halves of the pair so it cannot be read from one.
+  # NUMERICALLY UNRANKABLE: cte minus mcv2 is 0.274 counts against the 0.35-count A1
+  # resolution. RANKED BY PROVENANCE INSTEAD: mcv2 is an OLD command re-applied to the
+  # corrected base; cte is a GENUINE RE-OPTIMISATION on it. mcv2 is the PRIMARY pair, both
+  # because the author asked for it in the chain for traceability and because the pipeline
+  # is built around it, and because the deliverable is a METHOD VALIDATION, not a design
+  # endorsement. cte is the SECOND pair; its real value is as the DROP-IN TEST of the
+  # pipeline claim that a new candidate costs one input file. IF IT IS NOT A DROP-IN, THAT
+  # FINDING IS WORTH MORE THAN ITS 6.445-COUNT NUMBER.
+  # Arrived unannounced with the 2026-07-29 delivery. Author: "the more relevant candidate
+  # for comparison with the corrected baseline", while asking that mcv2 stay in the chain.
+  # Under the study-level screens root bending is 6.796% against the ILLUSTRATIVE 6.8% and the
+  # adjacent command 0.017771 against the ILLUSTRATIVE 0.018. NEITHER IS A CERTIFIED ALLOWABLE.
+  geometry_3d: {file: geometry/derived/wing3d/superseded/cte_i002_c04_oml_placed.stl, sha256: 76d7b2585fcdfc04dbc94266f9650726e25e393988d533c836ac34a8e14a3df8, status: derived_production, route: "IDENTICAL to baseline_corrected and mcv2_i002_c01", gates: "all six PASS, te_ref midpoint", te_gap_pct_c: 0.6764, half_model: true, record: D075}
+  source_vsp3: {file: dso_reference/2026-07-29_correction_pair/cte_i002_c04/cte_i002_c04.vsp3, status: delivered, units_source: feet}
+  dso_strict: {CDi: 0.009234250, dCDi_counts_vs_corrected_baseline: -6.445, dCDi_percent: -6.524, root_bending_change_percent: 6.796, max_adjacent_command: 0.017771}
+
+# =============================================================================
+# PHASE 0.5 SYNTHETIC METHOD-VALIDATION WINGS (GEO-082). NOT ARGUS HARDWARE.
+# hardware_identity: synthetic, no physical counterpart.
+# NO QUANTITY DERIVED FROM THESE EVER ENTERS AN ARGUS COMPARISON, in any form,
+# including as a mesh or solver-setting justification quoted against an ARGUS
+# result. They exist ONLY to test the 3D RANS route against an answer known
+# without measurement.
+# Their AREA is 1.114836480 m2, which equals Sref_TP1580 to five figures, and the
+# rectangular chord is 0.3048 m = 1 ft EXACTLY, because b/AR = 3.6576/12. That is
+# arithmetic, NOT a relationship to the TP-1580 wing, and it is precisely the
+# frame-rule collision of the project frame rule, instance 2. Never compare them.
+# NO INDUCED-DRAG FIELD (GEO-086): these entries carried CDi_over_CL2 and it
+# was REMOVED, not relabelled. No CDi extraction instrument exists in this
+# repository yet, so an artifact of ours naming a drag coefficient would
+# persuade where an absent one blocks. Recompute 1/(pi AR e) from
+# span_efficiency_e if ever needed. dso_strict.CDi on other candidates is
+# UNAFFECTED: that is the author's value under the author's namespace.
+# =============================================================================
+syn_elliptical:
+  description: Synthetic elliptical-planform half-wing, NACA 0010, unswept, untwisted
+  hardware_identity: "synthetic, no physical counterpart"
+  purpose: "KNOWN ANSWER. Lifting-line span efficiency e = 1.000000 EXACTLY for the ideal ellipse, so the RANS induced drag has a reference with NO measurement uncertainty."
+  analytic_reference: {span_efficiency_e: 0.999020, e_ideal_untruncated: 1.000000, induced_drag_factor_delta: 0.000981, method: "Prandtl lifting line, scripts/lifting_line.py", scope: "INVISCID, induced drag ONLY; the RANS CD must have its profile part removed before comparison"}
+  planform: {type: elliptical_cut_at_eta_0p99, span_full_m: 3.6576, aspect_ratio: 12.0, area_full_m2: 1.114836480, root_chord_m: 0.384664, tip_chord_m: 0.054263, aerofoil: "NACA 0010 analytic, open-TE coefficients, 0.21%c blunt TE", twist_deg: 0.0, dihedral_deg: 0.0, sweep_deg: 0.0}
+  # TIP TRUNCATION: a true ellipse has ZERO tip chord and cannot be written as a
+  # surface. Cut at eta 0.99 giving a 54.263 mm tip chord. This MOVES THE TARGET
+  # from 1.000000 to 0.999020; it does NOT add uncertainty, because the value is
+  # exact for the planform actually built. The elliptical-to-rectangular gap of
+  # 0.0925 is 94x the truncation penalty, so the directional gate is untouched.
+  # PLACEMENT TRANSFORM DELIBERATELY NOT APPLIED: the ARGUS Rx(5.000) @ Ry(1.873)
+  # reproduces a parent-Blank transform these wings do not have, and applying it
+  # would INVALIDATE THE REFERENCE, which is a planar-wing result (D077).
+  geometry_3d: {file: geometry/derived/wing3d/syn_elliptical_oml.stl, sha256: 71eb1e049ba6444554ad8108eac5b159bb4bcdfd351448a2cb42f6603c9324ae, status: derived_production_synthetic, units_output: metres, half_model: true, route: "geometry/scripts/make_synthetic_wing.py --kind elliptical --nchord 200 --nspan 240 (fully analytic, NO external source and so no provenance chain to verify)", gates: "13/13 PASS, scripts/check_synthetic_gates.py --kind elliptical", gates_note: "The ARGUS six-gate suite is NOT applicable and FAILS all six on this correct surface (D077); --demo-argus-suite shows it.", sidecar: geometry/derived/wing3d/syn_elliptical_oml.json, record: GEO-082}
+
+syn_rectangular:
+  description: Synthetic rectangular-planform half-wing, NACA 0010, unswept, untwisted
+  hardware_identity: "synthetic, no physical counterpart"
+  purpose: "DIRECTIONAL GATE. Span efficiency MUST come out BELOW syn_elliptical's. Physics fixes the SIGN, so it is falsifiable without arguing a tolerance (D060)."
+  analytic_reference: {span_efficiency_e: 0.906559, induced_drag_factor_delta: 0.103073, method: "Prandtl lifting line, scripts/lifting_line.py", scope: "INVISCID, induced drag ONLY"}
+  planform: {type: rectangular, span_full_m: 3.6576, aspect_ratio: 12.0, area_full_m2: 1.114836480, chord_m: 0.304800, aerofoil: "NACA 0010 analytic, open-TE coefficients, 0.21%c blunt TE", twist_deg: 0.0, dihedral_deg: 0.0, sweep_deg: 0.0}
+  # THE GATE, pre-registered before any solve: e_rect < e_ell. Analytic values
+  # 0.906559 against 0.999020, a gap of 0.092462. A RANS result violating the
+  # ORDER is a defect in the route; a result reproducing the MAGNITUDE to within
+  # the induced-drag extraction uncertainty is the route working.
+  geometry_3d: {file: geometry/derived/wing3d/syn_rectangular_oml.stl, sha256: b43baca0c6c7f9297070d3d853795c034465477660a3d66d6ae5b84605fe7afa, status: derived_production_synthetic, units_output: metres, half_model: true, route: "geometry/scripts/make_synthetic_wing.py --kind rectangular --nchord 200 --nspan 240 (fully analytic)", gates: "13/13 PASS, scripts/check_synthetic_gates.py --kind rectangular", sidecar: geometry/derived/wing3d/syn_rectangular_oml.json, record: GEO-082}
+
+# =============================================================================
+# BENCHMARK SECTIONS. Not design candidates: these exist to VALIDATE the solver
+# and mesh recipe against published experiment, and nothing here ever supplies a
+# geometry-dependent ARGUS result. Registered 2026-08-04.
+# =============================================================================
+cr2215_n1wt:
+  description: NASA CR-2215 Vol II basic airfoil (component N1WT), 9.3% blunt-based supercritical. VALIDATION BENCHMARK ONLY.
+  # WHY THIS SECTION. It is the closest published 2D experiment to what ARGUS actually
+  # solves: a blunt-based supercritical section (base 0.98%c against our 0.63%c) with
+  # measured Cp, wake-rake profile drag, AND measured transition locations, at Mach and
+  # Reynolds near Condition CR. The transition data is what makes it usable: our SST runs
+  # fully turbulent, so only the TRIPPED condition (A-06) is a like-for-like comparison.
+  # NOT our wing section and NOT the TM-89125 methodology airfoil (CR-2215 README: "Do
+  # not conflate the three").
+  geometry_2d: {file: geometry/derived/benchmarks/cr2215_n1wt.dat,
+    sha256: dba535282d5033f668b46aa6cbf54b99d9ed9ef13656dca3b9994ee0e48367b0,
+    points: 64, status: benchmark_derived, record: ARG-098,
+    source: validation_data/cr2215/csv/geometry_basic_airfoil_contour_meshing.csv,
+    chord_m: 0.6096,
+    self_check: "reproduces the package's own documented values: blunt base gap 0.0098c and max thickness 0.0930c (report states 9.30% at x/c 0.35)",
+    blunt_base: "0.0098c, LEFT OPEN in the .dat and closed with a blunt face in the mesh. The package is explicit: do NOT sharpen it."}
+  experiment:
+    tunnel: Boeing Research Wind Tunnel, 2D high-lift facility, two-stage wall BLC
+    chord_over_tunnel_height: 0.25
+    CAVEAT: "blockage is NOT small at c/h 0.25 with wall BLC. Cp SHAPE and polar SLOPE are the robust comparisons; absolute cd carries a wall-interference uncertainty that is not quantified here."
+    conditions: "A-06 M 0.201 Re 2.83e6 tripped 0.10c (like-for-like); A-05 M 0.080 Re 1.10e6 free transition (nearest ARGUS CR)"
+    source: NTRS 19800003805, Omar/Zierten/Hahn/Szpiro/Mahal, Boeing, Sept 1973
+
+# ---------------------------------------------------------------------------
+# CORRECTED M 0.78 CRUISE PACKAGE, delivered by Liming 2026-08-07 in
+# dso_reference/7-8/. Registered 2026-08-07 (ARG-136).
+#
+# THESE ARE DELIVERED .vsp3 FILES, NOT DERIVED GEOMETRY. Nothing has been meshed,
+# scaled or converted from them yet, so no STL, no placement transform and no gates.
+# The OpenVSP length unit is FEET (hard fact 1); any downstream export MUST scale by
+# 0.3048 as every other geometry in this registry does.
+#
+# EVERY sha256 BELOW WAS VERIFIED AGAINST THE DELIVERED SHA256SUMS.csv: 8 of 8 files
+# matched, 0 mismatches. TEAMS_REPLY.txt is listed in that manifest and was NOT
+# delivered; it is the covering note, so nothing is lost, but manifest and package
+# disagree and that is recorded rather than tidied away.
+#
+# CDi FIGURES ARE INDUCED DRAG ONLY, from VSPAERO, which the package README states
+# plainly 'does not resolve the Mach 0.78 shock/wave-drag physics'. POSITIVE percent
+# means LESS induced drag; the sign was derived from the file, not assumed.
+# PERCENTAGES USE A DIFFERENT DENOMINATOR PER STATE (early rigid CDi 0.010675951055,
+# late rigid 0.011308765676) so early and late percentages MAY NOT BE DIFFERENCED.
+# ---------------------------------------------------------------------------
+cruise_m078_corrected:
+  description: >-
+    Corrected Mach 0.78 cruise geometries and exact VSPAERO results, superseding the
+    pre-audit cruise numbers in Liming's earlier report. Early cruise CL 0.52929708745
+    at 74,500 kg / 10 km; late cruise CL 0.54411480021 at 56,000 kg / 12 km.
+  operating_points:
+    early_cruise: {mach: 0.78, CL: 0.52929708745, altitude_m: 10000, equivalent_lift_mass_kg: 74500,
+                   Re_cref_flight: 2.591e7, note: 'Re DERIVED: S_full 122.6 m2 from mg/(0.5 rho U^2 CL), linear scale 9.94x, cref_full 3.916 m'}
+    late_cruise:  {mach: 0.78, CL: 0.54411480021, altitude_m: 12000, equivalent_lift_mass_kg: 56000,
+                   Re_cref_flight: 1.971e7, note: 'same derivation gives the SAME S_full 122.6 m2 from independent inputs, which is a self-check'}
+  root_bending_limit_Nm: 2926583.3084655334
+  root_bending_limit_note: >-
+    Half-wing. EQUALS the corrected rigid EARLY-cruise value by construction, so early
+    utilisation is 1.0 by definition and not by measurement. The README calls it an
+    illustrative study-level limit, NOT a certified structural allowable.
+  surrogate_caveat: >-
+    The trailing-edge CDi surrogate has moderate cross-validation quality, so the
+    selected TE cases are best exact sampled candidates, NOT proven global optima.
+  geometries:
+    cruise_baseline_corrected:
+      file: dso_reference/7-8/baseline_corrected_cruise.vsp3
+      sha256: bb6ccd911e20b49fac38f8456abc8f2704b6fcf3292620d6eaa5d05adcf64379
+      status: delivered_vsp3_NOT_YET_DERIVED
+      units_source: feet
+      flight_state: both (rigid, and the early conventional optimum)
+      concept: rigid
+      description: >-
+        Corrected rigid cruise wing. Used by EVERY concept at BOTH states, and it is also the EA
+        RLY conventional optimum, whose deflections are all 0.0 -- so early conventional needs n
+        o separate geometry and no separate solve.
+      record: ARG-130, ARG-136
+    cruise_twist_early:
+      file: dso_reference/7-8/twist_early_tw_b02_c01.vsp3
+      sha256: f152028862ea04445b3eb05e33e51751b8b3edf9c29d0d6e3a67d0bf51c7bdaa
+      status: delivered_vsp3_NOT_YET_DERIVED
+      units_source: feet
+      flight_state: early_cruise
+      concept: twist
+      case_id: tw_b02_c01_early_min_cdi
+      CDi: 0.010627212355
+      CDi_reduction_percent: 0.45652794536908103
+      root_bending_Nm: 2923586.7355300975
+      root_bending_utilization: 0.9989760848677132
+      description: >-
+        Best exact sampled feasible distributed-twist case, early cruise.
+      record: ARG-130, ARG-136
+    cruise_te_early:
+      file: dso_reference/7-8/te_early_te_b02_c02.vsp3
+      sha256: 3dcd9a17e5465da0fd8d3124bf676d9e337f83fd588eac44c569859662ae4ef3
+      status: delivered_vsp3_NOT_YET_DERIVED
+      units_source: feet
+      flight_state: early_cruise
+      concept: trailing_edge
+      case_id: te_b02_c02_early_constraint_boundary
+      CDi: 0.010755305982
+      CDi_reduction_percent: -0.743305459075089
+      root_bending_Nm: 2911143.757322035
+      root_bending_utilization: 0.9947243766822432
+      description: >-
+        Best exact sampled feasible trailing-edge case, early cruise. NOTE ITS CDi IS WORSE THAN
+         RIGID: -0.7433%, i.e. a penalty, and Liming states it does not improve CDi.
+      record: ARG-130, ARG-136
+      status_amendment: >-
+        SUPERSEDED 2026-08-12 (ARG-161) by cruise_te_early_b03 below, delivered in the 2026-08-10
+        patch dso_reference/10-8. Two further adaptive batches improved the best feasible
+        early-cruise trailing-edge result from -0.743305459075089% to -0.1212966%. THE VALUE
+        ABOVE IS NOT OVERWRITTEN because it is what the 7 August delivery contains and what
+        dso_reference/7-8/corrected_four_concept_summary.csv still carries; that CSV is a
+        DELIVERED artefact and is not edited. Any early-cruise trailing-edge number read from
+        this block or from that CSV is the SUPERSEDED one. Use cruise_te_early_b03.
+    cruise_te_early_b03:
+      file: dso_reference/10-8/te_early_te_b03_c01.vsp3
+      sha256: 6faef3efa31d73ff97139e99c52feccb9a83df221d8761ee739a271cd289747f
+      status: delivered_vsp3_NOT_YET_DERIVED
+      units_source: feet
+      flight_state: early_cruise
+      concept: trailing_edge
+      case_id: te_b03_c01_early_min_cdi
+      CDi: 0.010688900618
+      CDi_reduction_percent: -0.1212966
+      root_bending_Nm: 2917989.392434543
+      root_bending_utilization: 0.9970634985834398
+      alpha_trim_deg: 0.8278710625545231
+      description: >-
+        CURRENT selected early-cruise trailing-edge case, SUPERSEDING te_b02_c02 above.
+        Delivered 2026-08-10; all five files in dso_reference/10-8 verified against the
+        package's own SHA256SUMS.csv. Still a PENALTY relative to rigid, -0.1213%, but four
+        times smaller than te_b02_c02's -0.7433%.
+      camber_schedule_lives_at: >-
+        TOP-LEVEL KEY te_b03_c01_early_min_cdi. The 2D morph schedule is registered ONCE,
+        there, because geometry/scripts/morph2d.py looks up a TOP-LEVEL candidate key and
+        because a schedule in two places drifts the first time either is edited.
+      record: ARG-161
+    cruise_twist_late:
+      file: dso_reference/7-8/twist_late_tw_b02_c03.vsp3
+      sha256: 704896ca996df741a47df6e84fdd732a650240f7bc0a7786f9358f2fa5f1f9a7
+      status: delivered_vsp3_NOT_YET_DERIVED
+      units_source: feet
+      flight_state: late_cruise
+      concept: twist
+      case_id: tw_b02_c03_late_min_cdi
+      CDi: 0.011108974846
+      CDi_reduction_percent: 1.7666899794732234
+      root_bending_Nm: 2288806.5263749
+      root_bending_utilization: 0.7820746191486232
+      description: >-
+        Best exact sampled feasible distributed-twist case, late cruise.
+      record: ARG-130, ARG-136
+    cruise_te_late:
+      file: dso_reference/7-8/te_late_te_b01_c04.vsp3
+      sha256: 668e26ad9838b3e346d078236c5e6819ca30e9124523e70f350d2867c1756131
+      status: delivered_vsp3_NOT_YET_DERIVED
+      units_source: feet
+      flight_state: late_cruise
+      concept: trailing_edge
+      case_id: te_b01_c04_late_uncertainty_exploration
+      CDi: 0.01096748756
+      CDi_reduction_percent: 3.0178193250946617
+      root_bending_Nm: 2311672.1759064775
+      root_bending_utilization: 0.7898877059879542
+      description: >-
+        Best exact sampled feasible trailing-edge case, late cruise. Largest CDi benefit of any 
+        concept at either state, +3.0178%.
+      record: ARG-130, ARG-136
+    cruise_conventional_late:
+      file: dso_reference/7-8/conventional_late_conv_g02_c07.vsp3
+      sha256: ae193b2969572602f11b62e95805d52652a2b15578be06848da1d2b8ac66885c
+      status: delivered_vsp3_NOT_YET_DERIVED
+      units_source: feet
+      flight_state: late_cruise
+      concept: conventional_hinged
+      case_id: conv_g02_c07
+      CDi: 0.011215374519
+      CDi_reduction_percent: 0.8258298003132113
+      root_bending_Nm: 2233167.1807635985
+      root_bending_utilization: 0.7630629117250358
+      description: >-
+        Best corrected conventional hinged case, late cruise. delta_inboard 1.6636 deg.
+      record: ARG-130, ARG-136
+
+# ============================================================================
+# 2D MORPH SCHEDULES. morph2d.py resolves a TOP-LEVEL key, so these live here
+# rather than nested under cruise_m078_corrected.geometries.
+# ============================================================================
+te_b03_c01_early_min_cdi:
+  description: >-
+    2D morph schedule for the CURRENT selected early-cruise trailing-edge candidate.
+    Delivery record and VSPAERO results are at cruise_m078_corrected.geometries.
+    cruise_te_early_b03. SUPERSEDES te_b02_c02_early_constraint_boundary.
+  record: ARG-161
+  design_controls:
+    note: >-
+      OPTIMISER VARIABLES, PROVENANCE ONLY, NOT FOR INTERPOLATION. Linear interpolation
+      of these five controls DOES NOT reproduce the delivered per-station table: at eta
+      0.6125 they give 0.002773 against the delivered 0.005318, a factor of 1.92. A
+      blending expression in Liming's report accounts for the difference and is NOT
+      reconstructed here. Registering these as camber_schedule would silently morph a
+      DIFFERENT geometry from the one he ran, under a gate that would still pass.
+    control_etas: [0.68, 0.76, 0.84, 0.92, 1]
+    control_values_over_c: [0.017748444517915143, -0.003680882329801953, 0.001744719697519874, -0.021285836070273165, -0.0003584052591690673]
+    seed_type: surrogate_batch_03
+  camber_schedule:
+    source: dso_reference/10-8/te_b03_c01_section_schedule.csv
+    source_sha256: ca74ba9ad6096e020130087847363246e82594e4ece7323401ba06f579431704
+    status: transcribed_from_dso_delivery
+    basis: REALISED per-station table, column command_over_c. Nodes reproduce exactly.
+    record: ARG-161
+    control_etas:
+    - 0.6124999333333111
+    - 0.6449999233333078
+    - 0.6774999133333045
+    - 0.7099999033333012
+    - 0.7454999151666385
+    - 0.7809999269999758
+    - 0.8164999388333131
+    - 0.8519999506666504
+    - 0.8819999606666536
+    - 0.9259999753333252
+    - 0.9699999899999967
+    - 1.0
+    control_amplitudes_over_c:
+    - 0.005317775998508047
+    - 0.014549419924297983
+    - 0.017732852109618807
+    - 0.010968107983107286
+    - -0.0018240967261599326
+    - -0.0027555898035374077
+    - 0.0006152541375708978
+    - 0.00034562429927632713
+    - -0.010633467380222406
+    - -0.021173591607709555
+    - -0.013265099141741999
+    - -0.0003584052591690673
+    # REFLEX. Half this schedule is trailing-edge UP. Every 2D section generated in this
+    # project before ARG-161 was positive droop, so the negative half was never tested.
+    A_min_over_c: -0.021173591607709555
+    A_max_over_c: 0.017732852109618807
+    x_h_over_c: 0.62
+
+resp_curve:
+  description: >-
+    NUMERICAL VEHICLE, NOT A DESIGN. Ten camber amplitudes spanning the union of the
+    cruise candidate's REFLEX range and the low-speed candidates' DROOP range, run to
+    build dcl(A/c) and dcd(A/c) as FUNCTIONS. Any spanwise schedule then maps onto the
+    curve without new solves. NO WING HAS THIS SHAPE and none should be built from it.
+  record: ARG-161
+  # ---- THE eta COLUMN IS AN INDEX, NOT A SPAN STATION. ------------------------------
+  # morph2d resolves A/c by interpolating on eta, so a response curve has to borrow that
+  # axis. eta = k/10 selects the k-th amplitude and MEANS NOTHING SPANWISE. Reading
+  # resp_curve eta 0.30 as '30% semi-span' is a frame error; it is amplitude index 3.
+  # Interpolating BETWEEN indices is meaningless and the values are deliberately not
+  # monotone in index order for the reflex half.
+  # ---- WHY THESE TEN AND NOT THE PLAN'S LIST -----------------------------------------
+  # Amended from the approved plan (2026-08-12). The plan listed the accidental
+  # amplitudes of existing sections; these are chosen so that THREE EXACT ANTISYMMETRIC
+  # PAIRS exist, +/-0.005318, +/-0.010633 and +/-0.017733. Thin-aerofoil theory is
+  # exactly antisymmetric in A, so a matched pair turns 'is the response linear' from a
+  # curve-fit judgement into a DIFFERENCE OF TWO MEASUREMENTS with a known answer of
+  # zero. The accidental list could not do that, and it is the same case count.
+  camber_schedule:
+    status: synthetic_response_curve
+    basis: designed amplitude sweep; eta is an INDEX (see comment above)
+    record: ARG-161
+    antisymmetric_pairs_over_c: [0.005317775998508047, 0.010633467380222406, 0.017732852109618807]
+    null_amplitude_over_c: 0.000218   # geometrically baseline to 0.02%c; predicted dcl 0.0029
+    A_min_over_c: -0.021173591607709555   # te_b03_c01's delivered max REFLEX
+    A_max_over_c: 0.034968   # covers mcv2_eta080, the largest droop ever run here
+    x_h_over_c: 0.62
+    control_etas:
+    - 0
+    - 0.1
+    - 0.2
+    - 0.3
+    - 0.4
+    - 0.5
+    - 0.6
+    - 0.7
+    - 0.8
+    - 0.9
+    control_amplitudes_over_c:
+    - -0.021173591607709555
+    - -0.017732852109618807
+    - -0.010633467380222406
+    - -0.005317775998508047
+    - 0.000218
+    - 0.005317775998508047
+    - 0.010633467380222406
+    - 0.017732852109618807
+    - 0.025978
+    - 0.034968
+  sections_2d:
+    generator: geometry/scripts/morph2d.py
+    baseline: geometry/derived/eet_section/eet_cruise_faired.dat
+    nulls_passed: >-
+      (1) morph2d reproduces the registered A/c at every index, err 0.0e+00, with a
+      negative control confirming the check can fail. (2) GEOMETRIC ANTISYMMETRY: for
+      each matched pair, max |z(-A) + z(+A) - 2 z(baseline)| = 1.388e-17 c, machine
+      epsilon, again with a firing negative control. (3) thickness is preserved exactly,
+      t/c max change +0.00e+00 on all ten, which is what the camber law promises.
+    files:
+      - {A_over_c: -0.021173591607709555, file: geometry/derived/eet_section/morphed/resp_curve_eta0p00.dat, sha256: 61441c231c737e31be144e39c8a45f697cfec67b543739694b0be5dbb43fac7c}
+      - {A_over_c: -0.017732852109618807, file: geometry/derived/eet_section/morphed/resp_curve_eta0p10.dat, sha256: 6317b42c44957dbea3c8ade788aa67751d331b3fefab9eb05ef606a4f05c16d2}
+      - {A_over_c: -0.010633467380222406, file: geometry/derived/eet_section/morphed/resp_curve_eta0p20.dat, sha256: 37385fb94e695efb152a327027341d7702f711aa485803e4c848112fc4c65b3a}
+      - {A_over_c: -0.005317775998508047, file: geometry/derived/eet_section/morphed/resp_curve_eta0p30.dat, sha256: c58d26471e6e59b5ea4996505e504a1b73b93845d76e1459199ccefa70d11bdf}
+      - {A_over_c: 0.000218, file: geometry/derived/eet_section/morphed/resp_curve_eta0p40.dat, sha256: b8fb0e70692c7ee6f1d0195078419b08e2059f23aa7572610c027363fdb2a0d4}
+      - {A_over_c: 0.005317775998508047, file: geometry/derived/eet_section/morphed/resp_curve_eta0p50.dat, sha256: d53ffa023c871143115d540d0db3a790550ca9fa0e576ad666d513dad1e20e69}
+      - {A_over_c: 0.010633467380222406, file: geometry/derived/eet_section/morphed/resp_curve_eta0p60.dat, sha256: 562a3ccaa836fc2e0437cd936f8ed53800a5ee13c88d6565288ae1a4082bd8c8}
+      - {A_over_c: 0.017732852109618807, file: geometry/derived/eet_section/morphed/resp_curve_eta0p70.dat, sha256: f62bd8498f82dc54625d64696c8911e9dac57cd68a372f291207b271649a455b}
+      - {A_over_c: 0.025978, file: geometry/derived/eet_section/morphed/resp_curve_eta0p80.dat, sha256: 9d0afa876ef2cc3761327b8c695a77742ee7d9568d60e9a68a099ff93ed579d2}
+      - {A_over_c: 0.034968, file: geometry/derived/eet_section/morphed/resp_curve_eta0p90.dat, sha256: 504d54fd868b1334f026d0da48e69a2cacaa186bcbbee9b2a45caca8d5290755}

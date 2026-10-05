@@ -1,0 +1,48 @@
+FoamFile { version 2.0; format ascii; class dictionary; object controlDict; }
+application simpleFoam;   // OpenFOAM-org 7
+startFrom latestTime; startTime 0; stopAt endTime; endTime 4000;
+deltaT 1; writeControl timeStep; writeInterval 1000; purgeWrite 2;
+writeFormat binary; writePrecision 9; timeFormat general; runTimeModifiable true;
+functions
+{
+    forces
+    {
+        type forceCoeffs; libs ("libforces.so");
+        writeControl timeStep; writeInterval 10;
+        patches (airfoil); rho rhoInf; rhoInf 1.225;
+        CofR (0.0851 0 0);            // quarter chord (c=0.3404, LE at x=0); rescale with chord
+        liftDir (0 0 1); dragDir (1 0 0); pitchAxis (0 1 0);   // trim script rotates lift/drag dirs with alpha
+        magUInf 34.0;                 // per condition (CR; WT: 40.8)
+        lRef 0.3404; Aref 0.3404;     // PER UNIT SPAN: chord x 1 m extrusion; rescale with chord
+    }
+    yPlus
+    {
+        type yPlus; libs ("libfieldFunctionObjects.so");
+        writeControl writeTime;       // run-card y+ min/mean/max over airfoil patch
+    }
+    forcesAll   // pressure/viscous split for the run card
+    {
+        type forces; libs ("libforces.so");
+        writeControl writeTime;
+        patches (airfoil); rho rhoInf; rhoInf 1.225;
+        CofR (0.0851 0 0);            // rescale with chord
+    }
+    wallShearStress   // D014 standing surface output (Cf = |tau_w|/q_inf in post)
+    {
+        type wallShearStress; libs ("libfieldFunctionObjects.so");
+        patches (airfoil);
+        writeControl writeTime;
+    }
+    surfaceFields   // D014: patch export feeding the D011 Emmi-schema post-processing;
+    {               // last write time = converged state; yPlus above runs first
+        type surfaces; libs ("libsampling.so");
+        writeControl writeTime;
+        surfaceFormat raw;
+        interpolationScheme cell;
+        fields (p wallShearStress yPlus);
+        surfaces
+        (
+            airfoil { type patch; patches (airfoil); interpolate false; }
+        );
+    }
+}

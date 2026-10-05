@@ -1,0 +1,77 @@
+\section{Quantities of interest}
+\label{sec:qoi}
+
+\textbf{Purpose.} This section is the contents of the results that follow, as a table. It names
+every quantity the campaign reports, the frame each one carries, how much of the campaign it
+covers, and whether the low-order study produces it at all, which is what decides where a
+comparison can be made and where the RANS stands alone.
+\subsection{Quantities and their frames}
+\label{sec:qv:qoi}
+\label{sec:cond:frame}
+\textbf{Frame.} Every coefficient here is on the DSO basis. The RANS cases solve a half wing, so
+$A_\mathrm{ref} = \num{0.620462}$~m$^2$ and $l_\mathrm{ref} = \num{0.393957}$~m. Twice
+$A_\mathrm{ref}$ matches the DSO $S_\mathrm{ref}$ to $3.2\times10^{-6}$ relative. All 90 converged
+cases carry that one frame, uniform within each condition. Differences are formed inside a single
+condition, never across two.
+
+\textbf{Definitions.} Table~\ref{tab:qv:qoi} is the register. One drag count is $10^{-4}$ in a
+force coefficient. Coverage is stated per quantity, because the force set and the surface set
+were harvested on different days: forces cover 90 cases and 18 trims, surface data all 18 trims.
+The last two columns say whether the low-order study produces the quantity, and where in this
+report it is compared.
+
+\begin{table}[htbp]
+  \centering
+  \scriptsize
+  \caption{Quantities of interest, their definitions and their frames. DSO basis throughout:
+  ``DSO half'' is $A_\mathrm{ref} = 0.620462$~m$^2$ with $l_\mathrm{ref} = 0.393957$~m, half of
+  $S_\mathrm{ref} = 1.24092$~m$^2$ to $3.2\times10^{-6}$. $q$ is the freestream dynamic pressure,
+  kinematic at Condition CR and absolute at cruise. Surface quantities carry no reference area.
+  ``VLM'' says what the low-order study produces for the quantity and ``Compared'' whether this
+  report sets the two side by side. Source: \texttt{data/rans\_forces\_current.json} and \texttt{data/qoi\_methods.md}.}
+  \label{tab:qv:qoi}
+  \setlength{\tabcolsep}{3pt}
+  \begin{tabular}{lllllll}
+    \toprule
+    Quantity & Definition & Frame & RANS coverage & VLM & Compared & Section \\
+    \midrule
+    $C_L$, $C_D$ & \texttt{forceCoeffs} on the \texttt{wing} patch & DSO half & 90 cases & $C_{Dtot}$, not compared & no & \ref{sec:perf:cr}, \ref{sec:cruise} \\
+    $\Delta C_D$ & candidate minus baseline at fixed $C_L$ & DSO half & 18 trims & induced only & ordering & \ref{sec:qv:counts} \\
+    $C_M$ & \texttt{forceCoeffs} about $(1.34,0,0)$~m & DSO half, $l_\mathrm{ref}$ & per case & other frame & no & \\
+    $C_{D,p}$, $C_{D,v}$ & \texttt{forces}, same $\hat{d}$ and same $q$ & DSO half & both conditions & no & no & \ref{sec:qv:qoi} \\
+    $L/D$ & $C_L/C_D$ at the trim point & area cancels & 18 trims & no & no & \ref{sec:perf:cr}, \ref{sec:cruise} \\
+    Trim $\alpha$ & bracket, slope fit, then a solved case & solver \texttt{dragDir} & 18 trims & yes & yes & \ref{sec:qv:lift} \\
+    $c_p$ & $(p - p_\infty)/q$, formed in the solver & $q$ per condition & 90 bands & no & no & \ref{sec:app:sections} \\
+    $c_f$, $c_{f,s}$ & $|\tau_w|/q$, and its signed form & per-file $q$ & 90 bands & no & no & \ref{sec:app:sections} \\
+    $y^+$ & \texttt{yPlus} object and surface field & cell centre & per case & no & no & \ref{sec:setup} \\
+    Spanwise load & $c_l c/C_\mathrm{ref}$, pressure only & $C_\mathrm{ref}$ DSO & 18 trims, 78 stations & 69 strips & yes & \ref{sec:qv:span} \\
+    $C_{D,i}$, $e$ & Trefftz integral of $(v'^2 + w'^2)$ & half-wing $A_\mathrm{ref}$ & 4 planes, 6 trims & near and far & yes & \ref{sec:cr:spaneff} \\
+    $M_h$ & hinge moment about $x_h/c = 0.62$ & local chord & 18 trims & not computed & no & \ref{sec:hinge} \\
+    $M_x$ & root bending, solver moment at $y = 0$ & N\,m & 18 trims & yes & yes & \ref{sec:rbm} \\
+    \bottomrule
+  \end{tabular}
+\end{table}
+
+\textbf{Drag split.} The split comes from a \texttt{forces} object on the same drag direction and
+the same $q$ as the coefficients. The test is closure against the solver's own $C_D$. On
+\texttt{SWB\_a1p90} the parts give $91.218 + 104.098 = 195.316$~ct against 195.317~ct. At cruise
+the closure holds once $q$ carries $\rho$: \texttt{CMPB\_a1p20} gives
+$131.534 + 51.917 = 183.451$~ct against 183.451~ct.
+
+\textbf{Wall quantities.} $c_p$ is formed inside the solver, so its normalisation travels with the
+file. That $q$ is 578~m$^2$/s$^2$ at Condition CR, 11292.8~Pa at early cruise and 8257.37~Pa at late
+cruise, each verified
+against its own independently known value. Skin friction is carried twice, as a magnitude for
+level and as a signed freestream-aligned component for direction. The sign multiplier is measured
+on inboard mid-chord faces whose attachment is known, and came out 100~per~cent one sign on all
+eighteen trims. Separation is therefore read from a sign rather than a threshold. Median
+upper-surface $y^+$ is 0.28 to 0.30 at Condition CR and 37 to 42 at both cruise points.
+
+\textbf{Spanwise load and induced drag.} Sectional load is taken from the wing surface at 78
+stations, pressure only. The test is again a closure: the strips integrate back to the case's own
+$C_L$ as $C_L = 2\int c_l c\,\mathrm{d}y/S_\mathrm{ref}$, with the explicit half-wing factor of
+two. That closure reads 4.65 to 4.91~per~cent low across the six Condition~CR trims and 4.85 to
+5.14~per~cent low across the twelve cruise trims, the gap being the root and tip outside the sampled window $\eta = 0.025$ to $0.986$. Induced drag is
+defined as a Trefftz integral on four planes per case at $x_{TE} + fc$, $f = 0.05$ to $0.75$. The
+induced drag those planes give, and the span efficiency it implies, are reported in
+Section~\ref{sec:cr:spaneff}.

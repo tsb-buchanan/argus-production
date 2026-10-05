@@ -1,0 +1,5 @@
+/* ARGUS airfoil2d, OpenFOAM-org 7: surfaceFeatures utility (NOT ESI surfaceFeatureExtract) */
+FoamFile { version 2.0; format ascii; class dictionary; object surfaceFeaturesDict; }
+surfaces ("airfoil.stl");
+includedAngle 150;          // captures blunt-TE edges
+subsetFeatures { nonManifoldEdges no; openEdges yes; }

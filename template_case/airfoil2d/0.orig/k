@@ -1,0 +1,13 @@
+/* Tu=0.1% assumed (TODO decision if tunnel Tu differs). k=1.5*(U*Tu)^2. CR: 1.73e-3; WT: 2.50e-3 */
+FoamFile { version 2.0; format ascii; class volScalarField; object k; }
+dimensions [0 2 -2 0 0 0 0];
+internalField uniform 1.73e-3;
+boundaryField
+{
+    inlet    { type fixedValue; value $internalField; }
+    outlet   { type inletOutlet; inletValue $internalField; value $internalField; }
+    farfield { type fixedValue; value $internalField; }
+    front    { type empty; }
+    back     { type empty; }
+    airfoil  { type fixedValue; value uniform 1e-12; }   // low-Re wall, y+~1
+}

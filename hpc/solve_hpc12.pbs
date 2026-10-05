@@ -1,0 +1,428 @@
+#!/bin/bash
+#PBS -N argus-solve
+#PBS -q fpt-medium
+#PBS -l nodes=4:ppn=32:typej,walltime=72:00:00
+#PBS -j oe
+#
+# solve_hpc12.pbs -- ARGUS OF-12 solve leg on HPC12. PBS port of slurm_v5/solve_v5.slurm.
+#
+# WHY THIS EXISTS. DelftBlue's BeeGFS has cost this campaign whole legs to transient I/O
+# faults, and its 24 h walltime forced restarts that lost up to writeInterval iterations
+# each time. HPC12 offers 72 h, which puts most cases in ONE leg and takes the restart
+# machinery off the critical path entirely.
+#
+# 192 RANKS, MATCHING DELFTBLUE EXACTLY. Not for convenience: the decomposition is baked
+# into system/decomposeParDict as hierarchical (8 3 8) = 192, and a result from a different
+# rank count is a result on a different partition. Keeping 192 means the two machines'
+# answers are comparable without an argument about decomposition.
+#
+# WHY typen (p16) RATHER THAN 6 x typej. A typen node is 192 cores and 377 GB in ONE box,
+# so the whole decomposition runs inside a single node and MPI never touches the network.
+# The measured node inventory, read from pbsnodes rather than assumed:
+#     typei p8/p9   32 nodes   20 cores  125 GB   asm-medium, fpt-small
+#     typej p12     36 nodes   32 cores   93 GB   fpt-medium, fpt-large
+#     typel p14      8 nodes   32 cores  187 GB   asm-small      (NO ACCESS)
+#     typem p15     12 nodes   96 cores  251 GB   fpt-large
+#     typen p16      6 nodes  192 cores  377 GB   fpt-large
+#     typeo p17      2 nodes  192 cores  755 GB   asm-large      (NO ACCESS)
+# The asm-* queues are gated on group lr-asm, which this account does not hold; fpt-* are
+# gated on lr-fpt, which it does. So typel and typeo are off the table regardless of how
+# free they look.
+#
+# OVERRIDE AT SUBMIT TIME rather than editing this line, e.g. to fall back to typej when
+# the two typen nodes are busy:
+#     qsub -l nodes=6:ppn=32:typej,walltime=72:00:00 ...
+# The rank count comes from decomposeParDict either way and is asserted against the
+# allocation below, so a mismatched -l is refused rather than silently run at the wrong
+# width.
+#
+# ENV IN:  ARGUS_CASE     required, absolute path to the case
+#          ARGUS_ENDTIME  optional; DEFAULTS TO THE CASE'S OWN endTime, which is 4500
+#                         incompressible and 10000 compressible. Set it only to override.
+#          ARGUS_LEG      default 1
+#          ARGUS_MAXLEG   default 4
+#          ARGUS_SCRIPT   absolute path to THIS file, required for requeue
+#
+# WHAT IS PORTED AND WHY, from the DelftBlue script's hard-won guards:
+#   - the start is CLASSIFIED BY READING THE CASE, never from ARGUS_LEG
+#   - checkpoint times are enumerated as the UNION ACROSS ALL RANKS, because a rank that
+#     rank 0 never wrote is invisible to a rank-0 scan and kills the run with
+#     "Start time is not the same for all processors"
+#   - every rank must agree on latestTime, asserted directly
+#   - a failed launch is CLASSIFIED before it is retried: a FOAM FATAL is deterministic
+#     and retrying it only overwrites the log that carries the diagnosis
+#   - convergence is the DRIFT OF THE MEAN, not peak-to-peak: a converged SIMPLE solve
+#     limit-cycles forever, so peak-to-peak has a floor unrelated to convergence
+
+set -uo pipefail
+
+CASE="${ARGUS_CASE:?ARGUS_CASE not set}"
+# ENDTIME IS RESOLVED AFTER `cd`, FROM THE CASE, because a default of 4500 imposed here
+# is wrong for half the campaign: the incompressible cases end at 4500 and the
+# compressible ones at 10000. The old line was `ENDTIME="${ARGUS_ENDTIME:-4500}"`, and
+# with the sed below that SILENTLY TRUNCATED every compressible run to 45% of its
+# intended length while reporting nothing. An explicit ARGUS_ENDTIME still wins.
+# THE LEG NUMBER IS DERIVED FROM THE CASE WHEN NOT GIVEN, never defaulted to 1.
+# ARGUS_LEG is set only by the SELF-REQUEUE path below, so any FRESH submission of a case
+# that had already run took leg 1 and TRUNCATED log/leg1/foamRun.log via `> $SOLVERLOG`.
+# That destroyed the 6000-iteration solver log of CMPC_a1p20, the compressible reference,
+# when the watcher resubmitted it. The results survived, living in postProcessing and
+# processor*; the run's stdout provenance did not. Resolved after `cd`, where log/ is
+# readable.
+MAXLEG="${ARGUS_MAXLEG:-4}"
+
+say() { echo "[$(date +%H:%M:%S)] $*"; }
+fail() { echo "REFUSED: $*" >&2; exit 2; }
+
+cd "$CASE" || fail "cannot cd to $CASE"
+
+# A FINISHED CASE IS NOT RESTARTED, AND THE JOB REFUSES RATHER THAN TRUSTING THE SUBMITTER
+# TO FILTER (GEO-102: a gate on the output cannot see a wrong input). fill_slots.sh skips a
+# case carrying .converged, but nothing ever wrote that marker, so the exclusion could
+# never fire. Both halves are now fixed, and this second guard sits HERE because the case
+# is in hand and the decision cannot be got wrong.
+if [ -f ".converged" ]; then
+    echo "[$(date +%H:%M:%S)] REFUSING to restart $(basename "$CASE"): .converged present"
+    sed 's/^/    /' .converged
+    echo "[$(date +%H:%M:%S)] Remove the marker deliberately to extend this case."
+    exit 0
+fi
+
+if [ -n "${ARGUS_LEG:-}" ]; then
+    LEG="$ARGUS_LEG"
+else
+    _hi=$(ls -d log/leg[0-9]* 2>/dev/null | sed 's#.*/leg##' | sort -n | tail -1)
+    LEG=$(( ${_hi:-0} + 1 ))
+fi
+mkdir -p "log/leg${LEG}"
+# endTime is NOT in this banner: it is resolved from the case further down, and naming it
+# here referenced an unbound variable under `set -u`, which killed the leg at line 72.
+say "=== $(basename "$CASE") leg $LEG/$MAXLEG on $(hostname) ==="
+
+# ---------------------------------------------------------------- rank count, DERIVED
+# NRANK WAS A HARDCODED 192 AND THAT IS THE VOUCHED-SUCCESS SHAPE (GEO-080): the script
+# ASSERTED a width instead of reading the one the case actually carries. Edit
+# decomposeParDict to 96 and the old script would still decompose to 192, still launch
+# 192 ranks, and still print "192" in every message, because nothing ever consulted the
+# dictionary. The authority is decomposeParDict; the allocation must MATCH it, not the
+# other way round.
+NRANK=$(sed -n 's/^ *numberOfSubdomains *\([0-9]\+\) *;.*/\1/p' system/decomposeParDict 2>/dev/null | head -1)
+[ -n "${NRANK:-}" ] || fail "cannot read numberOfSubdomains from system/decomposeParDict"
+case "$NRANK" in ''|*[!0-9]*) fail "numberOfSubdomains parsed as '$NRANK', not a number" ;; esac
+say "NRANK=$NRANK (read from system/decomposeParDict)"
+
+# THE ALLOCATION IS CHECKED AGAINST IT, and a shortfall is refused rather than run narrow.
+# PBS hands the slot list in $PBS_NODEFILE, one line per slot. An interactive run has no
+# nodefile, so that case is named rather than silently skipped.
+if [ -n "${PBS_NODEFILE:-}" ] && [ -r "${PBS_NODEFILE:-}" ]; then
+    NSLOT=$(wc -l < "$PBS_NODEFILE")
+    NHOST=$(sort -u "$PBS_NODEFILE" | wc -l)
+    say "allocation: $NSLOT slots across $NHOST host(s)"
+    [ "$NSLOT" -ge "$NRANK" ] \
+        || fail "allocation gives $NSLOT slots but the case decomposes to $NRANK; fix the -l line"
+    [ "$NSLOT" -eq "$NRANK" ] \
+        || say "NOTE: $NSLOT slots for $NRANK ranks; the surplus $((NSLOT - NRANK)) will idle"
+else
+    say "NOTE: no PBS_NODEFILE (interactive?); rank/allocation agreement NOT checked"
+fi
+
+# ---------------------------------------------------------------- toolchain
+module load devtoolset/11     2>/dev/null || source /opt/rh/devtoolset-11/enable 2>/dev/null
+module load mpi/openmpi-4.1.2 2>/dev/null
+OF_BASHRC="${ARGUS_OF_BASHRC:-$HOME/OpenFOAM/OpenFOAM-12/etc/bashrc}"
+[ -f "$OF_BASHRC" ] || fail "OpenFOAM-12 not found at $OF_BASHRC (build it first)"
+# `set -u` IS SUSPENDED AROUND THIS SOURCE, DELIBERATELY. OpenFOAM's etc/bashrc reads
+# $ZSH_NAME, unset under bash: harmless normally, FATAL under nounset. It killed the
+# OF-12 build job before this script had ever run, so the same fault is fixed here
+# pre-emptively rather than rediscovered on a 192-rank job.
+set +u
+# shellcheck disable=SC1090
+source "$OF_BASHRC"
+set -u
+# DERIVED FROM STATE. `source` returns 0 even when the environment did not take.
+command -v foamRun >/dev/null || fail "foamRun not on PATH after sourcing $OF_BASHRC"
+say "foamRun: $(command -v foamRun)"
+say "WM_OPTIONS=$WM_OPTIONS"
+
+# ---------------------------------------------------------------- 0. postpro gate
+# THE CASE MUST WRITE WHAT THE ANALYSIS CONSUMES, checked BEFORE burning a leg. A gate on
+# the output cannot see a wrong input (GEO-102).
+GATE="${ARGUS_GATE:-$HOME/argus_hpc12/assert_case_postpro.py}"
+if [ -f "$GATE" ]; then
+    python3 "$GATE" --before "$CASE" 2>&1 | sed 's/^/  /' || fail "post-processing gate refused"
+else
+    say "NOTE: $GATE absent, post-processing gate NOT run"
+fi
+
+# ---------------------------------------------------------------- 1. write probe
+# CHEAP INSURANCE, AND THE REASON IS SPECIFIC. HPC12 scratch deletes anything older than
+# 50 days with no recovery, and a filesystem that cannot write is one that will lose a
+# checkpoint silently. 8 fresh files, written, synced and read back.
+probe_dir="./.wprobe.$$"; mkdir -p "$probe_dir"
+pok=0; pbad=0
+for i in 1 2 3 4 5 6 7 8; do
+    if dd if=/dev/urandom of="$probe_dir/w$i" bs=64k count=1 status=none 2>/dev/null \
+       && sync && [ "$(stat -c%s "$probe_dir/w$i" 2>/dev/null)" = "65536" ] \
+       && cat "$probe_dir/w$i" > /dev/null 2>&1; then pok=$((pok+1)); else pbad=$((pbad+1)); fi
+done
+rm -rf "$probe_dir"
+say "write probe: $pok ok, $pbad bad of 8"
+[ "$pok" -ge 7 ] || fail "filesystem failed $pbad of 8 write probes; not judging or writing anything"
+
+# ---------------------------------------------------------------- 2. classify the start
+# READ THE CASE, never trust ARGUS_LEG. A leg number is an intention; the disk is a fact.
+REQ=$(ls 0.orig 2>/dev/null | grep -v uniform)
+[ -n "$REQ" ] || fail "0.orig is empty or missing; the solved-field set cannot be established"
+say "required fields (from 0.orig): $(echo "$REQ" | tr '\n' ' ')"
+
+MODE="cold"; PLT=""
+if [ -d processor0 ]; then
+    # THE UNION ACROSS ALL RANKS, not processor0's list. Measured on DelftBlue: a
+    # checkpoint present on 47 of 192 ranks and ABSENT FROM RANK 0 was invisible to a
+    # rank-0 scan, passed the completeness check, and then killed foamRun outright with
+    # "Start time is not the same for all processors".
+    ALLT=$(ls -d processor*/[0-9]* 2>/dev/null | sed 's#.*/##' \
+           | grep -E '^[0-9]+$' | grep -vx '0' | sort -run)
+    GOOD=""; TORN=""
+    for t in $ALLT; do
+        w=0; n=0
+        for p in processor*; do
+            ok=1
+            for f in $REQ; do
+                head -c 64 "$p/$t/$f" > /dev/null 2>&1 || { ok=0; break; }
+            done
+            [ "$ok" -eq 1 ] && w=$((w+1)) || n=$((n+1))
+        done
+        say "  checkpoint t=$t: whole=$w torn=$n of $NRANK"
+        if [ "$n" -eq 0 ] && [ "$w" -eq "$NRANK" ]; then GOOD="$t"; break; fi
+        TORN="$TORN $t"
+    done
+    if [ -n "$GOOD" ]; then
+        for t in $TORN; do
+            k=0
+            for p in processor*; do [ -d "$p/$t" ] && { rm -rf "$p/$t"; k=$((k+1)); }; done
+            [ "$k" -gt 0 ] && say "  cleared torn t=$t from $k ranks ($GOOD survives)"
+        done
+        # ASSERT THE CONDITION foamRun ITSELF ENFORCES rather than inferring it.
+        LT=$(for p in processor*; do
+                 ls -d "$p"/[0-9]* 2>/dev/null | sed 's#.*/##' | sort -g | tail -1
+             done | sort -u | tr '\n' ' ')
+        [ "$(echo "$LT" | wc -w)" -eq 1 ] \
+            || fail "ranks disagree on latestTime after cleaning: $LT"
+        say "  latestTime agreement: all $NRANK ranks resolve to t=$LT"
+        MODE="restart"; PLT="$GOOD"
+        say "RESTART leg: resuming from t=$PLT"
+    elif [ -n "$ALLT" ]; then
+        fail "no complete checkpoint exists; every time directory is torn. Nothing deleted."
+    fi
+fi
+[ "$MODE" = "cold" ] && say "COLD leg: no decomposed field to continue from"
+
+# ---- endTime: THE CASE'S OWN, unless one was named explicitly.
+CASE_END=$(sed -n 's/^endTime *\([0-9]\+\) *;.*/\1/p' system/controlDict | head -1)
+[ -n "${CASE_END:-}" ] || fail "cannot read endTime from system/controlDict"
+ENDTIME="${ARGUS_ENDTIME:-$CASE_END}"
+if [ "$ENDTIME" != "$CASE_END" ]; then
+    say "endTime: case says $CASE_END, ARGUS_ENDTIME overrides to $ENDTIME"
+else
+    say "endTime: $ENDTIME (from the case)"
+fi
+
+# THE CHECKPOINT CADENCE MUST DIVIDE endTime, or the converged state is never written.
+# writeControl is timeStep, so a write happens when the iteration index is a multiple of
+# writeInterval. 4500 % 1000 = 500: at 1000 a 4500-iteration run last writes at 4000 and
+# the one time directory the campaign exists to produce does not exist. Checked here
+# because the endTime can be overridden above, so a pairing that was fine in the case
+# can be broken by the submission.
+WI=$(sed -n 's/^writeInterval *\([0-9]\+\) *;.*/\1/p' system/controlDict | head -1)
+if [ -n "${WI:-}" ] && [ "$WI" -gt 0 ]; then
+    if [ $((ENDTIME % WI)) -ne 0 ]; then
+        fail "endTime $ENDTIME is not a multiple of writeInterval $WI; the final state would never be written"
+    fi
+    say "checkpoints: $((ENDTIME / WI)) writes at every $WI iterations"
+fi
+
+sed -i "s/^endTime .*/endTime         ${ENDTIME};/" system/controlDict
+grep -q "^startFrom *latestTime" system/controlDict \
+    || fail "controlDict is not startFrom latestTime; a restart would silently begin at 0"
+
+# ---------------------------------------------------------------- 3. decompose if cold
+if [ "$MODE" = "cold" ]; then
+    # 0.orig -> 0. DROPPED IN THE PORT AND CAUGHT BY DIFFING AGAINST THE ORIGINAL, which
+    # carries it at solve_v5.slurm:324. Without it decomposePar has no time directory to
+    # decompose and the leg dies on a case that is otherwise perfectly staged. Guarded by
+    # `[ -d 0 ]` so a restart never overwrites a solved field with its initial condition.
+    if [ ! -d 0 ]; then
+        cp -r 0.orig 0 || fail "cannot create 0 from 0.orig"
+        say "0.orig -> 0 ($(ls 0 | wc -l) fields)"
+    else
+        say "0 already exists, left alone"
+    fi
+    # ASSERT IT, rather than assume the copy took: every field 0.orig declares must be
+    # readable in 0, because decomposePar fails obscurely on a partial set.
+    for f in $REQ; do
+        head -c 64 "0/$f" > /dev/null 2>&1 || fail "0/$f missing or unreadable after staging"
+    done
+    say "all $(echo "$REQ" | wc -w) required fields present in 0/"
+
+    say "decomposePar"
+    decomposePar -force > "log/leg${LEG}/decomposePar.log" 2>&1 \
+        || { tail -20 "log/leg${LEG}/decomposePar.log" | sed 's/^/    /'; fail "decomposePar failed"; }
+    nd=$(ls -d processor* 2>/dev/null | wc -l)
+    [ "$nd" -eq "$NRANK" ] || fail "decomposePar produced $nd processor dirs, expected $NRANK"
+    say "decomposed onto $nd ranks"
+    if [ -f "$(dirname "$0")/../system/potentialFoamDict" ] || grep -q potentialFoam system/controlDict 2>/dev/null; then :; fi
+    say "potentialFoam"
+    mpirun -np "$NRANK" -machinefile "$PBS_NODEFILE" potentialFoam -parallel \
+        > "log/leg${LEG}/potentialFoam.log" 2>&1 || say "  potentialFoam returned non-zero (continuing; it is an initialiser)"
+fi
+
+# ---------------------------------------------------------------- 4. solve
+SOLVERLOG="log/leg${LEG}/foamRun.log"
+
+classify_failure() {
+    local log="$1"
+    [ -f "$log" ] || { echo "NOLOG"; return; }
+    grep -q "FOAM FATAL" "$log" 2>/dev/null       && { echo "FATAL";    return; }
+    grep -q "^Time = " "$log" 2>/dev/null          && { echo "RAN";      return; }
+    grep -q "Starting time loop" "$log" 2>/dev/null && { echo "COMPLETE"; return; }
+    echo "LAUNCH"
+}
+
+diagnose_fatal() {
+    local log="$1"
+    say "---- DETERMINISTIC FAULT, NOT RETRYING ----"
+    sed -n '/--> FOAM FATAL/,/^$/p' "$log" 2>/dev/null | head -20 | sed 's/^/    /'
+    if grep -q "Start time is not the same for all processors" "$log" 2>/dev/null; then
+        say "DIAGNOSIS: ranks disagree on latestTime. Per-rank latest, counted:"
+        for p in processor*; do
+            ls -d "$p"/[0-9]* 2>/dev/null | sed 's#.*/##' | sort -g | tail -1
+        done | sort -n | uniq -c | sed 's/^/      /'
+    elif grep -qi "Cannot find file" "$log" 2>/dev/null; then
+        say "DIAGNOSIS: a required file is missing or unreadable, not a transient fault."
+        grep -m3 -i "Cannot find file" "$log" | sed 's/^/      /'
+    fi
+    say "-------------------------------------------"
+}
+
+# A RETRY IS ONLY EVER RIGHT FOR A FAILURE WHOSE OUTCOME CAN DIFFER NEXT TIME. Three
+# attempts here rather than DelftBlue's six: the fault being defended against there was a
+# PMIx per-rank startup race specific to that machine, and it may simply not exist here.
+FR_RC=1
+for attempt in 1 2 3; do
+    [ "$attempt" -gt 1 ] && { say "foamRun attempt $attempt of 3, backing off 60s"; sleep 60
+                              cp "$SOLVERLOG" "log/leg${LEG}/foamRun.attempt$((attempt-1)).log" 2>/dev/null; }
+    mpirun -np "$NRANK" -machinefile "$PBS_NODEFILE" foamRun -parallel > "$SOLVERLOG" 2>&1
+    FR_RC=$?
+    grep -q "^Time = " "$SOLVERLOG" 2>/dev/null && { [ "$attempt" -gt 1 ] && say "started on attempt $attempt"; break; }
+    case "$(classify_failure "$SOLVERLOG")" in
+        FATAL)    diagnose_fatal "$SOLVERLOG"; FR_RC=90; break ;;
+        COMPLETE) say "0 iterations: already at endTime $ENDTIME. Not a launch failure."; break ;;
+    esac
+    say "attempt $attempt produced NO iterations (rc=$FR_RC, $(wc -c < "$SOLVERLOG" 2>/dev/null) bytes) -- retrying"
+    tail -3 "$SOLVERLOG" 2>/dev/null | sed 's/^/      /'
+done
+say "foamRun returned $FR_RC"
+
+# ---------------------------------------------------------------- 5. outcome from disk
+NLT=$(ls -d processor0/[0-9]* 2>/dev/null | sed 's#.*/##' | sort -g | tail -1)
+[ -n "$NLT" ] || fail "processor0 has no numeric time after the solve"
+REACHED=$(python3 -c "print(1 if float('$NLT')>=float('$ENDTIME')-0.5 else 0)")
+say "state: latestTime=$NLT reached=$REACHED"
+
+# CAPTURED, so the verdict can be written into the .converged marker as EVIDENCE rather
+# than the marker being a bare flag that asserts convergence without showing it.
+GATEOUT=$(python3 - <<'PYGATE'
+import glob, os, sys
+try:
+    files = glob.glob("postProcessing/forceCoeffs1/*/forceCoeffs.dat")
+    if not files:
+        print("  CONVERGENCE GATE: no forceCoeffs1 output", flush=True); sys.exit(3)
+    files.sort(key=lambda p: float(p.split(os.sep)[-2]))
+    icd = icl = None; rows = []
+    for f in files:
+        for line in open(f, errors="ignore"):
+            if line.startswith("#"):
+                tok = line.lstrip("#").split()
+                if "Cd" in tok and "Cl" in tok:
+                    icd, icl = tok.index("Cd"), tok.index("Cl")
+                continue
+            p = line.split()
+            if len(p) > 3: rows.append(p)
+    if icd is None: icd, icl = 2, 3
+    # SORT BY TIME, LATER WINS A REPEAT. Segments overlap across restarts, and the
+    # trailing rows in FILE order can straddle a restart and measure the jump across it.
+    best = {}
+    for r in rows:
+        try: best[float(r[0])] = r
+        except ValueError: pass
+    rows = [best[t] for t in sorted(best)]
+    W = 200
+    if len(rows) < W:
+        print(f"  CONVERGENCE GATE: only {len(rows)} samples, need {W}", flush=True); sys.exit(1)
+    cd = [float(r[icd]) for r in rows[-W:]]
+    cl = [float(r[icl]) for r in rows[-W:]]
+    # THE DRIFT OF THE MEAN, not the peak-to-peak. A converged SIMPLE solve limit-cycles
+    # about a stationary mean and that oscillation NEVER decays, so peak-to-peak has a
+    # floor a gate below it can never clear. Measured on DelftBlue: three of four cases
+    # were being called unconverged while their MEANS had moved 0.0004 to 0.0019 counts.
+    h = len(cd)//2
+    mean = lambda v: sum(v)/len(v)
+    dcd = abs(mean(cd[h:]) - mean(cd[:h])) * 1e4
+    dcl = abs(mean(cl[h:]) - mean(cl[:h])) * 1e4
+    # THE HALF-SHIFT CANNOT SEE A TURNING POINT. If the trajectory has a minimum inside
+    # the window, the falling half and the rising half average out and the statistic reads
+    # near zero on a case nowhere near settled. Measured on SWC_a1p50: Cd half-shift
+    # 0.0008 ct, SIXTY TIMES INSIDE this threshold, while Cl moved 94 counts across the
+    # same window. On drag alone it would have passed outright.
+    # The endpoint-to-endpoint change is what a turning point cannot hide. Calibrated on
+    # real cases: converged span 0.039 to 0.319 counts, unconverged 13.98 and 94.16, so
+    # 1.0 sits 3x above the highest converged and 14x below the lowest unconverged.
+    scl = abs(cl[-1] - cl[0]) * 1e4
+    ok = (dcd <= 0.05 and dcl <= 1.0 and scl <= 1.0)
+    print(f"  CONVERGENCE GATE over {W} samples: MEAN drift Cd {dcd:.4f} ct (<=0.05), "
+          f"Cl {dcl:.4f} ct (<=1.0), Cl SPAN {scl:.4f} ct (<=1.0) -> "
+          f"{'CONVERGED' if ok else 'NOT CONVERGED'}", flush=True)
+    print(f"  REPORT THESE: Cd {mean(cd):.7f}  Cl {mean(cl):.7f}  (window means)", flush=True)
+    sys.exit(0 if ok else 1)
+except Exception as e:
+    print(f"  CONVERGENCE GATE COULD NOT RUN: {type(e).__name__}: {e}", flush=True)
+    sys.exit(3)
+PYGATE
+)
+CONV=$?
+printf '%s\n' "$GATEOUT"
+[ "$CONV" -eq 3 ] && fail "the convergence gate could not run. That is the ABSENCE of a verdict, not a negative one."
+
+# ---------------------------------------------------------------- 6. finalise or requeue
+requeue() {
+    [ "$LEG" -ge "$MAXLEG" ] && { say "MAXLEG $MAXLEG reached, not requeueing"; exit 0; }
+    : "${ARGUS_SCRIPT:?leg $LEG needs to requeue but ARGUS_SCRIPT is unset; refusing to guess}"
+    [ -f "$ARGUS_SCRIPT" ] || fail "ARGUS_SCRIPT=$ARGUS_SCRIPT does not exist"
+    NEXT=$((LEG + 1))
+    say "requeueing as leg $NEXT with endTime $1"
+    qsub -N "argus-$(basename "$CASE")-L${NEXT}" \
+         -v ARGUS_CASE="$CASE",ARGUS_ENDTIME="$1",ARGUS_LEG="$NEXT",ARGUS_MAXLEG="$MAXLEG",ARGUS_SCRIPT="$ARGUS_SCRIPT",ARGUS_OF_BASHRC="$OF_BASHRC" \
+         "$ARGUS_SCRIPT"
+    exit 0
+}
+
+if [ "$REACHED" = "1" ] && [ "$CONV" -eq 0 ]; then
+    say "-> FINALISE: reached endTime AND converged"
+    # WRITE THE MARKER THE SUBMITTER'S EXCLUSION READS. It carries its own EVIDENCE, the
+    # gate's own output, rather than being an empty flag that asserts convergence without
+    # showing it.
+    {
+        echo "case $(basename "$CASE")"
+        echo "finalised $(date -u '+%Y-%m-%dT%H:%M:%SZ') on $(hostname), leg $LEG"
+        printf '%s\n' "$GATEOUT"
+    } > .converged
+    say "wrote .converged marker"
+elif [ "$REACHED" = "1" ]; then
+    say "-> reached endTime but NOT converged. Raising endTime and continuing."
+    say "   HITTING A NUMBER IS NOT EVIDENCE OF A STATIONARY FORCE."
+    requeue $((ENDTIME + 1500))
+else
+    say "-> did not reach endTime (walltime). Continuing at the same endTime."
+    requeue "$ENDTIME"
+fi

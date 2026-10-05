@@ -1,0 +1,8 @@
+FoamFile { version 2.0; format ascii; class dictionary; object momentumTransport; }
+simulationType  RAS;
+RAS
+{
+    model        kOmegaSST;   // Spalart-Allmaras is the sanctioned cross-check
+    turbulence      on;
+    printCoeffs     on;
+}

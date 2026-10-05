@@ -1,0 +1,29 @@
+{
+  "name": "M6_wallModelled_CRUISE_EARLY",
+  "note": "Compressible cruise recipe at the pinned early_cruise state: M 0.78, CL 0.52929708745, 74500 kg at 10 km. NUMERICS ARE BYTE-COPIED from cases/validation/onera_m6_B_flin2 (system/fvSchemes, system/fvSolution, ), which is the only compressible setup in this repo with a validated answer behind it (AGARD AR-138 run 308). Boundary-condition TYPES are the M6's, re-expressed on the ARGUS patch names. Reference quantities are the DSO basis at MODEL scale, matching L11. The one unratified choice is the scale resolution: see CONDITION.json -> scale_resolution.",
+  "files": [
+    "0.orig/T",
+    "0.orig/U",
+    "0.orig/alphat",
+    "0.orig/nuTilda",
+    "0.orig/nut",
+    "0.orig/p",
+    "CONDITION.json",
+    "constant/momentumTransport",
+    "constant/physicalProperties",
+    "system/blockMeshDict",
+    "system/controlDict",
+    "system/decomposeParDict",
+    "system/fvConstraints",
+    "system/fvSchemes",
+    "system/fvSolution",
+    "system/layerSettings",
+    "system/meshLevels",
+    "system/meshQualityDict",
+    "system/planeSample",
+    "system/snappyHexMeshDict",
+    "system/surfaceFeaturesDict",
+    "variants/fvSchemes.nolimiter"
+  ],
+  "turbulenceProperties_note": "DERIVED, not byte-copied. The M6's file carries a commented-out `RASModel kOmegaSST` beside the live `RASModel SpalartAllmaras`. OpenFOAM ignores it, but a commented alternative in a recipe file is the exact hazard solver_recipe.py was written against (this repo has been bitten by it four times). Rewritten with one RASModel line and no alternatives. Semantic equivalence VERIFIED with `foamDictionary -expand` against the M6."
+}

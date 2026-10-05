@@ -1,0 +1,282 @@
+#!/bin/bash
+#PBS -N argus-mesh
+#PBS -q fpt-large
+#PBS -l nodes=6:ppn=32:typej,walltime=12:00:00
+#PBS -j oe
+#
+# mesh_hpc12.pbs -- ARGUS mesh build on HPC12. PBS port of slurm_v5/mesh_v5.slurm.
+#
+# One mesh per geometry per condition-type. The mesh is alpha-independent, so three
+# alphas share one mesh; re-meshing per alpha would inject the re-meshing noise floor
+# straight into a differenced quantity.
+#
+# 192 RANKS IS PART OF THE RECIPE, NOT A SCHEDULING CHOICE. snappyHexMesh does not
+# produce the same mesh at different rank counts, so the rank count is read from
+# decomposeParDict and the allocation is asserted against it.
+#
+# WHY 6 x typej AND NOT ONE typen, WHICH WOULD ALSO GIVE 192 RANKS. MEMORY, MEASURED:
+# the DelftBlue original ran 4 exclusive nodes at roughly 185 GB each, about 740 GB, to
+# mesh 85.7 M cells. One typen is 377 GB; 6 typej is 558 GB. Meshing is the memory-heavy
+# step and there are 22 free typej against 2 free typen, so meshing takes the wide pool
+# and leaves typen for solving. If snappy is killed for memory, go wider (8 x typej) or
+# to 2 x typem (502 GB) rather than assuming the mesh is at fault.
+#
+# ENV IN:  ARGUS_CASE  required, absolute path to a mesh case: recipe dicts, a wing.stl
+#                      in constant/triSurface, and a MANIFEST.sha256 from the recipe.
+#
+# FULLY SELF-CONTAINED. Both gates are inlined and PURE STDLIB, because a gate read from
+# the filesystem at run time escapes the submission snapshot and is whatever the tree
+# holds when the job finally starts, which on a deep queue is days later.
+
+set -uo pipefail
+
+CASE="${ARGUS_CASE:?ARGUS_CASE not set}"
+
+# ---------------------------------------------------------------- toolchain
+module load devtoolset/11     2>/dev/null || source /opt/rh/devtoolset-11/enable 2>/dev/null
+module load mpi/openmpi-4.1.2 2>/dev/null
+OF_BASHRC="${ARGUS_OF_BASHRC:-$HOME/OpenFOAM/OpenFOAM-12/etc/bashrc}"
+[ -f "$OF_BASHRC" ] || { echo "REFUSED: OpenFOAM-12 not found at $OF_BASHRC"; exit 2; }
+# `set -u` IS SUSPENDED AROUND THIS SOURCE, DELIBERATELY. OpenFOAM's etc/bashrc reads
+# $ZSH_NAME, unset under bash: harmless normally, FATAL under nounset. It killed the
+# OF-12 build job on this machine before any solve script had ever run.
+set +u
+# shellcheck disable=SC1090
+source "$OF_BASHRC"
+set -u
+# DERIVED FROM STATE. `source` returns 0 even when the environment did not take.
+for b in snappyHexMesh blockMesh decomposePar reconstructPar surfaceFeatures checkMesh; do
+    command -v "$b" >/dev/null || { echo "REFUSED: $b not on PATH after sourcing $OF_BASHRC"; exit 2; }
+done
+echo "OpenFOAM: $(command -v snappyHexMesh)  WM_PROJECT_VERSION=${WM_PROJECT_VERSION:-unset}"
+
+cd "$CASE" || exit 2
+mkdir -p log
+echo "=== MESH $(basename "$CASE") on $(hostname) $(date) ==="
+
+# ---------------------------------------------------------------- ranks, DERIVED
+NRANK=$(sed -n 's/^ *numberOfSubdomains *\([0-9]\+\) *;.*/\1/p' system/decomposeParDict 2>/dev/null | head -1)
+[ -n "${NRANK:-}" ] || { echo "REFUSED: cannot read numberOfSubdomains from system/decomposeParDict"; exit 2; }
+case "$NRANK" in ''|*[!0-9]*) echo "REFUSED: numberOfSubdomains parsed as '$NRANK'"; exit 2 ;; esac
+echo "  NRANK=$NRANK (read from system/decomposeParDict)"
+if [ -n "${PBS_NODEFILE:-}" ] && [ -r "${PBS_NODEFILE:-}" ]; then
+    NSLOT=$(wc -l < "$PBS_NODEFILE"); NHOST=$(sort -u "$PBS_NODEFILE" | wc -l)
+    echo "  allocation: $NSLOT slots across $NHOST host(s)"
+    [ "$NSLOT" -ge "$NRANK" ] || { echo "REFUSED: $NSLOT slots for $NRANK ranks"; exit 2; }
+else
+    echo "  NOTE: no PBS_NODEFILE; rank/allocation agreement NOT checked"
+fi
+
+# ---------------------------------------------------------------------------
+# GATE A: THE RECIPE IS INTACT.
+# A GATE ON THE OUTPUT CANNOT SEE A WRONG INPUT (GEO-102). checkMesh passed every
+# flooded mesh this project ever built. So before meshing, verify the dicts in this
+# case are byte-for-byte the ones the recipe folder shipped.
+# ---------------------------------------------------------------------------
+python3 - <<'PYGATE'
+import hashlib, math, os, re, sys
+# TWO FILES ARE EXPECTED TO DIFFER FROM THE MANIFEST: the case builder writes the alpha
+# triple into them after copying. THE EXEMPTION ASSERTS ITS OWN PRECONDITION RATHER THAN
+# MERELY SKIPPING (GEO-092): an input that does not qualify for an exemption does not
+# stop, it falls through to a check never designed to judge it and may pass for an
+# irrelevant reason. So these two are moved to a DIFFERENT and stricter check, and every
+# manifest entry must land in exactly one bucket.
+ALPHA_BEARING = {"system/controlDict", "0.orig/U"}
+try:
+    man = "MANIFEST.sha256"
+    if not os.path.isfile(man):
+        print("  GATE A: no MANIFEST.sha256; this case did not come from a recipe "
+              "folder, so its recipe cannot be verified at all", flush=True)
+        sys.exit(1)
+    intact, altered, missing, deferred = [], [], [], []
+    for line in open(man):
+        if not line.strip():
+            continue
+        h, _, rel = line.rstrip("\n").partition("  ")
+        if rel in ALPHA_BEARING:
+            deferred.append(rel); continue
+        if not os.path.isfile(rel):
+            missing.append(rel); continue
+        (intact if hashlib.sha256(open(rel, "rb").read()).hexdigest() == h else altered).append(rel)
+    n = len(intact) + len(altered) + len(missing) + len(deferred)
+    for r in altered:
+        print(f"    ALTERED {r}", flush=True)
+    for r in missing:
+        print(f"    MISSING {r}", flush=True)
+
+    fails = []
+    if set(deferred) != ALPHA_BEARING:
+        fails.append(f"expected both alpha-bearing files in the manifest, got {deferred}")
+    else:
+        ut = open("0.orig/U", errors="ignore").read()
+        ct = re.sub(r"//.*", "", open("system/controlDict", errors="ignore").read())
+        mu = re.search(r"Uinf\s*\(\s*([-\d.eE+]+)\s+([-\d.eE+]+)\s+([-\d.eE+]+)\s*\)", ut)
+        md = re.search(r"dragDir\s*\(\s*([-\d.eE+]+)\s+([-\d.eE+]+)\s+([-\d.eE+]+)\s*\)", ct)
+        ml = re.search(r"liftDir\s*\(\s*([-\d.eE+]+)\s+([-\d.eE+]+)\s+([-\d.eE+]+)\s*\)", ct)
+        mm = re.search(r"magUInf\s+([-\d.eE+]+)\s*;", ct)
+        if not (mu and md and ml and mm):
+            fails.append("could not read the alpha triple from the deferred pair")
+        else:
+            ux, _, uz = (float(g) for g in mu.groups())
+            dx, _, dz = (float(g) for g in md.groups())
+            lx, _, lz = (float(g) for g in ml.groups())
+            mag = math.hypot(ux, uz)
+            a_u = math.degrees(math.atan2(uz, ux))
+            a_d = math.degrees(math.atan2(dz, dx))
+            a_l = math.degrees(math.atan2(-lx, lz))
+            if abs(mag - float(mm.group(1))) > 1e-3:
+                fails.append(f"magUInf {mm.group(1)} != |Uinf| {mag:.6f}")
+            for lab, a in (("dragDir", a_d), ("liftDir", a_l)):
+                if abs(a - a_u) > 1e-6:
+                    fails.append(f"{lab} implies alpha {a:.6f}, Uinf implies {a_u:.6f} (D019)")
+            if abs(lx * dx + lz * dz) > 1e-9:
+                fails.append("liftDir is not orthogonal to dragDir")
+            print(f"    alpha {a_u:.6f} deg, |U| {mag:.4f} m/s, axis lag {a_d-a_u:+.2e} deg", flush=True)
+    for f in fails:
+        print(f"    ALPHA {f}", flush=True)
+
+    print(f"  GATE A: {n} manifest entries = {len(intact)} intact + {len(altered)} altered "
+          f"+ {len(missing)} missing + {len(deferred)} alpha-bearing", flush=True)
+    # PARTITION ASSERTED, NOT PRINTED (GEO-089).
+    if n != len(intact) + len(altered) + len(missing) + len(deferred):
+        print("    PARTITION BROKEN", flush=True); sys.exit(1)
+    if len(intact) < 10:
+        print(f"    ONLY {len(intact)} FILES ACTUALLY COMPARED; a verdict over an "
+              f"unstated subset is not a verdict", flush=True); sys.exit(1)
+    sys.exit(0 if not (altered or missing or fails) else 1)
+except Exception as e:
+    print(f"  GATE A COULD NOT RUN: {type(e).__name__}: {e}", flush=True)
+    sys.exit(3)
+PYGATE
+case $? in
+  0) echo "  recipe intact" ;;
+  1) echo "REFUSED: the recipe dicts in this case do not match the manifest they"
+     echo "         shipped with. Meshing would build an unrecorded recipe."; exit 1 ;;
+  3) echo "REFUSED: gate A could not run. That is the ABSENCE of a verdict, not"
+     echo "         a negative one. Do not infer anything."; exit 3 ;;
+  *) echo "REFUSED: gate A returned an unexpected status"; exit 1 ;;
+esac
+
+# ---------------------------------------------------------------------------
+# GATE B: THE SURFACE IS CLOSED AND CROSSES THE SYMMETRY PLANE.
+# THE MOST EXPENSIVE FAILURE THIS PROJECT HAS HAD. Every wing surface was once an
+# open shell; snappy meshed the aerofoil interior, the wing became a zero-thickness
+# baffle with 76.8% of its patch faces in back-to-back coincident pairs, and
+# checkMesh had NOTHING TO COMPLAIN ABOUT, because a flooded mesh is a perfectly
+# valid mesh of the wrong domain. This is an INPUT gate and it was never run.
+#
+# INTEGER VERTEX KEY, not round(x, 6): numpy's round scales-rints-divides and carries
+# float error while Python's is correctly rounded, and the two disagreed by FOUR open
+# edges on this very surface, all at the skirt/cap junction, which is exactly the
+# marginal case where a welding tolerance decides the answer.
+# ---------------------------------------------------------------------------
+python3 - <<'PYGATE'
+import glob, sys, collections
+try:
+    bad = 0
+    files = sorted(glob.glob("constant/triSurface/*.stl"))
+    if not files:
+        print("  GATE B: no STL in constant/triSurface", flush=True); sys.exit(1)
+    for f in files:
+        verts, tri, idx, cur = [], [], {}, []
+        for line in open(f, errors="ignore"):
+            if line.lstrip().startswith("vertex"):
+                k = tuple(int(round(float(v) * 1e6)) for v in line.split()[1:4])
+                i = idx.get(k)
+                if i is None:
+                    i = idx[k] = len(verts); verts.append(k)
+                cur.append(i)
+                if len(cur) == 3:
+                    tri.append(tuple(cur)); cur = []
+        und = collections.Counter()
+        for a, b, c in tri:
+            for u, v in ((a, b), (b, c), (c, a)):
+                und[(u, v) if u < v else (v, u)] += 1
+        op = sum(1 for v in und.values() if v == 1)
+        ov = sum(1 for v in und.values() if v > 2)
+        ymin = min(v[1] for v in verts) / 1e6
+        ok = (op == 0 and ov == 0 and ymin < -0.010)
+        print(f"  GATE B {f}: tris={len(tri)} open={op} over={ov} "
+              f"y_min={1000*ymin:+.3f}mm {'OK' if ok else 'FAIL'}", flush=True)
+        bad += 0 if ok else 1
+    sys.exit(1 if bad else 0)
+except Exception as e:
+    print(f"  GATE B COULD NOT RUN: {type(e).__name__}: {e}", flush=True)
+    sys.exit(3)
+PYGATE
+case $? in
+  0) echo "  surface closed" ;;
+  1) echo "REFUSED: the surface is an OPEN SHELL or does not cross y=0. Not a mesh"
+     echo "         to build: snappy would mesh the aerofoil interior and checkMesh"
+     echo "         would report nothing wrong."; exit 1 ;;
+  3) echo "REFUSED: gate B could not run. NOT a verdict about the geometry."; exit 3 ;;
+  *) echo "REFUSED: gate B returned an unexpected status"; exit 1 ;;
+esac
+
+# ---------------------------------------------------------------------------
+# MESH
+# ---------------------------------------------------------------------------
+rm -rf processor* constant/polyMesh constant/extendedFeatureEdgeMesh
+
+surfaceFeatures > log/surfaceFeatures.log 2>&1 || { echo "surfaceFeatures failed"; exit 1; }
+EM=$(ls constant/extendedFeatureEdgeMesh/* 2>/dev/null | head -1)
+[ -n "$EM" ] || { echo "REFUSED: surfaceFeatures produced no eMesh"; exit 1; }
+for s in constant/triSurface/*.stl; do
+    [ "$EM" -nt "$s" ] || { echo "REFUSED: eMesh is not newer than $s; it is stale"; exit 1; }
+done
+echo "  eMesh built and newer than the STL"
+
+blockMesh > log/blockMesh.log 2>&1 || { echo "blockMesh failed"; exit 1; }
+decomposePar -force > log/decomposePar.log 2>&1 || { echo "decomposePar failed"; exit 1; }
+nd=$(ls -d processor* 2>/dev/null | wc -l)
+[ "$nd" -eq "$NRANK" ] || { echo "REFUSED: decomposePar produced $nd dirs, expected $NRANK"; exit 1; }
+
+echo "  snappyHexMesh on $NRANK ranks"
+mpirun -np "$NRANK" -machinefile "$PBS_NODEFILE" snappyHexMesh -parallel -overwrite \
+    > log/snappyHexMesh.log 2>&1 \
+    || { echo "snappyHexMesh failed; see log/snappyHexMesh.log"
+         tail -25 log/snappyHexMesh.log | sed 's/^/    /'; exit 1; }
+
+# ---------------------------------------------------------------------------
+# COLLECT. After `-parallel -overwrite` the fine mesh exists ONLY inside processor*/
+# and the case-root constant/polyMesh still holds the background blockMesh, so the
+# collect step is NOT optional.
+#
+# OPENFOAM-12: reconstructParMesh IS DEPRECATED AND IS A NO-OP. It writes no mesh and
+# EXITS 0, so `|| exit 1` would NOT have caught it. Under OF-12 reconstructPar collects
+# the mesh itself; -constant is the mesh-only form. The wall-patch check below is what
+# actually proves the mesh was collected, which is why it reads the boundary file
+# instead of trusting an exit status.
+# ---------------------------------------------------------------------------
+reconstructPar -constant > log/reconstructParMesh.log 2>&1 \
+    || { echo "reconstructPar -constant failed"; exit 1; }
+
+# THE BACKGROUND blockMesh HAS NO WALL PATCH, so the wall patch's presence proves the
+# snappy mesh was collected rather than the box.
+if [ -f constant/polyMesh/boundary ]; then B=constant/polyMesh/boundary; BCAT=cat
+elif [ -f constant/polyMesh/boundary.gz ]; then B=constant/polyMesh/boundary.gz; BCAT=zcat
+else echo "REFUSED: no reconstructed constant/polyMesh/boundary"; exit 1; fi
+$BCAT "$B" | grep -qE "^\s+wing$|type\s+wall" \
+    || { echo "REFUSED: the reconstructed mesh has no wall patch. That is the"
+         echo "         background blockMesh, not the snappy mesh."; exit 1; }
+echo "  reconstructed mesh carries a wall patch"
+
+checkMesh -allGeometry -allTopology -constant > log/checkMesh.log 2>&1
+
+# ---------------------------------------------------------------------------
+# REPORT. checkMesh EXITS 0 WHILE REPORTING FAILURES, which is why 32 of 48 logs in
+# this project once reported failures nobody saw, and why a COMPLETED mesh job is not
+# evidence of a good mesh. The verdict is READ out of the log, not inferred.
+# ---------------------------------------------------------------------------
+echo "--- VERDICTS, read from the logs ---"
+echo "  checkMesh : $(grep -E '^(Failed [0-9]+ mesh checks|Mesh OK)' log/checkMesh.log | tail -1)"
+echo "  cells     : $(grep -E '^ *cells: *[0-9]+' log/checkMesh.log | tail -1)"
+echo "  non-orth  : $(grep -m1 'non-orthogonality' log/checkMesh.log)"
+echo "  aspect    : $(grep -m1 'Max aspect ratio' log/checkMesh.log)"
+echo "  layers (the SECOND row is ACHIEVED, the first is REQUESTED; achieved can"
+echo "          only be at or below requested, so an achieved value above the"
+echo "          request means the wrong table was read):"
+grep -A4 'overall thickness' log/snappyHexMesh.log | tail -3 | sed 's/^/    /'
+echo "  extrusion : $(grep -oE 'Extruding [0-9]+ out of [0-9]+ faces \([0-9.]+%\)' log/snappyHexMesh.log | tail -1)"
+echo
+echo "=== MESH END $(date) ==="

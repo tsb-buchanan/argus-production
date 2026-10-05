@@ -1,0 +1,7 @@
+/* ARGUS airfoil2d, OpenFOAM-org 7: set the two spanwise planes to empty after extrudeMesh */
+FoamFile { version 2.0; format ascii; class dictionary; object changeDictionaryDict; }
+boundary
+{
+    front { type empty; }
+    back  { type empty; }
+}

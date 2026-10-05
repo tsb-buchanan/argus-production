@@ -1,0 +1,54 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           |
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      decomposeParDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+numberOfSubdomains 192;
+method          hierarchical;
+
+// DECOMPOSITION METHOD: hierarchical, NOT scotch (2026-08-25).
+//
+// WHY. DelftBlue's openfoam-org/12 module is BUILT WITHOUT SCOTCH: it ships only
+// the dummy libscotchDecomp stub, so decomposePar dies with "you are trying to
+// use scotch but do not have the scotch library loaded". Measured across the
+// module tree: OF-8, OF-9 and OF-10 carry a real libscotchDecomp, OF-11 and
+// OF-12 do not, so scotch disappears exactly at the foamRun transition. The
+// local Ubuntu OF-12 package DOES have real scotch, so this is a cluster build
+// gap, not a defect in these dictionaries.
+//
+// WHAT IT COSTS, MEASURED on the ARGUS baseline at 4 levels below production:
+//     wing wetted area   scotch 1.28019 m2   hierarchical 1.28026 m2   0.005%
+//     total cells        243,379             241,911                   0.60%
+//     post-snappy imbalance max over mean, scotch 1.013, hierarchical 1.001
+// snappyHexMesh rebalances during refinement, so the starting method barely
+// affects the final distribution. Forces depend on the wetted surface, and that
+// agrees to 0.005 percent.
+//
+// 8 by 3 by 8 is 192 EXACTLY, proportioned to the 60 by 30 by 60 m background
+// box. Every v5 mesh uses this same method, so the decomposition is common to
+// both sides of every geometry-to-geometry delta and cancels there (D071).
+//
+// TWO THINGS THIS FILE MUST NOT CONTAIN, both learned by being bitten:
+//   1. The subdomain-count keyword followed by a space, anywhere else including
+//      comments. mesh_v5.slurm rewrites every line carrying it, comments too.
+//      That altered this file mid-job and GATE A then correctly refused the
+//      case on resubmit for not matching its own manifest.
+//   2. A close-comment token. One appeared inside a quoted sed example here and
+//      OpenFOAM stopped at "found on line 37 the punctuation token".
+hierarchicalCoeffs
+{
+    n               (8 3 8);
+    delta           0.001;
+    order           xyz;
+}

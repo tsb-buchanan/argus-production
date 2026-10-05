@@ -1,0 +1,120 @@
+\section{What this report establishes, and what it does not}
+\label{sec:concl}
+
+\textbf{Purpose.} This section states the whole result in one place, after the loads that bear on
+it, so that no single section can be read as the conclusion on its own.
+
+\subsection{What is established}
+\label{sec:concl:established}
+
+\begin{enumerate}
+  \item \textbf{Drag: W is the cheapest geometry at every operating point, and the low-speed
+    ordering carries to cruise.} At Condition~CR four candidates improve on the rigid baseline,
+    W by $0.868$, F by $0.815$, C by $0.191$ and H by $0.009$ counts against $188.031$, and the
+    whole field spans $1.1$ counts, enough to separate the groups but not the neighbours within
+    them. At early cruise W saves $0.769$ counts against $177.839$, F and H cost $1.796$ and
+    $2.244$, and C and M cost $12.871$ and $14.554$; late cruise reproduces it, W at $-0.781$ to
+    M at $+13.728$ against $187.959$. \textbf{The two cruise points agree exactly}, both giving W,
+    F, H, C, M, and they differ from the low-speed sequence W, F, C, H, M only in the C and H pair,
+    which is $0.182$ counts apart at Condition~CR (Section~\ref{sec:perf:inversion}).
+  \item \textbf{The cruise cost is the aft shock.} C and M end the supersonic region at
+    $\eta = 0.80$ in a strong shock and separate behind it; F and H in a moderate shock and stay
+    attached; W and the baseline without a shock. Drag follows that order exactly
+    (Section~\ref{sec:perf:mechanism}).
+  \item \textbf{Hinge moment: every candidate raises the actuator load, and two of the rows are
+    not actuator loads at all.} All five raise the moment about the common $x_h/c = 0.62$ line at
+    all three operating points, by $2.0$ to $5.0$ per cent at Condition~CR, $0.5$ to $6.3$ at
+    early cruise and $0.4$ to $6.2$ at late cruise, with the same ordering at all three up to one
+    near-tie. C, F and M act on the line integrated about, so their numbers are the
+    moment their actuator reacts. \textbf{H's and W's are not}: H's hinge is at $0.70$, and W is
+    not hinged at all but rotates the whole section about $0.25c$
+    (Section~\ref{sec:hinge:hcaveat}).
+  \item \textbf{Root bending: the constraint that selected C is not satisfied viscously.} C sits
+    at $+6.796$ per cent in the VLM, inside the study's $6.8$ per cent screen by $0.004$
+    percentage points, and the RANS puts it at $+7.170$ per cent, outside. M is outside on both.
+    F, H and W are comfortably inside on both. At both cruise points, under the study's own
+    stricter limit, all five exceed the baseline moment, W by the least
+    (Section~\ref{sec:rbm:cruise}).
+  \item \textbf{The two methods agree on root bending to better than half a point.} VLM and RANS
+    differ by at most $0.40$ percentage points, so the screen result above is a property of the
+    shapes rather than of the method.
+  \item \textbf{The low-order method orders the candidates on its far-field column and prices
+    none of them.} Far-field $C_{Diw}$ reproduces the RANS order at Condition~CR to nine pairs of
+    ten, its one error on the closest pair in the field; near-field $C_{Di}$, the metric the June
+    selection was made on, gives four of ten. Neither resolves the size of the effect: the
+    far-field increments miss the measured ones by $86$ to $131$~per~cent of the whole low-speed
+    span and the near-field by $63$ to $381$ (Section~\ref{sec:qv:decision}).
+\end{enumerate}
+
+\subsection{What is not established, stated as plainly}
+\label{sec:concl:not}
+\label{sec:perf:limits}
+
+\begin{enumerate}
+  \item \textbf{W's actuator load is not computed anywhere in this report.} Distributed twist
+    reacts a torsional moment about $x/c = 0.25$ taken over the entire section. The quantity
+    tabulated for W is about $0.62$ over the aft $38$ per cent, which is a valid comparison on a
+    shared line and is not that load. Until the torsional moment is computed, \textbf{trailing-edge
+    morphing and distributed twist cannot be ranked against one another on actuator load}, which is
+    the axis the concept selection was expected to turn on.
+  \item \textbf{H's actuator load is likewise not its tabulated number}, for the smaller reason
+    that its own hinge is $0.08c$ aft of the comparison line.
+  \item \textbf{Neither root-bending bound is a certified allowable.} The design study calls the
+    $6.8$ per cent figure ``a study-level bound rather than a certified structural limit''. The
+    cruise limit is a different and stricter definition. Which to size against is a question for
+    the structures and actuator group and is not answered here.
+  \item \textbf{The low-order comparison is made at Condition~CR only.} The VSPAERO decks and the
+    meshed geometries share one frame and one geometry set there and nowhere else: the cruise
+    decks carry the TP-1580 $S_\mathrm{ref}$ and a geometry set that maps to none of the meshed
+    cases, and the study's cruise set contains optimiser seeds and the rigid baseline rather than
+    the five candidates. Extending the comparison to either cruise point requires the
+    corresponding VLM columns at that operating point, not merely the RANS ones, and quoting the
+    two together without them would cross operating points (D076).
+\item The meshed baseline is the uncorrected aerofoil-interpolation lineage and all five
+candidates are the corrected one. Measured directly between the two \texttt{.vsp3} files
+by \texttt{scripts/measure\_lineage\_pair.py} into \texttt{data/lineage\_measured.json},
+the uncorrected wing carries 9 distinct aerofoils across its 19
+stations where the corrected wing carries 19, so the two surfaces agree exactly at every
+station they share and diverge only in between. They are identical at and inboard of
+$\eta = 0.450$; the first station that differs is $\eta = 0.515$, which is also the worst,
+at $0.407$ percentage points of $t/c$ and $0.209$ per cent of chord in surface ordinate. The
+camber difference is an order of magnitude smaller again, at most $0.0034$ per cent of chord.
+Both wings are the same planform at the same twist, so this is a thickness-channel
+difference, and the candidate-to-candidate comparison is taken between surfaces of the
+corrected lineage throughout and does not cross it.
+\item Condition CR runs kOmegaSST wall resolved and both cruise points run Spalart--Allmaras wall
+modelled, so counts are differenced within a condition only.
+\item Every case is fully turbulent from the leading edge and in free air, so a tunnel comparison
+needs blockage, wall-interference and support corrections on the measured side.
+\item The VSPAERO columns are induced-drag increments and the RANS columns are total-drag
+increments, so Table~\ref{tab:lo:selection} compares ordering rather than magnitude.
+\item The cruise drag-due-to-lift slopes are formed on the trim legs alone, and six of the twelve
+rest on a nudge too small to resolve the slope. They are used only to convert trim residuals of
+at most $0.895$ counts of $C_L$ into a drag bias of at most $0.036$ counts.
+\end{enumerate}
+
+\subsection{Recommendation}
+\label{sec:perf:recommendation}
+
+\textbf{Recommendation.} W is the geometry to carry forward. It is the cheapest of the six at all
+three operating points, $0.868$, $0.769$ and $0.781$ counts below the baseline at Condition~CR,
+early cruise and late cruise, it raises $L/D$ at both cruise points, and it carries no aft shock
+and no separation at cruise. It also has the smallest root-bending increase of the five at both
+cruise points, $+3.36$ and $+3.25$ per cent, and sits inside the $6.8$ per cent screen at
+Condition~CR on both methods. F and H are the next two, within $2.3$ counts of the baseline at
+cruise. C and M are not candidates for cruise: they cost twelve to fifteen counts, separate behind
+a strong aft shock, and both fail the root-bending screen once it is computed viscously.
+
+\textbf{The caveat on W, and it is the one this report cannot close.} W's actuator reacts a
+torsional moment about the quarter chord over the whole section, and that moment is not computed
+here (Section~\ref{sec:hinge:hcaveat}); its tabulated hinge moment is a common-basis comparison
+only. W's aerodynamic case is complete. Its mechanical case is not, and it is the input the
+structures and actuator group needs before W can be committed to.
+
+\subsection{The one number that would change the picture}
+\label{sec:concl:next}
+W's torsional moment about $x/c = 0.25$ over the full section, at every operating point. It is
+the same integral this report already performs, over a different region about a different line, and
+it is the missing input to the concept selection, and the recommendation above rests on it. Nothing
+else outstanding has comparable leverage: the drag case is closed at all three operating points,
+and the root-bending case is closed against both bounds.

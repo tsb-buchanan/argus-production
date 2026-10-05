@@ -1,0 +1,63 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+  =========                 |
+  \\      /  F ield         | OpenFOAM: The Open Source CFD Toolbox
+   \\    /   O peration     |
+    \\  /    A nd           |
+     \\/     M anipulation  |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      decomposeParDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+numberOfSubdomains 192;
+method          scotch;
+
+// THIS IS THE MESH-STAGE DECOMPOSITION: 192 ranks, scotch.
+//
+// WHY IT IS PART OF THE MESH RECIPE. snappyHexMesh runs in parallel on this
+// decomposition, and parallel snappyHexMesh is decomposition-dependent: a
+// different rank count or a different method builds a different mesh. So the
+// method and the count are fixed here, with the rest of the mesh recipe, and
+// hpc/mesh_hpc12.pbs reads the count from this file and refuses an allocation
+// with fewer slots.
+//
+// WHAT RAN. All six wake-refined Condition CR meshes on HPC12 (scratch
+// argus/mesh/SWB_r2, SWC_r2, SWF_r2, SWH_r2, SWM_r2 and SWW_r2) carry exactly
+// this pair, and every one of their snappyHexMesh logs reports nProcs 192.
+//
+// THE SOLVE CASE IS DECOMPOSED DIFFERENTLY, ON PURPOSE. hpc/stage_solve_case.sh
+// builds the solve case from this recipe plus the finished mesh and rewrites
+// its decomposition to 128 ranks by default, hierarchical 8 by 2 by 8. All
+// six r2 solves ran 128 ranks, hierarchical; the 8 by 2 by 8 split matches the
+// 128-rank case definitions. 128 is four 32-core typej nodes on fpt-medium.
+// Re-decomposing a finished mesh does not change the mesh. Do not solve with
+// this file unchanged: solve_hpc12.pbs reads the rank count from the case and
+// would decompose the solve onto 192.
+//
+// WHAT THE METHOD COSTS, MEASURED on the ARGUS baseline at 4 levels below
+// production, scotch against hierarchical from the same inputs:
+//     wing wetted area   scotch 1.28019 m2   hierarchical 1.28026 m2   0.005%
+//     total cells        243,379             241,911                   0.60%
+// Small, but not zero, which is why the method is a mesh setting and not a
+// scheduling one. Changing it changes the mesh.
+//
+// WHERE SCOTCH IS MISSING. DelftBlue's openfoam-org/12 module was built
+// without it (only the dummy libscotchDecomp stub), and decomposePar there
+// dies with "you are trying to use scotch but do not have the scotch library
+// loaded". The HPC12 OpenFOAM-12 build meshed all six r2 cases with it, and
+// the Ubuntu OpenFOAM-12 package has it too. Meshing on a machine without it
+// means editing this file, which is a mesh change: record it.
+//
+// TWO THINGS THIS FILE MUST NOT CONTAIN, both learned by being bitten:
+//   1. The subdomain-count keyword followed by a space, anywhere else including
+//      comments. Older job scripts rewrite every line carrying it, comments
+//      too. That altered this file mid-job, and the recipe gate then correctly
+//      refused the case on resubmit for not matching its own manifest.
+//   2. A close-comment token. One appeared inside a quoted sed example in an
+//      earlier version of this file and OpenFOAM stopped at "found on line 37
+//      the punctuation token".

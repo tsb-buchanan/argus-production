@@ -1,0 +1,55 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| planeSample: constant-y cutting planes of p and U through the 3D solution.
+|
+| Run as `postProcess -func planeSample -parallel -latestTime`. `-func <name>` looks for a
+| STANDALONE caseDict called <name> in system/, NOT for a function object declared inline in
+| controlDict; pointing it at an inline entry exits 0 having done nothing (GEO-080).
+|
+| STATIONS. y = eta * semispan with semispan 1.8254 m MEASURED from the wing surface sample,
+| not from bref/2 = 1.8288 m. Those differ by 3.4 mm because the tip cap closes inboard of
+| the nominal span, and a plane placed at the nominal value would cut 3.4 mm outboard of the
+| station every other artefact in this project calls by that name (D068: the frame travels
+| with the number).
+|
+| eta 0.30 0.50 are UNMORPHED CONTROLS, inboard of the DSO morph flag at eta 0.6014, where
+| the two geometries are identical to 0.0000 mm. Any difference the planes show there is
+| flow response or numerical noise, never geometry, which is what makes them the control.
+\*---------------------------------------------------------------------------*/
+
+type            surfaces;
+libs            ("libsampling.so");
+writeControl    writeTime;
+
+surfaceFormat   vtk;
+fields          (p U);
+
+// cellPoint interpolation, so the cut carries smooth contours rather than one flat value
+// per cut cell. It does NOT invent resolution: the underlying cells are unchanged.
+interpolationScheme cellPoint;
+
+surfaces
+(
+    y_eta0p30 { type cuttingPlane; planeType pointAndNormal;
+                pointAndNormalDict { point (0 0.547620 0); normal (0 1 0); }
+                interpolate true; }
+    y_eta0p50 { type cuttingPlane; planeType pointAndNormal;
+                pointAndNormalDict { point (0 0.912700 0); normal (0 1 0); }
+                interpolate true; }
+    y_eta0p60 { type cuttingPlane; planeType pointAndNormal;
+                pointAndNormalDict { point (0 1.095240 0); normal (0 1 0); }
+                interpolate true; }
+    y_eta0p70 { type cuttingPlane; planeType pointAndNormal;
+                pointAndNormalDict { point (0 1.277780 0); normal (0 1 0); }
+                interpolate true; }
+    y_eta0p80 { type cuttingPlane; planeType pointAndNormal;
+                pointAndNormalDict { point (0 1.460320 0); normal (0 1 0); }
+                interpolate true; }
+    y_eta0p90 { type cuttingPlane; planeType pointAndNormal;
+                pointAndNormalDict { point (0 1.642860 0); normal (0 1 0); }
+                interpolate true; }
+    y_eta0p95 { type cuttingPlane; planeType pointAndNormal;
+                pointAndNormalDict { point (0 1.734130 0); normal (0 1 0); }
+                interpolate true; }
+);
+
+// ************************************************************************* //

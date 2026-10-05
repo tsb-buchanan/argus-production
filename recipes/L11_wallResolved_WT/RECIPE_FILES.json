@@ -1,0 +1,46 @@
+{
+  "name": "L11_wallResolved_WT",
+  "note": "The prism-layer recipe adopted 2026-08-24 (results/layer_recipe_verdict.json): 11 layers at expansionRatio 1.45 on a surface-level-11 skin, wall-resolved, Condition WT (M 0.12, |U| 40.800000 m/s, Re_cref 0.95e6), which is what the L11 pair and the whole phaseA campaign actually ran. Assembled from the UNSUFFIXED dicts of layers/L11_base and layers/L11_morph, which are the files snappyHexMeshDict actually #includes. The pair's layerSettings are byte-identical (sha e63fcb21...), which is what makes either an acceptable source for it. fvSchemes was damaged in BOTH L11 cases and came from phaseA/A1_er133; that variant is carried by 22 of the ~30 cases on scratch and is confirmed present on the production cases CTE_a1p40 and MR_mcv2, so it is the campaign standard rather than a settings-rig one-off. THIS SUBSTITUTION IS THE ONE FILE IN THIS FOLDER THAT DID NOT COME FROM AN L11 CASE.",
+  "resolution": {
+    "0.orig/nut": "0.orig/nut.wallResolved"
+  },
+  "banned_suffixes": [
+    ".wallResolved",
+    ".wallModelled",
+    ".full",
+    ".sandbox"
+  ],
+  "files": [
+    "0.orig/U",
+    "0.orig/k",
+    "0.orig/nut",
+    "0.orig/omega",
+    "0.orig/p",
+    "constant/momentumTransport",
+    "constant/physicalProperties",
+    "system/blockMeshDict",
+    "system/controlDict",
+    "system/decomposeParDict",
+    "system/fvSchemes",
+    "system/fvSolution",
+    "system/layerSettings",
+    "system/meshLevels",
+    "system/meshQualityDict",
+    "system/planeSample",
+    "system/snappyHexMeshDict",
+    "system/surfaceFeaturesDict"
+  ],
+  "edits_after_capture": [
+    {
+      "file": "system/controlDict",
+      "change": "endTime 300 -> 4500",
+      "why": "300 is what the L11 layer study ran, not what v5 needs. THE RECIPE FOLDER IS THE v5 TEMPLATE, NOT AN ARCHAEOLOGICAL CAPTURE: a stored recipe that says 300 while the campaign wants 4500 invites exactly the confusion this folder exists to prevent. 4500 is the pinned v5 value in hpc/v5_recipe.json, derived from CRB_a1p75's drift trend."
+    },
+    {
+      "file": "system/fvSolution",
+      "change": "residualControl p 1e-6 / U 1e-7 / (k|omega) 1e-7  ->  p 1e-9 / U 1e-10 / (k|omega) 1e-10",
+      "why": "AT 1e-6/1e-7 SIMPLE CAN STOP EARLY ON RESIDUALS, PRE-EMPTING THE FORCE GATE. The standing convergence basis in this project is force-history stationarity, not residualControl, and the run-card schema says so outright: no case here meets the residual targets. Worse, an early residual stop breaks solve_v5.slurm's loop specifically: the run exits normally with latestTime < endTime, the loop reads that as a walltime kill and requeues, the restart satisfies residualControl again within a few iterations, and it burns all four legs before stopping. The CR production cases already carry 1e-9/1e-10, which is effectively unreachable and lets the run go to endTime so the force gate decides. Both recipes now match them."
+    }
+  ],
+  "condition_correction": "Folder renamed from L11_wallResolved_CR to _WT. The dicts are Condition WT: 0.orig/U has |Uinf| = 40.800000 m/s (M 0.12) and forceCoeffs1 magUInf 40.8 agrees with it. The original _CR name was asserted from the 'CR' prefix on phaseA case names without reading the freestream, and it was wrong. The dicts were never wrong."
+}

@@ -1,0 +1,33 @@
+{
+  "name": "L11_wallResolved_CR",
+  "note": "The SAME L11 mesh recipe (11 layers at ER 1.45, surface level 11) at CONDITION CR: M 0.10, U 34.0 m/s, Re_cref 0.79e6. Per docs/ARGUS_reference_data.md section 9, CR is where BASELINE-VS-MORPHED DELTAS ARE COMPARED AGAINST DSO PREDICTIONS, which is what the v5 matrix is for. Condition-INDEPENDENT files (every mesh dict, fvSchemes, fvSolution, transport and turbulence properties, 0.orig/p) are byte-copied from L11_wallResolved_WT, so the two conditions share ONE mesh recipe and ONE numerics setup and differ only in the freestream. Condition-DEPENDENT files (0.orig U, k, omega, nut) are the real ones from phaseA/CRM_a1p30, whose template alpha is 1.30 deg. controlDict is derived from the WT recipe with magUInf 40.8 -> 34.0, and its liftDir and dragDir are RE-DERIVED FROM THE FREESTREAM rather than inherited, because inheriting them left a 0.803 deg axis lag that verify_recipe.py caught on its first real use. Aref, lRef, CofR and every function object stay byte-identical across the two conditions, which is what makes WT and CR coefficients directly comparable. VERIFIED: |Uinf| 34.000000 equals magUInf 34.0; kInf 1.734e-3 equals 1.5*(34.0*0.001)^2 at the same 0.1 percent intensity as WT; omegaInf 14.25 is 17.10*34.0/40.8 exactly; nut 1.2167e-4 equals k/omega. nut/nu is 8.34 at CR against 10.00 at WT, which is CORRECT: nu is fixed while U changed, i.e. the Reynolds number changed.",
+  "resolution": {
+    "0.orig/nut": "0.orig/nut.wallResolved"
+  },
+  "banned_suffixes": [
+    ".wallResolved",
+    ".wallModelled",
+    ".full",
+    ".sandbox"
+  ],
+  "files": [
+    "0.orig/U",
+    "0.orig/k",
+    "0.orig/nut",
+    "0.orig/omega",
+    "0.orig/p",
+    "constant/momentumTransport",
+    "constant/physicalProperties",
+    "system/blockMeshDict",
+    "system/controlDict",
+    "system/decomposeParDict",
+    "system/fvSchemes",
+    "system/fvSolution",
+    "system/layerSettings",
+    "system/meshLevels",
+    "system/meshQualityDict",
+    "system/planeSample",
+    "system/snappyHexMeshDict",
+    "system/surfaceFeaturesDict"
+  ]
+}

@@ -1,0 +1,138 @@
+{
+  "schema_version": 1,
+  "candidate": "cte_i002_c04",
+  "case": {
+    "path": "/home/scratch/$USER/argus/solve_r2/SWC_trim",
+    "dimensionality": "3D",
+    "condition": "CR",
+    "eta": null,
+    "description": "Wake-refined re-run of the SWC CR trim, trimmed to target C_L by rotating the inlet direction at fixed |U|."
+  },
+  "geometry": {
+    "file": "geometry/derived/wing3d/cte_i002_c04_oml_placed_laddercap.stl",
+    "sha256": "790c3ded3568fa877bf8daf1a7296d7f66e7e865e42f4a1e9b90a14501c45d3b"
+  },
+  "provenance": {
+    "git_commit": "e1648ab3549643cb383df377b13a37ed2facf27c",
+    "git_dirty": true,
+    "openfoam_version": "openfoam-org-12",
+    "date": "2026-09-22"
+  },
+  "mesh": {
+    "generator": "snappyHexMesh",
+    "cells": 99171693,
+    "max_skewness": 15.714541,
+    "max_non_orthogonality": 70.988758,
+    "yplus": {
+      "min": 0.0978958575,
+      "mean": 1.23228694,
+      "max": 76.3890343
+    },
+    "checkMesh_pass": false,
+    "mesh_generation": {
+      "ranks": 192,
+      "method": "scotch",
+      "inferred": false,
+      "inferred_from": "mesh/SWC_r2/system/decomposeParDict, read directly",
+      "machine": "hpc12"
+    }
+  },
+  "model": {
+    "solver": "foamRun",
+    "turbulence_model": "kOmegaSST",
+    "wall_treatment": "low-Re resolved"
+  },
+  "bc": {
+    "farfield": "inletOutlet on inlet/topBottom/outboard, freestream direction rotated to the trim alpha",
+    "airfoil": "noSlip on wing"
+  },
+  "numerics": {
+    "schemes_summary": "steady SIMPLE, second-order upwind on momentum and turbulence, GAMG on p",
+    "convergence_criteria": {
+      "p": 1e-09,
+      "U": 1e-10,
+      "(k|omega)": 1e-10
+    }
+  },
+  "convergence": {
+    "iterations": 6000,
+    "final_residuals": {
+      "p": 9.55656582e-08,
+      "U": 2.95999379e-08,
+      "k": 1.00627633e-07,
+      "omega": 8.84151172e-10
+    },
+    "converged": true,
+    "criterion": "200-sample window: mean drift Cd <= 0.05 ct, Cl <= 1.0 ct, Cl span <= 1.0 ct"
+  },
+  "conditions": {
+    "U_mag_m_s": 34.0,
+    "alpha_deg": 1.268311286,
+    "nu_m2_s": 1.46e-05,
+    "Re_ref": 917434.1095890411,
+    "mach_nominal": 0.1,
+    "rho_ref_kg_m3": 1.225,
+    "reference": {
+      "Aref_m2": 0.620462,
+      "lRef_m": 0.393957,
+      "CofR_m": [
+        1.34,
+        0.0,
+        0.0
+      ],
+      "convention": "DSO basis, S_ref 1.24092 m2 and c_ref 0.39396 m, b_ref 3.6576 m. Half-wing A_ref 0.620462 m2 = S_ref/2, so half-model and full-wing coefficients coincide."
+    }
+  },
+  "results": {
+    "CL": 0.428278932,
+    "CD": 0.0187839144,
+    "CD_pressure": 0.008661865440527949,
+    "CD_viscous": 0.01012204893721008,
+    "Cm": -0.490610358,
+    "CD_counts": 187.839144
+  },
+  "trim": {
+    "target_CL": 0.428277635108,
+    "tolerance": 0.0001,
+    "alpha_trim_deg": 1.268311286,
+    "history": [
+      {
+        "alpha_deg": 1.263371999971,
+        "CL": 0.427846
+      },
+      {
+        "alpha_deg": 1.268311286,
+        "CL": 0.428278932,
+        "CD": 0.0187839144,
+        "Cm": -0.490610358
+      }
+    ],
+    "converged": true
+  },
+  "cost": {
+    "wall_clock_s": 61125,
+    "n_cores": 128,
+    "core_hours": 2173.3,
+    "machine": "n12-68"
+  },
+  "decomposition": {
+    "method": "hierarchical",
+    "n_subdomains": 128
+  },
+  "hpc": {
+    "machine": "hpc12.tudelft.net",
+    "solve_ranks": 128,
+    "solve_decomposition_method": "hierarchical",
+    "walltime_requested": "72:00:00"
+  },
+  "wall_treatment": {
+    "nut": "nutLowReWallFunction",
+    "k": "kLowReWallFunction",
+    "omega": "omegaWallFunction",
+    "yplus_min": 0.0978958575,
+    "yplus_mean": 1.23228694,
+    "yplus_max": 76.3890343,
+    "yplus_convention": "cell-centre"
+  },
+  "notes": "First 3D run card in the project. Wake-refined re-run; see docs/r2_wake_refinement_2026-09-21.md. checkMesh fails 4 checks, the SAME 4 as the published mesh. y+ max is high (76.4) against a mean of 1.23: a localised patch sits in the log layer, which does not affect the far-field Trefftz result but IS a caveat on surface quantities, Cf especially. Tooling was shipped to the cluster ad hoc, so git_commit is the repo HEAD at card-writing time, not a commit the cluster held. Run was 2 leg(s), 61125 s wall total: argus-r2-SWC_trim.o1031984 41518s; argus-r2-SWC_trim.o1032073 19607s. Convergence marker: case SWC_trim finalised 2026-09-22T18:23:19Z on n12-68, leg 2   CONVERGENCE GATE over 200 samples: MEAN drift Cd 0.0004 ct (<=0.05), Cl 0.0368 ct (<=1.0), Cl SPAN 0.0676 ct (<=1.0) -> CONVERGED   REPORT THESE: Cd 0.0187840  Cl 0.4282771  (window means)"
+}

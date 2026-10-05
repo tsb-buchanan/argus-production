@@ -1,0 +1,29 @@
+\section{Objectives and the question}
+\label{sec:intro}
+\label{sec:objectives}
+\textbf{Purpose.} ARGUS asks how the outer wing of a transport aircraft should adapt during
+cruise. A low-order VSPAERO study searched that design space and selected the candidate
+shapes~\cite{zheng}. The search is inviscid, wing-only, and ranks on induced drag. This work is
+the viscous audit of that search.
+
+\textbf{Study hierarchy.} The design study evaluates hundreds of geometries cheaply. This
+campaign evaluates six of them with steady RANS at the matched Reynolds number. The design study
+proposes candidates. The RANS says what they cost at trimmed lift.
+
+\textbf{The job.} Six wing surfaces, one rigid baseline and five morphing candidates, were meshed and
+solved with steady RANS at three operating points, every geometry trimmed to that point's target
+lift. The low-order study selected the candidates at the low-speed point, Condition~CR, so that is
+where it is tested against the RANS; the two cruise points are the results the low-order study
+does not have.
+\textbf{Question.} This report answers two. First, does the low-order method order the candidates
+the way the RANS orders them? Second, what does the RANS say about the candidates themselves?
+
+\textbf{Reading order.} The report follows the order of the work. Section~\ref{sec:condgeom} states
+the operating points and the six geometries. Section~\ref{sec:method} states the OpenFOAM setup,
+the automated pipeline, the trim convention and the convergence gate, each once.
+Section~\ref{sec:qoi} lists every quantity of interest, its frame, and whether the low-order study
+produces it. Section~\ref{sec:results} reports each quantity in turn, RANS beside VLM wherever a
+VLM value exists. Section~\ref{sec:lo} answers whether the VLM can drive the design study, and
+Section~\ref{sec:concl} states what the whole of it establishes and what it does not.
+Appendices~\ref{sec:app:sections} and~\ref{sec:deltamaps} carry the surface pressure and skin
+friction, by station and over the whole wing.

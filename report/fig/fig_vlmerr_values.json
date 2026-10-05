@@ -1,0 +1,650 @@
+{
+ "_figures": [
+  {
+   "bytes": 25858,
+   "path": "$ARGUS_ROOT/docs/report/all_geometry_2026-09-15/fig/fig_vlmerr_correlation.pdf"
+  },
+  {
+   "bytes": 19459,
+   "path": "$ARGUS_ROOT/docs/report/all_geometry_2026-09-15/fig/fig_vlmerr_ranking.pdf"
+  },
+  {
+   "bytes": 24931,
+   "path": "$ARGUS_ROOT/docs/report/all_geometry_2026-09-15/fig/fig_vlmerr_counts.pdf"
+  }
+ ],
+ "_gaps": [
+  "RANS induced drag is NOT FOUND. rans_forces.json carries no CDi, no CDiw and no pressure/viscous split for any 3D case, and qoi_methods.md records that no consumer of the archived argusTrefftz planes exists. Every drag panel therefore compares an INCREMENT at fixed C_L (VLM induced-drag increment against RANS TOTAL-drag increment), not CDi against CDi. A true induced-against-induced correlation cannot be drawn from the present data set.",
+  "VLM lift slope dCL/dalpha is NOT FOUND. All 23 VSPAERO runs carry exactly one polar point and no stability deck (.stab), so no alpha derivative can be read or fitted. The lift panel therefore compares TRIM ALPHA at the common target C_L, which needs no derivative, and the lift-slope panel shows the RANS side alone.",
+  "No cruise RANS-vs-VLM comparison is drawn, for two independent reasons. (1) Geometry: of the 14 cruise VSPAERO runs only rigid_baseline maps to any of our cases by checksum, and it maps to baseline_corrected, which is NOT the meshed surface; the other six cruise geometries are a separate set with no derived STL. (2) Frame: rans_forces.json records an open, unadjudicated conflict, the cruise RANS cases measurably normalising on the DSO Sref while the cruise decks carry the TP-1580 Sref, an 11.31 percent gap against a 0.4 percent signal. D068 forbids the table until it is settled.",
+  "Late cruise has no converged trim case for any geometry, so no late-cruise point of any kind exists."
+ ],
+ "_sources": {
+  "liming": "$ARGUS_ROOT/docs/report/all_geometry_2026-09-15/data/liming.json",
+  "rans": "$ARGUS_ROOT/docs/report/all_geometry_2026-09-15/data/rans_forces.json",
+  "vlm": "$ARGUS_ROOT/docs/report/all_geometry_2026-09-15/data/vlm.json"
+ },
+ "_what": "Every value displayed by fig_vlmerr_*.pdf, dumped so a reader can check the figure against the source JSONs without rerunning it.",
+ "errors_vs_mapped_B": {
+  "C": {
+   "abs_err_far_ct": -1.200619420000002,
+   "abs_err_near_ct": 0.8572281899999858,
+   "rans_dCd_total_ct": -0.191,
+   "rel_err_far_pct": 628.596554973823,
+   "rel_err_ill_conditioned": true,
+   "rel_err_near_pct": -448.81057068062086,
+   "vlm_dCDi_near_ct": 0.6662281899999858,
+   "vlm_dCDiw_far_ct": -1.391619420000002,
+   "vlm_over_rans_near": -3.4881057068062082
+  },
+  "F": {
+   "abs_err_far_ct": -1.122759840000006,
+   "abs_err_near_ct": 3.604131769999984,
+   "rans_dCd_total_ct": -0.815,
+   "rel_err_far_pct": 137.76194355828295,
+   "rel_err_ill_conditioned": false,
+   "rel_err_near_pct": -442.22475705521276,
+   "vlm_dCDi_near_ct": 2.789131769999984,
+   "vlm_dCDiw_far_ct": -1.937759840000006,
+   "vlm_over_rans_near": -3.422247570552128
+  },
+  "H": {
+   "abs_err_far_ct": -1.2572638600000055,
+   "abs_err_near_ct": 3.7027962700000008,
+   "rans_dCd_total_ct": -0.009,
+   "rel_err_far_pct": 13969.598444444506,
+   "rel_err_ill_conditioned": true,
+   "rel_err_near_pct": -41142.18077777779,
+   "vlm_dCDi_near_ct": 3.693796270000001,
+   "vlm_dCDiw_far_ct": -1.2662638600000053,
+   "vlm_over_rans_near": -410.42180777777793
+  },
+  "M": {
+   "abs_err_far_ct": -1.4408929200000047,
+   "abs_err_near_ct": 0.7086051599999965,
+   "rans_dCd_total_ct": 0.232,
+   "rel_err_far_pct": -621.0745344827606,
+   "rel_err_ill_conditioned": false,
+   "rel_err_near_pct": 305.43325862068815,
+   "vlm_dCDi_near_ct": 0.9406051599999965,
+   "vlm_dCDiw_far_ct": -1.2088929200000047,
+   "vlm_over_rans_near": 4.054332586206881
+  },
+  "W": {
+   "abs_err_far_ct": -0.9546464200000059,
+   "abs_err_near_ct": 4.22181693999999,
+   "rans_dCd_total_ct": -0.868,
+   "rel_err_far_pct": 109.9823064516136,
+   "rel_err_ill_conditioned": false,
+   "rel_err_near_pct": -486.38444009216477,
+   "vlm_dCDi_near_ct": 3.35381693999999,
+   "vlm_dCDiw_far_ct": -1.8226464200000059,
+   "vlm_over_rans_near": -3.8638444009216473
+  }
+ },
+ "frame": {
+  "basis": "DSO  Sref 1.24092 m2 / Cref 0.39396 m / bref 3.6576 m",
+  "mach": 0.1,
+  "rans_Aref_m2": 0.620462,
+  "rans_rel_resid_vs_DSO_Sref": 3.223414885643698e-06,
+  "rans_rel_resid_vs_TP1580_Sref": 0.11313598851811975,
+  "rans_turbulence_models": [
+   "kOmegaSST"
+  ],
+  "rans_two_Aref_m2": 1.240924,
+  "target_CL": 0.428277635108
+ },
+ "lift": {
+  "B": {
+   "alpha_rans_deg": 1.747608659,
+   "alpha_vlm_deg": 1.99981,
+   "d_alpha_deg": 0.25220134100000013,
+   "implied_dCL_at_fixed_alpha": 0.021684181631733447,
+   "implied_dCL_pct_of_target": 5.063113236409201
+  },
+  "B_alternative_baseline_corrected": {
+   "alpha_rans_deg": 1.747608659,
+   "alpha_vlm_deg": 1.64536,
+   "d_alpha_deg": -0.10224865900000002,
+   "implied_dCL_at_fixed_alpha": -0.00879130334742025,
+   "implied_dCL_pct_of_target": -2.0527112850997513
+  },
+  "C": {
+   "alpha_rans_deg": 1.268311281,
+   "alpha_vlm_deg": 1.25652,
+   "d_alpha_deg": -0.01179128099999982,
+   "implied_dCL_at_fixed_alpha": -0.0010145404655024736,
+   "implied_dCL_pct_of_target": -0.2368884999672313
+  },
+  "F": {
+   "alpha_rans_deg": 1.4754555356873216,
+   "alpha_vlm_deg": 1.45936,
+   "d_alpha_deg": -0.016095535687321583,
+   "implied_dCL_at_fixed_alpha": -0.001400876753056563,
+   "implied_dCL_pct_of_target": -0.3270954722404078
+  },
+  "H": {
+   "alpha_rans_deg": 1.5523096655433406,
+   "alpha_vlm_deg": 1.44697,
+   "d_alpha_deg": -0.10533966554334051,
+   "implied_dCL_at_fixed_alpha": -0.009141846583886571,
+   "implied_dCL_pct_of_target": -2.1345608162754623
+  },
+  "M": {
+   "alpha_rans_deg": 1.25742268,
+   "alpha_vlm_deg": 1.24972,
+   "d_alpha_deg": -0.007702679999999962,
+   "implied_dCL_at_fixed_alpha": -0.00066334346813854,
+   "implied_dCL_pct_of_target": -0.1548863199385284
+  },
+  "W": {
+   "alpha_rans_deg": 1.520544715,
+   "alpha_vlm_deg": 1.42193,
+   "d_alpha_deg": -0.09861471500000007,
+   "implied_dCL_at_fixed_alpha": -0.008531190860105167,
+   "implied_dCL_pct_of_target": -1.9919767367618515
+  }
+ },
+ "noise_floor": {
+  "counts_hi": 0.199,
+  "counts_lo": 0.106,
+  "preregistered_acceptance_band_counts": 0.1,
+  "source_field": "liming.json claims[].our_independent_agreement",
+  "source_text": "resp_2026-09-02 confirms this from the other direction: our pre-registered acceptance band for a candidate-versus-reference drag delta is 0.10 counts, set from a measured fixed-CL noise floor of 0.106 to 0.199 counts on this mesh family. A 0.115-count separation sits inside that floor."
+ },
+ "ranking": {
+  "far_field": {
+   "concordant": 9,
+   "discordant": 1,
+   "kendall": 0.8,
+   "spearman": 0.9,
+   "swapped_pairs": [
+    [
+     "F",
+     "W"
+    ]
+   ]
+  },
+  "near_field": {
+   "concordant": 4,
+   "discordant": 6,
+   "kendall": -0.2,
+   "spearman": -0.19999999999999996,
+   "swapped_pairs": [
+    [
+     "C",
+     "F"
+    ],
+    [
+     "C",
+     "W"
+    ],
+    [
+     "M",
+     "F"
+    ],
+    [
+     "M",
+     "W"
+    ],
+    [
+     "M",
+     "H"
+    ],
+    [
+     "F",
+     "W"
+    ]
+   ]
+  },
+  "rank_is_baseline_invariant": "an increment ranking is invariant to the choice of VLM baseline: switching it shifts every increment by the same constant",
+  "rans_rank_by_dCd_total": {
+   "C": 3,
+   "F": 2,
+   "H": 4,
+   "M": 5,
+   "W": 1
+  },
+  "vlm_rank_by_dCDi_near": {
+   "C": 1,
+   "F": 3,
+   "H": 5,
+   "M": 2,
+   "W": 4
+  },
+  "vlm_rank_by_dCDiw_far": {
+   "C": 3,
+   "F": 1,
+   "H": 4,
+   "M": 5,
+   "W": 2
+  }
+ },
+ "rans_delta_shift_if_trim_residual_removed_counts": {
+  "C": -0.0027187989416793032,
+  "F": -0.0016715183106050082,
+  "H": -0.0016375578640974908,
+  "M": -0.0028930061233523874,
+  "W": -0.0017191660247288388
+ },
+ "rans_gate_drift_Cd_counts": {
+  "B": 0.0028,
+  "C": -0.0004,
+  "F": 0.0014,
+  "H": 0.0019,
+  "M": 0.0002,
+  "W": 0.002
+ },
+ "rans_lift_slope_fit": {
+  "B": {
+   "alpha0_deg": -3.237443788878885,
+   "alpha_range_deg": [
+    1.5999999987146878,
+    1.9000000005463933
+   ],
+   "cases": [
+    "SWB_a1p60",
+    "SWB_trim",
+    "SWB_a1p75",
+    "SWB_a1p90"
+   ],
+   "dCl_dalpha_per_deg": 0.08597964446086524,
+   "n": 4,
+   "rms_resid_Cl": 0.00020010166576067343
+  },
+  "C": {
+   "alpha0_deg": -3.712801753544656,
+   "alpha_range_deg": [
+    1.2000000015231398,
+    1.4999999995123963
+   ],
+   "cases": [
+    "SWC_a1p20",
+    "SWC_trim",
+    "SWC_a1p30",
+    "SWC_a1p40",
+    "SWC_a1p50"
+   ],
+   "dCl_dalpha_per_deg": 0.08604158152981758,
+   "n": 5,
+   "rms_resid_Cl": 0.00016082400171394393
+  },
+  "F": {
+   "alpha0_deg": -3.4661344996696744,
+   "alpha_range_deg": [
+    1.3000000019785838,
+    1.8000000019107465
+   ],
+   "cases": [
+    "SWF_a1p30",
+    "SWF_trim",
+    "SWF_a1p55",
+    "SWF_a1p80"
+   ],
+   "dCl_dalpha_per_deg": 0.0870351121124866,
+   "n": 4,
+   "rms_resid_Cl": 0.0010671934358743222
+  },
+  "H": {
+   "alpha0_deg": -3.4043618434279908,
+   "alpha_range_deg": [
+    1.349999998369088,
+    1.8499999980190844
+   ],
+   "cases": [
+    "SWH_a1p35",
+    "SWH_trim",
+    "SWH_a1p60",
+    "SWH_a1p85"
+   ],
+   "dCl_dalpha_per_deg": 0.08678446563061555,
+   "n": 4,
+   "rms_resid_Cl": 0.001097962652504745
+  },
+  "M": {
+   "alpha0_deg": -3.719383663581196,
+   "alpha_range_deg": [
+    1.2000000015231398,
+    1.4999999995123963
+   ],
+   "cases": [
+    "SWM_a1p20",
+    "SWM_trim",
+    "SWM_a1p30",
+    "SWM_a1p50"
+   ],
+   "dCl_dalpha_per_deg": 0.08611852863400055,
+   "n": 4,
+   "rms_resid_Cl": 0.00019163321014142206
+  },
+  "W": {
+   "alpha0_deg": -3.452372905812185,
+   "alpha_range_deg": [
+    1.3000000019785838,
+    1.8000000019107465
+   ],
+   "cases": [
+    "SWW_a1p30",
+    "SWW_trim",
+    "SWW_a1p55",
+    "SWW_a1p80"
+   ],
+   "dCl_dalpha_per_deg": 0.0865103231308346,
+   "n": 4,
+   "rms_resid_Cl": 0.0011200957567199738
+  }
+ },
+ "rans_morphing_signal_span_counts": [
+  -0.868,
+  0.232
+ ],
+ "rans_rank_pairs_below_noise_floor": [
+  {
+   "pair": [
+    "C",
+    "H"
+   ],
+   "separation_counts": 0.182
+  },
+  {
+   "pair": [
+    "F",
+    "W"
+   ],
+   "separation_counts": 0.05300000000000005
+  }
+ ],
+ "rans_trim": {
+  "B": {
+   "Cd_bias_from_trim_residual_counts": 0.0028737038013112426,
+   "Cd_counts": 188.031,
+   "Cl": 0.4282682,
+   "Cl_minus_target_counts": -0.09435107999999914,
+   "alpha_deg": 1.747608659,
+   "case": "SWB_trim",
+   "dCd_counts": 0.0,
+   "drift_Cd_ct": 0.0028,
+   "drift_Cl_ct": 0.145,
+   "trim_within_tolerance": true,
+   "turbulence_model": "kOmegaSST",
+   "window_samples": 200
+  },
+  "C": {
+   "Cd_bias_from_trim_residual_counts": 0.0001549048596319394,
+   "Cd_counts": 187.84,
+   "Cl": 0.428277111,
+   "Cl_minus_target_counts": -0.00524107999999579,
+   "alpha_deg": 1.268311281,
+   "case": "SWC_trim",
+   "dCd_counts": -0.191,
+   "drift_Cd_ct": -0.0004,
+   "drift_Cl_ct": 0.0368,
+   "trim_within_tolerance": true,
+   "turbulence_model": "kOmegaSST",
+   "window_samples": 200
+  },
+  "F": {
+   "Cd_bias_from_trim_residual_counts": 0.0012021854907062345,
+   "Cd_counts": 187.216,
+   "Cl": 0.428273778,
+   "Cl_minus_target_counts": -0.03857107999993836,
+   "alpha_deg": 1.4754555356873216,
+   "case": "SWF_trim",
+   "dCd_counts": -0.815,
+   "drift_Cd_ct": 0.0014,
+   "drift_Cl_ct": 0.2086,
+   "trim_within_tolerance": true,
+   "turbulence_model": "kOmegaSST",
+   "window_samples": 200
+  },
+  "H": {
+   "Cd_bias_from_trim_residual_counts": 0.0012361459372137518,
+   "Cd_counts": 188.022,
+   "Cl": 0.428273693,
+   "Cl_minus_target_counts": -0.039421079999768516,
+   "alpha_deg": 1.5523096655433406,
+   "case": "SWH_trim",
+   "dCd_counts": -0.009,
+   "drift_Cd_ct": 0.0019,
+   "drift_Cl_ct": 0.214,
+   "trim_within_tolerance": true,
+   "turbulence_model": "kOmegaSST",
+   "window_samples": 200
+  },
+  "M": {
+   "Cd_bias_from_trim_residual_counts": -1.930232204114469e-05,
+   "Cd_counts": 188.263,
+   "Cl": 0.4282777,
+   "Cl_minus_target_counts": 0.0006489199999570872,
+   "alpha_deg": 1.25742268,
+   "case": "SWM_trim",
+   "dCd_counts": 0.232,
+   "drift_Cd_ct": 0.0002,
+   "drift_Cl_ct": 0.0434,
+   "trim_within_tolerance": true,
+   "turbulence_model": "kOmegaSST",
+   "window_samples": 200
+  },
+  "W": {
+   "Cd_bias_from_trim_residual_counts": 0.0011545377765824038,
+   "Cd_counts": 187.163,
+   "Cl": 0.4282739,
+   "Cl_minus_target_counts": -0.037351080000025405,
+   "alpha_deg": 1.520544715,
+   "case": "SWW_trim",
+   "dCd_counts": -0.868,
+   "drift_Cd_ct": 0.002,
+   "drift_Cl_ct": 0.2184,
+   "trim_within_tolerance": true,
+   "turbulence_model": "kOmegaSST",
+   "window_samples": 200
+  }
+ },
+ "reproduce_DSO_19aug_CDiw_percent_vs_baseline_corrected": {
+  "C": -0.7413642789629193,
+  "F": -1.7049478474433166,
+  "H": -0.5201930317703884,
+  "M": -0.41897053830931563,
+  "W": -1.5018473334334148
+ },
+ "reproduce_superseded_CDi_percent_vs_baseline_corrected": {
+  "C": -6.52402849855247,
+  "F": -4.375066957098506,
+  "H": -3.459297990135468,
+  "M": -6.246283639131822,
+  "W": -3.8034504575119255
+ },
+ "vlm_alternative_baseline": {
+  "CDi": 0.009878741611,
+  "CDiw": 0.005667805449,
+  "CL": 0.428278133112,
+  "CL_error": 4.98004000037966e-07,
+  "alpha_deg": 1.64536,
+  "geometry_name": "baseline_corrected",
+  "mapping_family": "B (alternative aerofoil interpolation) - NOT THE MESHED SURFACE",
+  "sha256": "bb6ccd911e20b49fac38f8456abc8f2704b6fcf3292620d6eaa5d05adcf64379"
+ },
+ "vlm_baseline_choice_shift_counts": {
+  "CDi": -7.111147369999998,
+  "CDiw": 0.9714285700000019,
+  "meaning": "every VLM increment moves by this much when the reference is switched from baseline_wing_only_refined (the meshed surface) to baseline_corrected (the surface the DSO ranks against)"
+ },
+ "vlm_deltas_vs_baseline_corrected": {
+  "C": {
+   "dCDi_ct": -6.444919180000012,
+   "dCDiw_ct": -0.42019085000000006
+  },
+  "F": {
+   "dCDi_ct": -4.322015600000014,
+   "dCDiw_ct": -0.9663312700000041
+  },
+  "H": {
+   "dCDi_ct": -3.4173510999999968,
+   "dCDiw_ct": -0.2948352900000034
+  },
+  "M": {
+   "dCDi_ct": -6.170542210000001,
+   "dCDiw_ct": -0.23746435000000266
+  },
+  "W": {
+   "dCDi_ct": -3.7573304300000077,
+   "dCDiw_ct": -0.851217850000004
+  }
+ },
+ "vlm_deltas_vs_mapped_B": {
+  "C": {
+   "dCDi_ct": 0.6662281899999858,
+   "dCDiw_ct": -1.391619420000002
+  },
+  "F": {
+   "dCDi_ct": 2.789131769999984,
+   "dCDiw_ct": -1.937759840000006
+  },
+  "H": {
+   "dCDi_ct": 3.693796270000001,
+   "dCDiw_ct": -1.2662638600000053
+  },
+  "M": {
+   "dCDi_ct": 0.9406051599999965,
+   "dCDiw_ct": -1.2088929200000047
+  },
+  "W": {
+   "dCDi_ct": 3.35381693999999,
+   "dCDiw_ct": -1.8226464200000059
+  }
+ },
+ "vlm_runs_mapped": {
+  "B": {
+   "CDi": 0.009167626874,
+   "CDiw": 0.005764948306,
+   "CDo": 0.006405972414,
+   "CDo_frac_of_CDtot": 0.41133538211272874,
+   "CDtot": 0.015573599288,
+   "CL": 0.42826231128,
+   "CL_error": -1.5323828000013417e-05,
+   "ReCref_deck": 10000000.0,
+   "alpha_deg": 1.99981,
+   "alpha_deg_csv": 1.999811681602774,
+   "geometry_name": "baseline_wing_only_refined",
+   "mapping_family": "B",
+   "package": "baseline_operating_point_and_loads",
+   "sha256": "55cbdc7c48a15d847da602b540b95712b38e893490823aa7b5b997302100ba02"
+  },
+  "C": {
+   "CDi": 0.009234249693,
+   "CDiw": 0.005625786364,
+   "CDo": 0.006407827642,
+   "CDo_frac_of_CDtot": 0.40965323881004834,
+   "CDtot": 0.015642077335,
+   "CL": 0.428277943081,
+   "CL_error": 3.0797299999107963e-07,
+   "ReCref_deck": 10000000.0,
+   "alpha_deg": 1.25652,
+   "alpha_deg_csv": 1.2565172230781758,
+   "geometry_name": "cte_i002_c04",
+   "mapping_family": "C",
+   "package": "2026-07-29_correction_pair",
+   "sha256": "aae4a07e4735df8a0b7598fdd445a03eea15aefd871f7575b16bc6d5e17c5bb6"
+  },
+  "F": {
+   "CDi": 0.009446540051,
+   "CDiw": 0.005571172322,
+   "CDo": 0.006389378148,
+   "CDo_frac_of_CDtot": 0.4034738035211291,
+   "CDtot": 0.015835918199,
+   "CL": 0.428277235372,
+   "CL_error": -3.9973599996745435e-07,
+   "ReCref_deck": 10000000.0,
+   "alpha_deg": 1.45936,
+   "alpha_deg_csv": 1.459359736882683,
+   "geometry_name": "cfft_b02_c01",
+   "mapping_family": "F",
+   "package": "ARGUS_CDIW_audit_delivery_2026-08-19",
+   "sha256": "b3712ac50df554d17b37b851c02072cdc53c4794aab4e703cdbaf1ea1bf75a6f"
+  },
+  "H": {
+   "CDi": 0.009537006501,
+   "CDiw": 0.00563832192,
+   "CDo": 0.006388719285,
+   "CDo_frac_of_CDtot": 0.4011571824636213,
+   "CDtot": 0.015925725786,
+   "CL": 0.428276922524,
+   "CL_error": -7.125839999733152e-07,
+   "ReCref_deck": 10000000.0,
+   "alpha_deg": 1.44697,
+   "alpha_deg_csv": 1.4469742941410888,
+   "geometry_name": "chc_g02_c06",
+   "mapping_family": "H",
+   "package": "ARGUS_CDIW_audit_delivery_2026-08-19",
+   "sha256": "fd591b0c3064aa4fa8610c15d2988c664dce140b03aeb7571c56a3ea7d4b4bee"
+  },
+  "M": {
+   "CDi": 0.00926168739,
+   "CDiw": 0.005644059014,
+   "CDo": 0.006408441884,
+   "CDo_frac_of_CDtot": 0.4089590948450525,
+   "CDtot": 0.015670129274,
+   "CL": 0.428277505407,
+   "CL_error": -1.297009999956522e-07,
+   "ReCref_deck": 10000000.0,
+   "alpha_deg": 1.24972,
+   "alpha_deg_csv": 1.249720412530536,
+   "geometry_name": "mcv2_i002_c01",
+   "mapping_family": "M",
+   "package": "2026-07-29_correction_pair",
+   "sha256": "54fe540dd4cf685f2ed6d1e4e4b3513b0c81c75f4d423b6d1f02dbc39c8ffb96"
+  },
+  "W": {
+   "CDi": 0.009503008568,
+   "CDiw": 0.005582683664,
+   "CDo": 0.006392701371,
+   "CDo_frac_of_CDtot": 0.40216520029204367,
+   "CDtot": 0.015895709938,
+   "CL": 0.428277783612,
+   "CL_error": 1.4850399998600494e-07,
+   "ReCref_deck": 10000000.0,
+   "alpha_deg": 1.42193,
+   "alpha_deg_csv": 1.4219268233475166,
+   "geometry_name": "cffw_b01_c01",
+   "mapping_family": "W",
+   "package": "ARGUS_CDIW_audit_delivery_2026-08-19",
+   "sha256": "69d2be9b515283a5980a55bf8ede9a7d01a420efddbb27f667683425fbb02652"
+  }
+ },
+ "vlm_trim_residual_sensitivity_MODEL": {
+  "B": {
+   "CL_error_counts": -0.15323828000013417,
+   "implied_CDi_bias_counts_MODEL_CL_squared": 0.0065606117412292265
+  },
+  "C": {
+   "CL_error_counts": 0.0030797299999107963,
+   "implied_CDi_bias_counts_MODEL_CL_squared": -0.000132806259419344
+  },
+  "F": {
+   "CL_error_counts": -0.0039973599996745435,
+   "implied_CDi_bias_counts_MODEL_CL_squared": 0.0001763400816874689
+  },
+  "H": {
+   "CL_error_counts": -0.007125839999733152,
+   "implied_CDi_bias_counts_MODEL_CL_squared": 0.00031736093554624153
+  },
+  "M": {
+   "CL_error_counts": -0.001297009999956522,
+   "implied_CDi_bias_counts_MODEL_CL_squared": 5.609681110795451e-05
+  },
+  "W": {
+   "CL_error_counts": 0.0014850399998600494,
+   "implied_CDi_bias_counts_MODEL_CL_squared": -6.590277797495053e-05
+  }
+ },
+ "vlm_unmapped_condition_CR": [
+  [
+   "baseline_corrected",
+   "B (alternative aerofoil interpolation) - NOT THE MESHED SURFACE"
+  ],
+  [
+   "mbr_c01_l011",
+   "unmapped"
+  ]
+ ]
+}

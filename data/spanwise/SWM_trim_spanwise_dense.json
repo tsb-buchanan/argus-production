@@ -1,0 +1,31 @@
+{
+  "case": "SWM_trim",
+  "vtk": "/home/scratch/$USER/argus/solve_r2/SWM_trim/postProcessing/argusWingSurface/6000/wingSurface.vtk",
+  "time": "6000",
+  "vtk_bytes": 628572410,
+  "vtk_sha256": "621d4be07d95e8e793e90d95170c7e72e8700769e85a36e9d2b303076d2e9d64",
+  "script": "scripts/spanwise_dense_report.py",
+  "band_half_width_frac_semispan": 0.004,
+  "Sref_m2_DSO": 1.24092,
+  "Cref_m_DSO": 0.39396,
+  "frame": "c_l on LOCAL chord; LOAD = c_l*c/Cref, Cref DSO 0.39396 m; CL closure = 2*int(c_l c dy)/Sref, Sref DSO 1.24092 m2 full-wing",
+  "q_from_file": 578.0000010136205,
+  "p_inf_from_file": 9.370516806939122e-08,
+  "q_fit_resid_max_over_q": 5.776791238213481e-06,
+  "q_fit_resid_p99_over_q": 1.2082904754728672e-06,
+  "dragDir": [
+    0.999759192568252,
+    0.0,
+    0.02194440419052326
+  ],
+  "alpha_deg": 1.2574226779085187,
+  "case_dir": "/home/scratch/$USER/argus/solve_r2/SWM_trim",
+  "semispan_from_surface_m": 1.8253949999999999,
+  "semispan_registered_m": 1.8288,
+  "CL_from_strips": 0.40806331269124746,
+  "CL_strip_note": "pressure only; the integral spans eta 0.025 to 0.988, so the root and tip regions outside that range are NOT included. The closure gap is therefore an UPPER BOUND on the sampling error and is not by itself a defect.",
+  "CL_forceCoeffs": 0.4282777,
+  "CL_closure_rel": -0.04719925251478778,
+  "n_stations": 78,
+  "skipped": []
+}

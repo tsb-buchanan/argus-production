@@ -1,0 +1,292 @@
+{
+  "what": "Trefftz-plane induced drag and span efficiency at Condition CR",
+  "generated_by": "docs/report/all_geometry_2026-09-15/scripts/build_span_efficiency.py",
+  "source": "data/span_eff_r2trim_raw.json",
+  "produced_by": "span_efficiency() in scripts/case_derived_quantities.py, unchanged",
+  "frame": {
+    "Aref_m2": 0.620462,
+    "Aref_note": "half wing, matching each case's forceCoeffs",
+    "AR_full": 10.780741514360313,
+    "AR_note": "DSO basis, bref 3.6576 m, Sref 1.24092 m2",
+    "U_inf_m_s": 34.0,
+    "condition": "CR (M 0.10)",
+    "CL_target": 0.428277635108,
+    "mesh_generation": "wake-refined",
+    "stations_x_m": [
+      2.394,
+      2.626,
+      2.916,
+      3.206
+    ]
+  },
+  "gate": {
+    "rule": "e = CL^2/(pi*AR*CDi) cannot exceed 1",
+    "max_e_last_station": 0.9858729001595391
+  },
+  "geometries": {
+    "B": {
+      "case": "SWB_trim",
+      "mesh_generation": "wake-refined",
+      "trimmed": true,
+      "time": 6000,
+      "alpha_deg": 1.7476076753733858,
+      "CL": 0.4282682,
+      "CL_minus_target_counts": -0.09435107999999914,
+      "Cd_counts": 188.031,
+      "stations": [
+        {
+          "plane": "trefftz_x1",
+          "x_m": 2.39425,
+          "CDi_counts": 61.833788889078846,
+          "span_efficiency": 0.8758047401895154,
+          "n_faces": 78366
+        },
+        {
+          "plane": "trefftz_x2",
+          "x_m": 2.6261900000000007,
+          "CDi_counts": 58.67328250898662,
+          "span_efficiency": 0.9229810076611713,
+          "n_faces": 78312
+        },
+        {
+          "plane": "trefftz_x3",
+          "x_m": 2.91613,
+          "CDi_counts": 56.9359649658121,
+          "span_efficiency": 0.9511444206741849,
+          "n_faces": 78153
+        },
+        {
+          "plane": "trefftz_x4",
+          "x_m": 3.2060600000000004,
+          "CDi_counts": 55.98364621903725,
+          "span_efficiency": 0.9673240146069275,
+          "n_faces": 77994
+        }
+      ],
+      "CDi_counts_first": 61.833788889078846,
+      "CDi_counts_last": 55.98364621903725,
+      "decay_first_to_last_percent": 9.461077470985865,
+      "e_last": 0.9673240146069275
+    },
+    "C": {
+      "case": "SWC_trim",
+      "mesh_generation": "wake-refined",
+      "trimmed": true,
+      "time": 6000,
+      "alpha_deg": 1.2683128488405377,
+      "CL": 0.4282771,
+      "CL_minus_target_counts": -0.005351079999660335,
+      "Cd_counts": 187.83999999999997,
+      "stations": [
+        {
+          "plane": "trefftz_x1",
+          "x_m": 2.39425,
+          "CDi_counts": 61.701777403826924,
+          "span_efficiency": 0.8777150110934706,
+          "n_faces": 78366
+        },
+        {
+          "plane": "trefftz_x2",
+          "x_m": 2.6261900000000007,
+          "CDi_counts": 58.218511114614834,
+          "span_efficiency": 0.9302294957675695,
+          "n_faces": 78312
+        },
+        {
+          "plane": "trefftz_x3",
+          "x_m": 2.91613,
+          "CDi_counts": 56.38829638074975,
+          "span_efficiency": 0.9604222811202924,
+          "n_faces": 78159
+        },
+        {
+          "plane": "trefftz_x4",
+          "x_m": 3.2060600000000004,
+          "CDi_counts": 55.41407127033765,
+          "span_efficiency": 0.9773072975324957,
+          "n_faces": 77994
+        }
+      ],
+      "CDi_counts_first": 61.701777403826924,
+      "CDi_counts_last": 55.41407127033765,
+      "decay_first_to_last_percent": 10.190478132157164,
+      "e_last": 0.9773072975324957
+    },
+    "F": {
+      "case": "SWF_trim",
+      "mesh_generation": "wake-refined",
+      "trimmed": true,
+      "time": 6000,
+      "alpha_deg": 1.4754577280463896,
+      "CL": 0.4282738,
+      "CL_minus_target_counts": -0.03835108000005416,
+      "Cd_counts": 187.216,
+      "stations": [
+        {
+          "plane": "trefftz_x1",
+          "x_m": 2.39425,
+          "CDi_counts": 61.000609567974685,
+          "span_efficiency": 0.8877901719476433,
+          "n_faces": 78366
+        },
+        {
+          "plane": "trefftz_x2",
+          "x_m": 2.6262000000000003,
+          "CDi_counts": 57.66885752685609,
+          "span_efficiency": 0.9390812299696288,
+          "n_faces": 78312
+        },
+        {
+          "plane": "trefftz_x3",
+          "x_m": 2.91613,
+          "CDi_counts": 55.88977701020233,
+          "span_efficiency": 0.968974015540937,
+          "n_faces": 78156
+        },
+        {
+          "plane": "trefftz_x4",
+          "x_m": 3.2060600000000004,
+          "CDi_counts": 54.931768231482515,
+          "span_efficiency": 0.9858729001595391,
+          "n_faces": 77994
+        }
+      ],
+      "CDi_counts_first": 61.000609567974685,
+      "CDi_counts_last": 54.931768231482515,
+      "decay_first_to_last_percent": 9.948820806010946,
+      "e_last": 0.9858729001595391
+    },
+    "H": {
+      "case": "SWH_trim",
+      "mesh_generation": "wake-refined",
+      "trimmed": true,
+      "time": 6000,
+      "alpha_deg": 1.5523109871715541,
+      "CL": 0.4282737,
+      "CL_minus_target_counts": -0.039351080000082916,
+      "Cd_counts": 188.02200000000002,
+      "stations": [
+        {
+          "plane": "trefftz_x1",
+          "x_m": 2.39425,
+          "CDi_counts": 61.56262019761362,
+          "span_efficiency": 0.8796850457824219,
+          "n_faces": 78366
+        },
+        {
+          "plane": "trefftz_x2",
+          "x_m": 2.6261900000000007,
+          "CDi_counts": 58.188201829241954,
+          "span_efficiency": 0.930699259721893,
+          "n_faces": 78312
+        },
+        {
+          "plane": "trefftz_x3",
+          "x_m": 2.91613,
+          "CDi_counts": 56.391234510369934,
+          "span_efficiency": 0.9603569923099439,
+          "n_faces": 78153
+        },
+        {
+          "plane": "trefftz_x4",
+          "x_m": 3.2060600000000004,
+          "CDi_counts": 55.41628345161791,
+          "span_efficiency": 0.9772527674885509,
+          "n_faces": 77994
+        }
+      ],
+      "CDi_counts_first": 61.56262019761362,
+      "CDi_counts_last": 55.41628345161791,
+      "decay_first_to_last_percent": 9.983877759371204,
+      "e_last": 0.9772527674885509
+    },
+    "M": {
+      "case": "SWM_trim",
+      "mesh_generation": "wake-refined",
+      "trimmed": true,
+      "time": 6000,
+      "alpha_deg": 1.2574247848743663,
+      "CL": 0.4282777,
+      "CL_minus_target_counts": 0.0006489199999570872,
+      "Cd_counts": 188.263,
+      "stations": [
+        {
+          "plane": "trefftz_x1",
+          "x_m": 2.39425,
+          "CDi_counts": 62.03465682532448,
+          "span_efficiency": 0.8730076178822329,
+          "n_faces": 78366
+        },
+        {
+          "plane": "trefftz_x2",
+          "x_m": 2.6261900000000007,
+          "CDi_counts": 58.51782456539123,
+          "span_efficiency": 0.925474048009089,
+          "n_faces": 78312
+        },
+        {
+          "plane": "trefftz_x3",
+          "x_m": 2.91613,
+          "CDi_counts": 56.67596011472612,
+          "span_efficiency": 0.955550252198494,
+          "n_faces": 78153
+        },
+        {
+          "plane": "trefftz_x4",
+          "x_m": 3.2060600000000004,
+          "CDi_counts": 55.69584349323608,
+          "span_efficiency": 0.9723657024387345,
+          "n_faces": 77994
+        }
+      ],
+      "CDi_counts_first": 62.03465682532448,
+      "CDi_counts_last": 55.69584349323608,
+      "decay_first_to_last_percent": 10.218180701695601,
+      "e_last": 0.9723657024387345
+    },
+    "W": {
+      "case": "SWW_trim",
+      "mesh_generation": "wake-refined",
+      "trimmed": true,
+      "time": 6000,
+      "alpha_deg": 1.520546959447182,
+      "CL": 0.4282739,
+      "CL_minus_target_counts": -0.037351080000025405,
+      "Cd_counts": 187.163,
+      "stations": [
+        {
+          "plane": "trefftz_x1",
+          "x_m": 2.39416,
+          "CDi_counts": 60.95583220214044,
+          "span_efficiency": 0.8884427460184403,
+          "n_faces": 78366
+        },
+        {
+          "plane": "trefftz_x2",
+          "x_m": 2.6260800000000013,
+          "CDi_counts": 57.73764963894181,
+          "span_efficiency": 0.9379627900714363,
+          "n_faces": 78312
+        },
+        {
+          "plane": "trefftz_x3",
+          "x_m": 2.9159900000000003,
+          "CDi_counts": 55.99526191028339,
+          "span_efficiency": 0.9671490961910003,
+          "n_faces": 78153
+        },
+        {
+          "plane": "trefftz_x4",
+          "x_m": 3.205910000000002,
+          "CDi_counts": 55.05450470904555,
+          "span_efficiency": 0.9836754909287384,
+          "n_faces": 77994
+        }
+      ],
+      "CDi_counts_first": 60.95583220214044,
+      "CDi_counts_last": 55.05450470904555,
+      "decay_first_to_last_percent": 9.681317242171401,
+      "e_last": 0.9836754909287384
+    }
+  }
+}

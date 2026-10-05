@@ -1,0 +1,67 @@
+# Credentials and keys. NEVER commit any of these.
+*.pem
+*.key
+*.ppk
+id_rsa*
+id_ed25519*
+id_ecdsa*
+authorized_keys
+known_hosts
+.netrc
+.env*
+credentials*
+.git-credentials
+.pypirc
+.ssh/
+.huggingface/
+.cache/
+*.token
+.htpasswd
+
+# OpenFOAM run output. Cases are rebuilt from recipes, never committed.
+processor*/
+postProcessing/
+constant/polyMesh/
+dynamicCode/
+*.OpenFOAM
+log.*
+*.log
+# Provenance logs that ship with the spanwise data (derived-quantity records, not solver logs)
+!data/spanwise/*.log
+[0-9]*/
+!0.orig/
+
+# Meshes and heavy fields
+*.vtk
+*.vtu
+*.foam
+*.msh
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.ipynb_checkpoints/
+.venv/
+venv/
+
+# LaTeX build products
+*.aux
+*.bbl
+*.blg
+*.fdb_latexmk
+*.fls
+*.lof
+*.lot
+*.nav
+*.out
+*.snm
+*.synctex.gz
+*.toc
+
+# Editor and OS
+*~
+*.swp
+.DS_Store
+.vscode/
+.idea/

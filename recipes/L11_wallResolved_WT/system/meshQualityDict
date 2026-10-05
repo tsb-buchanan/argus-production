@@ -1,0 +1,40 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+// OpenFOAM-7 Foundation defaults from etc/caseDicts/mesh/generation/meshQualityDict,
+// with the `relaxed` sub-dict populated so nRelaxedIter has something to relax to.
+//
+// minVol note.  The check is on the CELL PYRAMID volume over a face, A*h/3.
+// At our finest surface cell (3.906 mm) and a 4.5 um first layer:
+//     A*h/3 = (3.906e-3)^2 * 4.5e-6 / 3 = 2.3e-11 m3
+// which clears 1e-13 by 230x.  It only becomes binding below about a 0.4 mm
+// surface cell.  Recompute if the surface refinement is ever raised.
+
+maxNonOrtho         65;
+maxBoundarySkewness 20;
+maxInternalSkewness  4;
+maxConcave          80;
+// minVol: OF-7 canonical was 1e-13 and OF-12 canonical is -1e30, i.e.
+// OpenFOAM DISABLED this check at 12. Measured on SWH (job 9348): the
+// inherited 1e-13 flagged 88,736,304 of 95,037,975 faces as 'face pyramid
+// volume < 1e-13' while EVERY other quality check reported 0, and the
+// failed initial-mesh check meant NO LAYERS WERE ADDED (layer mesh ==
+// snapped mesh, 29.4M cells against the 85.6M the recipe expects).
+// The same threshold on the same geometry family reports 0 under OF-7.
+minVol              -1e30;
+minTetQuality       1e-15;
+minArea             -1;
+minTwist            0.02;
+minDeterminant      0.001;
+minFaceWeight       0.05;
+minVolRatio         0.01;
+// minTriangleTwist removed: absent from OpenFOAM-12. It was -1
+// (disabled) here, so this is not a behaviour change.
+
+nSmoothScale        4;
+errorReduction      0.75;
+
+relaxed
+{
+    maxNonOrtho     75;
+    minTetQuality   -1e30;
+    minTwist        -1;
+}

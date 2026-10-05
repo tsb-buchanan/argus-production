@@ -1,0 +1,16 @@
+/*  ARGUS airfoil2d, OpenFOAM-org 7. Flatten the snapped slab to a single spanwise cell:
+    re-extrude the front (y=0) patch 1.0 m; side faces inherit inlet/outlet/farfield/airfoil
+    from edge adjacency; front + new back patch are set to empty by changeDictionary.
+    Thickness 1.0 m makes forceCoeffs Aref = chord x 1 exactly per unit span.  */
+FoamFile { version 2.0; format ascii; class dictionary; object extrudeMeshDict; }
+constructFrom patch;
+sourceCase ".";
+sourcePatches (front);
+exposedPatchName back;
+flipNormals false;
+extrudeModel linearNormal;
+nLayers 1;
+expansionRatio 1.0;
+linearNormalCoeffs { thickness 1.0; }
+mergeFaces false;
+mergeTol 0;

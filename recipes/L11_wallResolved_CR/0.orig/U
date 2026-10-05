@@ -1,0 +1,23 @@
+FoamFile { version 2.0; format ascii; class volVectorField; object U; }
+// |U| = 40.8 m/s.  alpha imposed by TILTING THE FREESTREAM, geometry not rotated
+// (Onera M6 tutorial and OpenFOAM HPC CRM case both do this).
+//   alpha = 2.1028 deg  ->  (40.8*cos, 0, 40.8*sin) = (40.7725, 0, 1.49736)
+dimensions      [0 1 -1 0 0 0 0];
+Uinf            (33.991249 0 0.771369);
+internalField   uniform $Uinf;
+
+boundaryField
+{
+    // inletOutlet, NOT slip.  A slip patch enforces zero normal velocity, which is
+    // the inviscid solid-wall condition -- i.e. a wind tunnel wall, complete with
+    // image-vortex interference.  inletOutlet permits normal flux and behaves as a
+    // far field.  (Lecture 4 slide 13 states the equivalence explicitly:
+    // "Physically speaking, they [symmetry BCs] are equivalent to slip walls.")
+    inlet     { type inletOutlet; inletValue uniform $Uinf; value uniform $Uinf; }
+    topBottom { type inletOutlet; inletValue uniform $Uinf; value uniform $Uinf; }
+    outboard  { type inletOutlet; inletValue uniform $Uinf; value uniform $Uinf; }
+    outlet    { type inletOutlet; inletValue uniform (0 0 0); value uniform $Uinf; }
+    symmetry  { type symmetry; }
+    wing      { type noSlip; }
+    #includeEtc "caseDicts/setConstraintTypes"
+}

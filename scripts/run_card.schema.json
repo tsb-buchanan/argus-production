@@ -1,0 +1,915 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "argus:run_card:v1",
+  "title": "ARGUS run card v1",
+  "description": "One JSON per completed OpenFOAM run (project record-keeping rules; funded-project deliverable). Written to the case directory as run_card.json and committed. Validate with scripts/validate_run_card.py. OpenFOAM-org 7 pinned per D009. FIELD CLASSES (GEO-081): every field carries x-argus-field-class, either 'derived' (recomputed from the case on every regeneration) or 'recorded-at-run-time' (immutable once written; regeneration must preserve it, or it destroys the provenance of the run it describes). A field added later MUST be classed. Enforced by scripts/atomic_artifact.py:preserve_run_time_fields, which reads the class from here rather than hard-coding a field list.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "candidate",
+    "case",
+    "geometry",
+    "provenance",
+    "mesh",
+    "model",
+    "bc",
+    "numerics",
+    "convergence",
+    "conditions",
+    "results",
+    "trim",
+    "cost",
+    "wall_treatment",
+    "hpc"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "candidate": {
+      "type": "string",
+      "minLength": 1,
+      "description": "Key in registry/candidates.yaml; no case runs on an unregistered geometry"
+    },
+    "case": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "path",
+        "dimensionality",
+        "condition"
+      ],
+      "properties": {
+        "path": {
+          "type": "string",
+          "description": "Repo-relative case path, D006 naming: cases/<candidate>/WT_M0p12_CL0p428/ or CR_M0p10_CL0p428/ (alpha- or eta-suffixed variants for sweeps/2D)"
+        },
+        "dimensionality": {
+          "enum": [
+            "2D",
+            "3D"
+          ]
+        },
+        "condition": {
+          "enum": [
+            "WT",
+            "CR",
+            "VER",
+            "C2215A06",
+            "C2215A05",
+            "EC",
+            "LC"
+          ],
+          "description": "VER = solver-verification case (e.g. TMR NACA 0012, D012 Layer 1), not an ARGUS flow condition. WT and CR are the ARGUS operating points (tunnel-matched M 0.12 and DSO-matched M 0.10). VER is a verification case run at a reference code's conditions rather than ours (TMR NACA 0012). C2215A06 and C2215A05 are the NASA CR-2215 EXPERIMENTAL conditions, M 0.201/Re 2.83e6 tripped and M 0.080/Re 1.10e6 free respectively; they are neither ARGUS operating points nor verification, so they need their own values rather than being mislabelled as one of the existing three. Added 2026-08-06 when the CR-2215 cases first produced quotable results."
+        },
+        "eta": {
+          "type": [
+            "number",
+            "null"
+          ],
+          "minimum": 0.0,
+          "maximum": 1.0,
+          "description": "Spanwise station of a 2D section case; null/absent for 3D"
+        },
+        "description": {
+          "type": "string"
+        }
+      }
+    },
+    "geometry": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "file",
+        "sha256"
+      ],
+      "properties": {
+        "file": {
+          "type": "string",
+          "description": "Repo-relative geometry file the mesh was built from"
+        },
+        "sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "Must match the entry in registry/candidates.yaml"
+        }
+      }
+    },
+    "provenance": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "git_commit",
+        "git_dirty",
+        "openfoam_version",
+        "date"
+      ],
+      "properties": {
+        "git_commit": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{7,40}$",
+          "description": "Commit at which this card was generated, i.e. the state of the post-processing code that turned the solver output into the reported coefficients. Re-stamped when a card is regenerated; pair it with `date` to place the run.",
+          "x-argus-field-class": "recorded-at-run-time"
+        },
+        "git_dirty": {
+          "type": "boolean",
+          "description": "true if the working tree had uncommitted changes (explain in notes)",
+          "x-argus-field-class": "recorded-at-run-time"
+        },
+        "openfoam_version": {
+          "type": "string",
+          "description": "e.g. openfoam-org-7 (D009)",
+          "x-argus-field-class": "recorded-at-run-time"
+        },
+        "date": {
+          "type": "string",
+          "pattern": "^[0-9]{4}-[0-9]{2}-[0-9]{2}$",
+          "description": "RUN date, taken from the mtime of the final solver log. NOT the card-write date: regenerating a card must not re-date the run it records.",
+          "x-argus-field-class": "recorded-at-run-time"
+        }
+      }
+    },
+    "mesh": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "generator",
+        "cells",
+        "max_skewness",
+        "max_non_orthogonality",
+        "yplus",
+        "checkMesh_pass",
+        "mesh_generation"
+      ],
+      "properties": {
+        "generator": {
+          "type": "string",
+          "description": "e.g. blockMesh+snappyHexMesh+extrudeMesh (2D) or blockMesh+snappyHexMesh (3D)"
+        },
+        "cells": {
+          "type": "integer",
+          "minimum": 1,
+          "x-argus-field-class": "derived"
+        },
+        "max_skewness": {
+          "type": "number",
+          "minimum": 0,
+          "x-argus-field-class": "derived"
+        },
+        "max_non_orthogonality": {
+          "type": "number",
+          "minimum": 0,
+          "x-argus-field-class": "derived"
+        },
+        "avg_non_orthogonality": {
+          "type": "number",
+          "minimum": 0
+        },
+        "yplus": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "min",
+            "mean",
+            "max"
+          ],
+          "properties": {
+            "min": {
+              "type": "number"
+            },
+            "mean": {
+              "type": "number"
+            },
+            "max": {
+              "type": "number"
+            }
+          },
+          "description": "Over the wall patch, from the yPlus function object at the final iteration"
+        },
+        "layers": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "n_surface_layers",
+            "first_layer_thickness_m",
+            "expansion_ratio"
+          ],
+          "properties": {
+            "n_surface_layers": {
+              "type": "integer",
+              "minimum": 0
+            },
+            "first_layer_thickness_m": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "expansion_ratio": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "coverage_fraction": {
+              "type": "number",
+              "minimum": 0,
+              "maximum": 1,
+              "description": "Achieved/requested layer thickness fraction from snappy log"
+            }
+          }
+        },
+        "checkMesh_pass": {
+          "type": "boolean",
+          "x-argus-field-class": "derived"
+        },
+        "mesh_generation": {
+          "type": "object",
+          "additionalProperties": false,
+          "description": "MANDATORY. Rank count and decomposition method are PART OF THE MESH RECIPE, on the same footing as refinement levels and the layer specification, because parallel snappyHexMesh does not produce the same mesh at different rank counts. Do not confuse with hpc.solve_ranks, which is not.",
+          "required": [
+            "ranks",
+            "method",
+            "inferred",
+            "machine"
+          ],
+          "properties": {
+            "ranks": {
+              "type": [
+                "integer",
+                "null"
+              ],
+              "minimum": 1,
+              "description": "MPI rank count snappyHexMesh was RUN AT. null only for a serial mesh, and then method must say so."
+            },
+            "method": {
+              "type": "string",
+              "description": "decomposePar method used for MESH GENERATION, e.g. scotch"
+            },
+            "inferred": {
+              "type": "boolean",
+              "description": "true when the values were reconstructed after the fact (e.g. from the count of processor* directories present) rather than recorded at generation time. AN INFERRED VALUE IS NOT A RECORDED ONE: a case can be re-decomposed after meshing and the evidence is then gone. hpc/slurm/mesh.slurm writes inferred:false because it records the number at the moment it uses it; hpc/package_case.sh writes inferred:true unless told otherwise."
+            },
+            "inferred_from": {
+              "type": "string",
+              "description": "Required in practice whenever inferred is true: what the value was inferred from."
+            },
+            "machine": {
+              "type": "string",
+              "description": "Where the mesh was BUILT, e.g. laptop-WSL2. May differ from hpc.machine and from cost.machine; for the six coverage-ladder and wall-function solves it does."
+            },
+            "feature_utility": {
+              "type": "string",
+              "description": "Surface-feature utility actually invoked. OpenFOAM-org 7 ships BOTH surfaceFeatures (reading system/surfaceFeaturesDict) and surfaceFeatureExtract (reading system/surfaceFeatureExtractDict); all 16 org-7 tutorials use the former, as did the project's OpenFOAM-org 7 wing template (no longer shipped). Record which one ran rather than assuming."
+            }
+          }
+        }
+      }
+    },
+    "model": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "solver",
+        "turbulence_model",
+        "wall_treatment"
+      ],
+      "properties": {
+        "solver": {
+          "type": "string",
+          "description": "e.g. simpleFoam (OF-7) or foamRun (OF-12)",
+          "x-argus-field-class": "derived"
+        },
+        "solver_module": {
+          "type": "string",
+          "description": "OF-12 only: the module foamRun ran, from controlDict 'solver'. Either 'incompressibleFluid' or 'fluid'. OPTIONAL because OF-7 cases have no such concept and every committed card predates OF-12; absent means OF-7, where 'solver' alone is unambiguous. REQUIRED IN PRACTICE FOR ANY OF-12 CARD, because 'foamRun' alone does NOT identify the recipe: it is the same executable for both paths, which carry different sanctioned turbulence models and opposite wall-function rules, so a card naming only foamRun cannot be checked against a recipe.",
+          "enum": ["incompressibleFluid", "fluid"],
+          "x-argus-field-class": "derived"
+        },
+        "turbulence_model": {
+          "type": "string",
+          "description": "e.g. kOmegaSST (default) or SpalartAllmaras (cross-check)",
+          "x-argus-field-class": "derived"
+        },
+        "wall_treatment": {
+          "enum": [
+            "low-Re resolved",
+            "wall functions"
+          ],
+          "x-argus-field-class": "derived"
+        },
+        "decision_ref": {
+          "type": "string",
+          "description": "Decision-log ID authorizing any non-default choice"
+        },
+        "notes": {
+          "type": "string"
+        }
+      },
+      "if": {
+        "properties": {
+          "wall_treatment": {
+            "const": "wall functions"
+          }
+        }
+      },
+      "then": {
+        "required": [
+          "decision_ref"
+        ]
+      }
+    },
+    "bc": {
+      "type": "object",
+      "minProperties": 1,
+      "description": "Per-patch boundary-condition summary, patch name -> {field: type/value}",
+      "additionalProperties": true
+    },
+    "numerics": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "convergence_criteria"
+      ],
+      "properties": {
+        "schemes_summary": {
+          "type": "string",
+          "description": "e.g. steadyState, linearUpwind U/k/omega, SIMPLEC"
+        },
+        "convergence_criteria": {
+          "type": "object",
+          "description": "residualControl targets and any run-termination criteria",
+          "additionalProperties": true,
+          "x-argus-field-class": "derived"
+        }
+      }
+    },
+    "convergence": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "iterations",
+        "final_residuals",
+        "converged"
+      ],
+      "properties": {
+        "iterations": {
+          "type": "integer",
+          "minimum": 1,
+          "x-argus-field-class": "derived"
+        },
+        "final_residuals": {
+          "type": "object",
+          "required": [
+            "p",
+            "U"
+          ],
+          "properties": {
+            "p": {
+              "type": "number"
+            },
+            "U": {
+              "type": "number"
+            },
+            "k": {
+              "type": "number"
+            },
+            "omega": {
+              "type": "number"
+            }
+          },
+          "additionalProperties": {
+            "type": "number"
+          },
+          "x-argus-field-class": "derived"
+        },
+        "converged": {
+          "type": "boolean",
+          "description": "residualControl met, or force history stationary; the basis MUST be stated in `criterion`",
+          "x-argus-field-class": "derived"
+        },
+        "criterion": {
+          "type": "string",
+          "minLength": 10,
+          "description": "What `converged` actually means for this run. No 2D case in this project meets the residualControl targets; the standing basis is force-history stationarity, and final_residuals carries the ACHIEVED values (not the targets)."
+        },
+        "cd_mean_drift_1000iter_counts": {
+          "type": "number",
+          "minimum": 0,
+          "description": "D023 gate (2D): |mean(cd, 2nd half) - mean(cd, 1st half)| over the last 1000 iterations, in counts; must be <= 0.01 for converged=true. Drift of the MEAN across a SELF-CONTAINED window: an endpoint difference is blind to oscillation, a peak-to-peak gate is unachievable for a case in a stable numerical limit cycle, and comparing against the preceding 1000 iterations reaches into the initial transient on short runs."
+        },
+        "cd_p2p_last1000_counts": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Peak-to-peak cd over the last 1000 iterations, in counts: the unsteadiness amplitude on the reported instantaneous coefficients. Where this exceeds the D023 gate, quote the coefficient with +/- half this value."
+        },
+        "cd_mean_last1000_counts": {
+          "type": "number",
+          "description": "Window-mean cd in counts, for reference; reported CD stays the instantaneous final-write value so that CD = CD_pressure + CD_viscous remains exact."
+        }
+      }
+    },
+    "conditions": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "U_mag_m_s",
+        "alpha_deg",
+        "nu_m2_s",
+        "Re_ref",
+        "mach_nominal",
+        "rho_ref_kg_m3",
+        "reference"
+      ],
+      "properties": {
+        "U_mag_m_s": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "alpha_deg": {
+          "type": "number",
+          "description": "Geometric angle of attack of this run (inlet vector rotation)"
+        },
+        "nu_m2_s": {
+          "type": "number",
+          "exclusiveMinimum": 0
+        },
+        "Re_ref": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "On lRef (cref for 3D, local chord for 2D)"
+        },
+        "mach_nominal": {
+          "type": "number",
+          "minimum": 0,
+          "description": "Nominal condition Mach (incompressible solve)"
+        },
+        "rho_ref_kg_m3": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "rhoInf used for coefficient normalization"
+        },
+        "reference": {
+          "type": "object",
+          "additionalProperties": false,
+          "required": [
+            "Aref_m2",
+            "lRef_m",
+            "CofR_m",
+            "convention"
+          ],
+          "properties": {
+            "convention": {
+              "type": "string",
+              "minLength": 10,
+              "description": "MUST state the area convention explicitly (D006 2nd amendment addendum), e.g. 3D: 'half-model: half-force over half-area, Aref = Sref_dso/2 = 0.62046 m2; coefficients equal full-wing values'; 2D: 'per unit span: Aref = chord x 1 m span'"
+            },
+            "Aref_m2": {
+              "type": "number",
+              "exclusiveMinimum": 0,
+              "description": "3D half-model: Sref/2 = 0.5574; 2D: chord x 1 m span (per unit span)"
+            },
+            "lRef_m": {
+              "type": "number",
+              "exclusiveMinimum": 0
+            },
+            "CofR_m": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 3,
+              "maxItems": 3
+            }
+          }
+        }
+      }
+    },
+    "results": {
+      "type": "object",
+      "required": [
+        "CL",
+        "CD",
+        "CD_pressure",
+        "CD_viscous",
+        "Cm"
+      ],
+      "properties": {
+        "CL": {
+          "type": "number",
+          "x-argus-field-class": "derived"
+        },
+        "CD": {
+          "type": "number",
+          "x-argus-field-class": "derived"
+        },
+        "CD_pressure": {
+          "type": "number",
+          "x-argus-field-class": "derived"
+        },
+        "CD_viscous": {
+          "type": "number",
+          "x-argus-field-class": "derived"
+        },
+        "Cm": {
+          "type": "number",
+          "x-argus-field-class": "derived"
+        },
+        "Cp_Cf_surface_files": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "Case-relative paths of the D014 surfaces-sampling outputs (p, wallShearStress, yPlus on the wall patch) at the converged write time"
+        },
+        "strip_loads_file": {
+          "type": "string",
+          "description": "3D only: forceCoeffs binData output (20 spanwise bins over the half-span, D014) for the DSO strip-load comparison"
+        },
+        "coefficients_dso": {
+          "type": "object",
+          "description": "Coefficients on the DSO normalization (Sref 1.24092 m2, Cref 0.39396 m; D006 second amendment) - the primary basis for 3D",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "coefficients_tp1580": {
+          "type": "object",
+          "description": "Same force calculation rescaled to the TP-1580 tunnel normalization (Sref 1.1148 m2, cref 0.3404 m)",
+          "additionalProperties": {
+            "type": "number"
+          }
+        },
+        "uncertainty_bands": {
+          "type": "object",
+          "description": "BOTH bands, ALWAYS SEPARATE, NEVER MERGED (D064). They are not alternative estimates of one quantity: they apply to different comparisons and a single merged figure is wrong for both.",
+          "properties": {
+            "fixed_cl_counts": {
+              "type": "array",
+              "items": {
+                "type": "number"
+              },
+              "minItems": 2,
+              "maxItems": 2,
+              "description": "[0.063, 0.102] counts. Applies to FIXED-CL comparisons, where each geometry is trimmed to its own alpha."
+            },
+            "fixed_alpha_counts": {
+              "type": "number",
+              "description": "0.430 counts. Applies to FIXED-ALPHA comparisons. ~4x the fixed-CL band, because at fixed alpha a lift difference feeds straight into induced drag."
+            },
+            "merged": {
+              "type": "boolean",
+              "enum": [
+                false
+              ],
+              "description": "Must be false. Recording a single merged band loses which comparison it applies to."
+            }
+          },
+          "required": [
+            "fixed_cl_counts",
+            "fixed_alpha_counts"
+          ]
+        },
+        "reference_convention": {
+          "type": "object",
+          "description": "Which normalisation EACH coefficient is on. AR joined this set in D006 amendment 3: it is Bref^2/Sref and therefore changes with Sref, so it cannot be treated as a constant of the wing.",
+          "properties": {
+            "basis": {
+              "type": "string",
+              "enum": [
+                "dso_wetted",
+                "tp1580_tunnel"
+              ],
+              "description": "dso_wetted: Sref 13.3572 ft2, Cref 1.29251 ft, AR 10.7807. tp1580_tunnel: Sref 12.0 ft2, cref 1.11667 ft, AR 12.0000."
+            },
+            "sref_ft2": {
+              "type": "number"
+            },
+            "cref_ft": {
+              "type": "number"
+            },
+            "aspect_ratio": {
+              "type": "number",
+              "description": "MUST equal Bref^2/sref_ft2 for the sref recorded here. Enforced by scripts/reference_quantities.py assert_ar_consistent()."
+            },
+            "bref_ft": {
+              "type": "number",
+              "const": 12.0,
+              "description": "Common to both bases, which is exactly why AR looks like a wing constant and is not one."
+            }
+          },
+          "required": [
+            "basis",
+            "sref_ft2",
+            "cref_ft",
+            "aspect_ratio"
+          ]
+        }
+      },
+      "additionalProperties": true,
+      "description": "2D cases report sectional cl/cd/cm in these fields with per-unit-span Aref; extras (strip loads, hinge moment, root bending) as additional keys"
+    },
+    "trim": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "description": "null only for standalone sweep/diagnostic runs; production fixed-CL results must carry the trim record",
+      "additionalProperties": false,
+      "required": [
+        "target_CL",
+        "tolerance",
+        "alpha_trim_deg",
+        "history",
+        "converged"
+      ],
+      "properties": {
+        "target_CL": {
+          "type": "number"
+        },
+        "tolerance": {
+          "type": "number",
+          "exclusiveMinimum": 0,
+          "description": "|CL - target| criterion, 1e-4 per project instructions"
+        },
+        "alpha_trim_deg": {
+          "type": "number"
+        },
+        "history": {
+          "type": "array",
+          "minItems": 1,
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "alpha_deg",
+              "CL"
+            ],
+            "properties": {
+              "alpha_deg": {
+                "type": "number"
+              },
+              "CL": {
+                "type": "number"
+              },
+              "CD": {
+                "type": "number"
+              },
+              "Cm": {
+                "type": "number"
+              }
+            }
+          }
+        },
+        "converged": {
+          "type": "boolean"
+        }
+      }
+    },
+    "cost": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "wall_clock_s",
+        "n_cores",
+        "core_hours",
+        "machine"
+      ],
+      "properties": {
+        "wall_clock_s": {
+          "type": "number",
+          "minimum": 0,
+          "x-argus-field-class": "recorded-at-run-time"
+        },
+        "n_cores": {
+          "type": "integer",
+          "minimum": 1,
+          "x-argus-field-class": "recorded-at-run-time"
+        },
+        "core_hours": {
+          "type": "number",
+          "minimum": 0,
+          "x-argus-field-class": "recorded-at-run-time"
+        },
+        "machine": {
+          "type": "string",
+          "description": "e.g. laptop-WSL2 or DelftBlue",
+          "x-argus-field-class": "recorded-at-run-time"
+        }
+      }
+    },
+    "notes": {
+      "type": "string"
+    },
+    "wall_treatment": {
+      "type": "object",
+      "description": "MANDATORY. The wall model must never be implicit again. Two different nut boundary conditions were found in the 3D record (nutkWallFunction on every snappy case, nutLowReWallFunction on wing3d_coarse) with nothing recording which was used. Any y+ figure MUST carry the treatment it was measured under (D059 item 4c). AMENDED 2026-08-21 (ARG-170): k and omega were MANDATORY, which the compressible recipe cannot satisfy because Spalart-Allmaras has neither. The schema therefore refused every compressible card outright, and record-keeping rule 8 then blocked quoting any compressible result. nut stays mandatory; the turbulence-field BCs are now anyOf(k+omega, nuTilda), so a card must still name the wall BC of whatever turbulence variable its model actually transports. Nothing is loosened: a card naming none of them still fails.",
+      "required": [
+        "nut"
+      ],
+      "properties": {
+        "nut": {
+          "type": "string",
+          "description": "nut wall BC by name, e.g. nutkWallFunction, nutUSpaldingWallFunction, nutLowReWallFunction",
+          "x-argus-field-class": "derived"
+        },
+        "k": {
+          "type": "string",
+          "x-argus-field-class": "derived"
+        },
+        "omega": {
+          "type": "string",
+          "x-argus-field-class": "derived"
+        },
+        "yplus_min": {
+          "type": "number"
+        },
+        "yplus_median": {
+          "type": "number"
+        },
+        "yplus_mean": {
+          "type": "number"
+        },
+        "yplus_max": {
+          "type": "number"
+        },
+        "yplus_convention": {
+          "type": "string",
+          "enum": [
+            "cell-centre",
+            "first-cell-height"
+          ]
+        },
+        "area_fraction_above_yplus_30": {
+          "type": "number"
+        },
+        "area_fraction_buffer_5_to_30": {
+          "type": "number"
+        },
+        "area_fraction_below_yplus_1": {
+          "type": "number"
+        },
+        "nuTilda": {
+          "type": "string",
+          "description": "nuTilda wall BC by name. Present on one-equation models, where it is the transported turbulence variable and k/omega do not exist. A NEW FIELD MUST BE CLASSED (record-keeping rule 7c), and this one is derived: it is read back from 0/nuTilda by scripts/derive_run_card_fields.py, never authored.",
+          "x-argus-field-class": "derived"
+        }
+      },
+      "anyOf": [
+        {
+          "required": [
+            "k",
+            "omega"
+          ],
+          "title": "two-equation models (kOmegaSST): both k and omega wall BCs"
+        },
+        {
+          "required": [
+            "nuTilda"
+          ],
+          "title": "one-equation models (SpalartAllmaras): the nuTilda wall BC"
+        }
+      ]
+    },
+    "decomposition": {
+      "type": "object",
+      "description": "Parallel decomposition of the SOLVE. Recorded because rank count is part of the run's description even though it does not change the converged answer: decomposePar only partitions the linear algebra on an existing mesh, so a steady solution differs only through reduction summation order, order 1e-6 relative. THE CONSTRAINT THAT BINDS IS THAT BOTH MEMBERS OF A PAIR USE THE SAME RANK COUNT AS EACH OTHER; an unstated difference between two halves of a pair is the shape of unstated frame this project keeps getting caught by (D068). Mesh-generation decomposition is a different matter and DOES change the mesh. DUPLICATION NOTICE: hpc.solve_ranks and hpc.solve_decomposition_method carry the SAME two quantities for cluster runs. THIS BLOCK IS CANONICAL because it is present for BOTH laptop and cluster runs, whereas hpc is null for laptop runs. When hpc is non-null the two MUST agree; scripts/validate_run_card.py enforces the equality, because a number recorded in two places without a check is a number that will eventually disagree.",
+      "additionalProperties": false,
+      "required": [
+        "method",
+        "n_subdomains"
+      ],
+      "properties": {
+        "method": {
+          "type": "string",
+          "description": "scotch, simple, hierarchical"
+        },
+        "n_subdomains": {
+          "type": "integer",
+          "minimum": 1,
+          "x-argus-field-class": "recorded-at-run-time"
+        },
+        "pair_partner": {
+          "type": [
+            "string",
+            "null"
+          ],
+          "description": "case name of the other member of the pair, if this run is half of a delta"
+        },
+        "pair_partner_n_subdomains": {
+          "type": [
+            "integer",
+            "null"
+          ],
+          "minimum": 1,
+          "description": "MUST equal n_subdomains when pair_partner is set"
+        }
+      }
+    },
+    "hpc": {
+      "type": [
+        "object",
+        "null"
+      ],
+      "additionalProperties": false,
+      "description": "Cluster execution record. null for runs executed entirely on the laptop. NOTE: solve_ranks is NOT part of the mesh recipe; mesh.mesh_generation.ranks is.",
+      "required": [
+        "machine",
+        "solve_ranks",
+        "solve_decomposition_method"
+      ],
+      "properties": {
+        "machine": {
+          "type": "string",
+          "description": "e.g. DelftBlue"
+        },
+        "partition": {
+          "type": "string",
+          "description": "e.g. compute-p1 (218 nodes, 48 cores, 186 GiB)"
+        },
+        "account": {
+          "type": "string",
+          "description": "e.g. research-ae-fpt"
+        },
+        "qos": {
+          "type": "string"
+        },
+        "slurm_job_id": {
+          "type": "string"
+        },
+        "nodes": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "1 for every job in this deliverable. All three planned grid levels (8/20/50 M cells) fit on one node at about 2.3 GB per million cells."
+        },
+        "solve_ranks": {
+          "type": "integer",
+          "minimum": 1,
+          "description": "MPI rank count the SOLVE ran at. NOT part of the mesh recipe: decomposePar only repartitions an existing mesh, so this cannot change the geometry. Do not confuse with mesh.mesh_generation.ranks."
+        },
+        "solve_decomposition_method": {
+          "type": "string",
+          "description": "decomposePar method for the SOLVE, e.g. scotch. Same caveat as solve_ranks."
+        },
+        "file_handler": {
+          "type": "string",
+          "enum": [
+            "collated",
+            "uncollated"
+          ],
+          "description": "FOAM_FILEHANDLER. collated, because uncollated writing at high rank counts produces tens of thousands of small files against a 1,000,000 chunk-file quota. Kept collated at 16 ranks too, so one file-handling convention spans the record."
+        },
+        "module_line": {
+          "type": "string",
+          "description": "Resolved module stack, VERBATIM, e.g. '2024r1 openmpi openfoam-org/7'"
+        },
+        "walltime_requested": {
+          "type": "string",
+          "description": "SLURM --time as submitted. Record it: the compute-p1 default is 00:01:00 and an omitted --time kills the job after one minute."
+        },
+        "bundle_mesh_sha256": {
+          "type": "string",
+          "pattern": "^[0-9a-f]{64}$",
+          "description": "mesh_sha256 from the transfer bundle MANIFEST.json, asserted equal on the cluster by hpc/unpack_case.sh before the solve. This is what proves the cluster solved the mesh the laptop built."
+        },
+        "migration_gate": {
+          "type": [
+            "object",
+            "null"
+          ],
+          "additionalProperties": false,
+          "description": "Only for the laptop-to-cluster reproduction run (job 1). Known-answer gate: the physics is unchanged, but the machine, compiler, MPI stack and partitioning are all different.",
+          "required": [
+            "reference_case",
+            "reference_CD_counts",
+            "reference_CL",
+            "delta_CD_counts",
+            "delta_CL",
+            "passed"
+          ],
+          "properties": {
+            "reference_case": {
+              "type": "string"
+            },
+            "reference_CD_counts": {
+              "type": "number"
+            },
+            "reference_CL": {
+              "type": "number"
+            },
+            "delta_CD_counts": {
+              "type": "number"
+            },
+            "delta_CL": {
+              "type": "number"
+            },
+            "band_CD_counts": {
+              "type": "number",
+              "description": "Pre-registered acceptance band in counts. 0.10, i.e. below the 0.106-0.199 count fixed-CL noise floor measured in D058."
+            },
+            "passed": {
+              "type": "boolean"
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,62 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+// ARGUS layer settings -- WALL RESOLVED,  target y+ ~ 0.54
+//
+// Condition: U = 40.8 m/s, nu = 1.46e-5 m2/s, c_ref = 0.3404 m, Re = 0.9513e6
+//   u_tau = 1.754 m/s,  y(y+ = 1) = 8.325e-6 m
+//
+//   firstLayerThickness 4.5 um  ->  y+ = 4.5e-6 * 1.754 / 1.46e-5 = 0.54
+//   Sized at y+ ~ 0.5 rather than 1.0 because local shear runs 2..3x the
+//   chord-mean near the suction peak, so the peak lands near y+ 1.0..1.5.
+//
+// Stack, r = 1.18, n = 36:
+//   total       = 4.5e-6 * (1.18^36 - 1)/0.18 = 9.65 mm   (1.21 x the ~8 mm TE BL)
+//   last        = 4.5e-6 * 1.18^35            = 1.476 mm
+//   last/cell   = 1.476 / 3.906               = 0.378    (target band 0.3..0.5)
+//   cells below y+ 30                         = 14       (>= 10 is the usual minimum)
+//
+// 36 layers is not an unusual number for this: the OpenFOAM HPC committee's
+// 30P30N wall-resolved case uses 31 prism layers at y+max ~ 1, and the published
+// aircraft work of Ashton & Skaperdas uses 40 to 65.
+
+addLayersControls
+{
+    relativeSizes       false;
+
+    layers { wing { nSurfaceLayers 11; } }
+
+    firstLayerThickness 4.5e-06;
+    expansionRatio      1.450;
+
+    // See the wallModelled file for the mechanism.  0.25 x requested stack.
+    //
+    // THE CURRENT PRODUCTION RECIPE PINS THIS AT 8e-05 m, which against a 9.65 mm
+    // requested stack is 0.83%.  That does not "protect" anything: it licenses
+    // snappy to compress the stack to under 1% of requested rather than
+    // terminating, which produces squeezed near-degenerate cells that then fail
+    // meshQualityControls and get ripped out.  That is a candidate mechanism for
+    // the observed 74.5% coverage, the 4.17% concave cells and the 1.90 surface
+    // area ratio, all at once.
+    minThickness        4.05e-06;
+
+    // --- extrusion / termination controls ---------------------------------
+    featureAngle              330;
+    slipFeatureAngle           30;
+    maxThicknessToMedialRatio 0.6;
+    maxFaceThicknessRatio     1;
+    nGrow                       0;
+
+    // --- smoothing ---------------------------------------------------------
+    nSmoothSurfaceNormals       1;
+    nSmoothNormals              3;
+    nSmoothThickness           10;
+    minMedialAxisAngle         90;
+    nMedialAxisIter            10;
+
+    // --- iteration ----------------------------------------------------------
+    nRelaxIter                  5;
+    nLayerIter                 50;
+    nRelaxedIter               3;
+    nBufferCellsNoExtrude       0;
+
+    additionalReporting      true;
+}

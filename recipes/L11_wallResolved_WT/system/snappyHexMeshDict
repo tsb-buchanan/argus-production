@@ -1,0 +1,163 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+FoamFile { version 2.0; format ascii; class dictionary; object snappyHexMeshDict; }
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+//
+// ONE dict for all four cases.  The two things that vary are pulled in:
+//   meshLevels    -> sandbox (base 0.25 m) or full (base 1.0 m).  Physical cell
+//                    sizes are identical; only the level integers differ.
+//   layerSettings -> wallResolved or wallModelled.
+//
+// Refinement architecture follows the Onera M6 OpenFOAM tutorial (nested boxes,
+// 5 levels) with two additions taken from the OpenFOAM HPC committee's high-lift
+// CRM case: an explicit wake block and a tip-vortex cone.
+//
+// OpenFOAM-org 7.  Feature extraction utility is `surfaceFeatures`, NOT
+// `surfaceFeatureExtract` (that is the ESI name).
+
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+#include "meshLevels"
+
+geometry
+{
+    wing.stl { type triSurfaceMesh; file "wing.stl"; name wing; }
+
+    // --- nested near-field, outermost first -------------------------------
+    box_outer { type searchableBox; min (-0.50 0.00 -2.00); max ( 9.00 4.00  2.00); }
+    box_mid   { type searchableBox; min ( 0.30 0.00 -1.00); max ( 6.00 2.80  1.00); }
+    box_near  { type searchableBox; min ( 0.80 0.00 -0.50); max ( 3.60 2.30  0.40); }
+    box_wing  { type searchableBox; min ( 1.05 0.00 -0.30); max ( 2.65 2.05  0.15); }
+
+    // --- wake block, from the trailing edge downstream ---------------------
+    box_wake  { type searchableBox; min ( 2.30 0.00 -0.22); max ( 7.00 2.20  0.08); }
+
+    // --- tip vortex path: inboard ~10% semispan and down with the downwash --
+    //     downwash angle ~ CL/(pi.AR) = 0.428/(pi.10.78) = 0.0127 rad
+    // searchableCone DOES NOT EXIST IN OpenFOAM-7.  Valid types are searchableBox,
+    // searchableCylinder, searchableDisk, searchablePlate, searchableSphere
+    // (src/meshTools/searchableSurfaces/).  The cone is approximated by three
+    // stepped cylinders on the same axis, from r 0.15 at the tip to r 0.50 at
+    // x = 7.0, following the same downwash descent.
+    cone_tip1
+    {
+        type searchableCylinder;
+        point1 (2.30 1.80 -0.10); point2 (3.87 1.74 -0.17); radius 0.22;
+    }
+    cone_tip2
+    {
+        type searchableCylinder;
+        point1 (3.87 1.74 -0.17); point2 (5.43 1.68 -0.23); radius 0.35;
+    }
+    cone_tip3
+    {
+        type searchableCylinder;
+        point1 (5.43 1.68 -0.23); point2 (7.00 1.62 -0.30); radius 0.50;
+    }
+
+    // TRAILING-EDGE VOLUME REFINEMENT.  Belt and braces beside the feature
+    // edges, because the TE base is FLAT and surfaceLevelMax is
+    // curvature-driven -- it cannot fire there.  Two segments, broken at
+    // eta 0.384 where the TE polyline itself breaks (Douglas-Peucker: 2
+    // segments hold the axis within 5 mm, 3 EQUALLY SPACED hold only 19.5).
+    te_outer1
+    {
+        type searchableCylinder;
+        point1 (1.8154 0.0020 -0.1424); point2 (1.9051 0.7010 -0.0722); radius 0.008;
+    }
+    te_outer2
+    {
+        type searchableCylinder;
+        point1 (1.9051 0.7010 -0.0722); point2 (2.3360 1.8234 0.0079); radius 0.008;
+    }
+    te_inner1
+    {
+        type searchableCylinder;
+        point1 (1.8154 0.0020 -0.1424); point2 (1.9051 0.7010 -0.0722); radius 0.003;
+    }
+    te_inner2
+    {
+        type searchableCylinder;
+        point1 (1.9051 0.7010 -0.0722); point2 (2.3360 1.8234 0.0079); radius 0.003;
+    }
+    // --- morphing region, 0.60 <= eta <= 1.00  ->  y = 1.097 .. 1.829 -------
+    box_morph { type searchableBox; min ( 1.45 1.05 -0.28); max ( 2.55 1.95  0.12); }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       4000000;
+    maxGlobalCells      40000000;
+    minRefinementCells  10;
+    maxLoadUnbalance    0.10;
+    nCellsBetweenLevels 3;
+
+    features ( { file "wing.eMesh"; level $featureLevel; } );
+
+    refinementSurfaces
+    {
+        wing { level ($surfaceLevelMin $surfaceLevelMax); patchInfo { type wall; } }
+    }
+
+    resolveFeatureAngle 30;
+
+    refinementRegions
+    {
+        // GRADED SHELL ON THE SURFACE ITSELF, replacing box_outer/mid/near/wing.
+        //
+        // WHY: box_wing is 1.60 x 2.05 x 0.45 m = 1.48 m3.  At level 6 that is
+        // 24.8 M cells IN THAT BOX ALONE -- refining an entire 1.5 m3 block to
+        // 3.9 mm merely to get 3.9 mm NEXT TO THE WALL.  It OOM-killed the run at
+        // 21.4 M cells (signal 9).  A 30 mm shell over the 1.28 m2 surface is
+        // 0.038 m3, about 0.64 M cells at the same level: 38x cheaper for the
+        // same near-wall resolution.
+        //
+        // It also follows the geometry.  This wing sweeps 1.0 m at the LE and
+        // 0.5 m at the TE with 5 deg of dihedral, so every hand-placed box has to
+        // be re-derived when the geometry moves.  A distance shell cannot miss.
+        wing
+        {
+            mode distance;
+            levels ((0.030 $levelWing) (0.100 $levelNear) (0.350 $levelMid) (1.200 $levelOuter));
+        }
+        box_wake  { mode inside; levels ((1e15 $levelWake )); }
+        cone_tip1  { mode inside; levels ((1e15 $levelCone )); }
+        cone_tip2  { mode inside; levels ((1e15 $levelCone )); }
+        cone_tip3  { mode inside; levels ((1e15 $levelCone )); }
+        box_morph { mode inside; levels ((1e15 $levelMorph)); }
+        te_outer1 { mode inside; levels ((1e15 $levelTEouter)); }
+        te_outer2 { mode inside; levels ((1e15 $levelTEouter)); }
+        te_inner1 { mode inside; levels ((1e15 $levelTEinner)); }
+        te_inner2 { mode inside; levels ((1e15 $levelTEinner)); }
+
+    }
+
+    // Inside the domain, clear of the wing, clear of every symmetry plane.
+    locationInMesh (-1.0 2.5 1.5);
+
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    nSmoothPatch        3;
+    tolerance           2.0;
+    nSolveIter          50;
+    nRelaxIter          5;
+    nFeatureSnapIter    10;
+    implicitFeatureSnap false;
+    explicitFeatureSnap true;
+    multiRegionFeatureSnap false;
+}
+
+#include "layerSettings"
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+}
+
+writeFlags ( scalarLevels layerSets layerFields );
+
+mergeTolerance 1e-6;

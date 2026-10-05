@@ -1,0 +1,49 @@
+/*--------------------------------*- C++ -*----------------------------------*/
+// Wall-MODELLED layer stack for the compressible cruise condition.
+//
+// The stack is sized for y+ ~80 on the CELL-CENTRE convention at this state's Reynolds
+// number. Values, their derivation and the convention are in CONDITION.json -> layers.
+// Change them there, not here.
+//
+// WHY THIS IS NOT ARG-129's FORBIDDEN CONFIGURATION. ARG-129 found y+ 80 structurally
+// incompatible with the 1.03 mm blunt trailing edge, because the first layer came out
+// 1.65x the surface cell and a prism taller than its own cell cannot be inserted. THAT
+// RESULT IS AT LOW SPEED. At cruise Reynolds the same y+ 80 is 0.09x the surface cell,
+// so it fits with room. The incompatibility does not transfer, and assuming it did would
+// have ruled out a configuration that is available.
+//
+// THE LIVE HAZARD IS THE OPPOSITE ONE. snappy silently thickens a first layer up to a
+// floor at roughly 8.4% of the local cell (legacy.md). This spec sits at ~9%, i.e. on
+// that floor. minThickness is therefore set to 0.9x the request so a layer that cannot
+// be built at the asked size is DROPPED AND COUNTED rather than quietly thickened.
+// Read the achieved thickness from the snappy layer report, never the requested table.
+
+addLayersControls
+{
+    relativeSizes       false;
+
+    layers { wing { nSurfaceLayers 5; } }
+
+    firstLayerThickness 4.3700e-05;
+    expansionRatio      1.300;
+    minThickness        3.9330e-05;
+
+    featureAngle              330;
+    slipFeatureAngle           30;
+    maxThicknessToMedialRatio 0.6;
+    maxFaceThicknessRatio     1;
+    nGrow                       0;
+
+    nSmoothSurfaceNormals       1;
+    nSmoothNormals              3;
+    nSmoothThickness           10;
+    minMedialAxisAngle         90;
+    nMedialAxisIter            10;
+
+    nRelaxIter                  5;
+    nLayerIter                 50;
+    nRelaxedIter                3;
+    nBufferCellsNoExtrude       0;
+
+    additionalReporting      true;
+}

@@ -1,0 +1,42 @@
+{
+  "counts": {
+    "published": 2,
+    "r2": 6,
+    "welded": 10
+  },
+  "mixed": true,
+  "note": "Condition CR is on the wake-refined (r2) meshes and both cruise conditions on the welded meshes. Within one condition every geometry shares a generation, so a delta against B does not cross one; a table setting Condition CR beside cruise crosses a generation as well as an operating point.",
+  "purpose": "which derived record served each condition and geometry",
+  "remeshed_prefixes": [
+    "CMP",
+    "LC",
+    "SW"
+  ],
+  "rule": "the re-run record (SW: <prefix><L>_r2_trim; CMP, LC: <prefix><L>_welded) where it exists, else <prefix><L>_trim",
+  "served": {
+    "published": [
+      "LCH",
+      "LCM"
+    ],
+    "r2": [
+      "SWB",
+      "SWC",
+      "SWF",
+      "SWH",
+      "SWM",
+      "SWW"
+    ],
+    "welded": [
+      "CMPB",
+      "CMPC",
+      "CMPF",
+      "CMPH",
+      "CMPM",
+      "CMPW",
+      "LCB",
+      "LCC",
+      "LCF",
+      "LCW"
+    ]
+  }
+}

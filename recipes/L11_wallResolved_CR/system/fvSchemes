@@ -1,0 +1,41 @@
+FoamFile { version 2.0; format ascii; class dictionary; object fvSchemes; }
+
+ddtSchemes      { default steadyState; }
+
+gradSchemes
+{
+    default         Gauss linear;
+    limited         cellLimited Gauss linear 1;
+    grad(U)         $limited;
+    grad(k)         $limited;
+    grad(omega)     $limited;
+}
+
+divSchemes
+{
+    default         none;
+    div(phi,U)      bounded Gauss linearUpwind limited;
+    turbulence      bounded Gauss limitedLinear 1;
+    div(phi,k)      $turbulence;
+    div(phi,omega)  $turbulence;
+    div((nuEff*dev2(T(grad(U))))) Gauss linear;
+
+    // REQUIRED BY potentialFoam -writep, AND ONLY BY IT. potentialFoam's approximate
+    // pressure field is recovered from div(div(phi,U)); without this entry it solves
+    // the potential flow CORRECTLY and then dies at the final write:
+    //     "keyword div(div(phi,U)) is undefined in dictionary divSchemes"
+    // Measured on V1/V3/WR_L9: continuity error 3.4e-06 and interpolated velocity error
+    // 7.3e-04 were already printed when it aborted, so the initialisation itself was
+    // fine and only the p write was missing a scheme. Gauss linear is the standard
+    // choice; this term never enters the SIMPLE loop.
+    div(div(phi,U))  Gauss linear;
+}
+
+// "limited corrected 0.33" rather than plain "corrected".  Lecture 4 slide 18:
+// minimise the effect of non-orthogonality; a 65-degree max-nonOrtho mesh needs
+// the limiter or the correction itself becomes the error source.
+laplacianSchemes { default Gauss linear limited corrected 0.33; }
+interpolationSchemes { default linear; }
+snGradSchemes   { default limited corrected 0.33; }
+
+wallDist        { method meshWave; }

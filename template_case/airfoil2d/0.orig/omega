@@ -1,0 +1,13 @@
+/* omega = sqrt(k)/(Cmu^0.25 * L), L=0.01*c=0.0034 m. CR: ~22; WT: ~27 */
+FoamFile { version 2.0; format ascii; class volScalarField; object omega; }
+dimensions [0 0 -1 0 0 0 0];
+internalField uniform 22.0;
+boundaryField
+{
+    inlet    { type fixedValue; value $internalField; }
+    outlet   { type inletOutlet; inletValue $internalField; value $internalField; }
+    farfield { type fixedValue; value $internalField; }
+    front    { type empty; }
+    back     { type empty; }
+    airfoil  { type omegaWallFunction; value $internalField; }  // org-7 low-Re blended omega wall treatment
+}

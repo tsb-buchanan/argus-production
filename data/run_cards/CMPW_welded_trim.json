@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "candidate": "cffw_b01_c01",
+  "case": {
+    "path": "/home/scratch/$USER/argus_wfix/solve/CMPW_welded",
+    "dimensionality": "3D",
+    "condition": "EC",
+    "eta": null,
+    "description": "Early cruise trim of geometry W at M 0.78, trimmed to target C_L by rotating the freestream and the force axes together at fixed |U|."
+  },
+  "geometry": {
+    "file": "geometry/derived/wing3d/cffw_b01_c01_oml_placed_laddercap.stl",
+    "sha256": "200fa64ca9d6eecc54bbecaa62c384edeab95c2560ce5f514c4a9ffc830de692"
+  },
+  "provenance": {
+    "git_commit": "38617aef46644cc0455c84ccd475394adf5bd11f",
+    "git_dirty": true,
+    "openfoam_version": "openfoam-org-12",
+    "date": "2026-09-26"
+  },
+  "mesh": {
+    "generator": "snappyHexMesh",
+    "cells": 73668547,
+    "max_skewness": 18.127987,
+    "max_non_orthogonality": 74.098894,
+    "avg_non_orthogonality": 6.6947176,
+    "yplus": {
+      "min": 3.57506761,
+      "mean": 38.2148038,
+      "max": 837.184262
+    },
+    "layers": {
+      "n_surface_layers": 5,
+      "first_layer_thickness_m": 4.37e-05,
+      "expansion_ratio": 1.3
+    },
+    "checkMesh_pass": false,
+    "mesh_generation": {
+      "ranks": 192,
+      "method": "scotch",
+      "inferred": false,
+      "inferred_from": "mesh/CMPW_welded/system/decomposeParDict, read directly",
+      "machine": "hpc12"
+    }
+  },
+  "model": {
+    "solver": "foamRun",
+    "solver_module": "fluid",
+    "turbulence_model": "SpalartAllmaras",
+    "wall_treatment": "wall functions",
+    "decision_ref": "ARG-151 (2D transonic), ARG-170 (3D compressible)"
+  },
+  "bc": {
+    "farfield": "freestreamVelocity / freestreamPressure on inlet, outlet, topBottom and outboard, freestream direction rotated to the trim alpha",
+    "airfoil": "noSlip on wing, nutUSpaldingWallFunction"
+  },
+  "numerics": {
+    "schemes_summary": "steady compressible foamRun fluid, Spalart-Allmaras, recipe numerics of M6_wallModelled_CRUISE",
+    "convergence_criteria": {
+      "p": 1e-09,
+      "U": 1e-10,
+      "e": 1e-09,
+      "(k|epsilon|nuTilda)": 1e-10
+    }
+  },
+  "convergence": {
+    "iterations": 6000,
+    "final_residuals": {
+      "p": 2.41856514e-08,
+      "U": 6.93102249e-07,
+      "e": 3.53357537e-07,
+      "nuTilda": 5.19362066e-07
+    },
+    "converged": true,
+    "criterion": "200-sample window: mean drift Cd <= 0.05 ct, Cl <= 1.0 ct, Cl span <= 1.0 ct"
+  },
+  "conditions": {
+    "U_mag_m_s": 233.934028,
+    "alpha_deg": 0.8954459214790783,
+    "nu_m2_s": 4.352000882287103e-06,
+    "Re_ref": 21176454.31642543,
+    "mach_nominal": 0.78,
+    "rho_ref_kg_m3": 0.41271,
+    "reference": {
+      "Aref_m2": 0.620462,
+      "lRef_m": 0.393957,
+      "CofR_m": [
+        1.34,
+        0.0,
+        0.0
+      ],
+      "convention": "DSO basis, S_ref 1.24092 m2 and c_ref 0.39396 m, b_ref 3.6576 m. Half-wing A_ref 0.620462 m2 = S_ref/2. Model scale with mu set so Re on c_ref matches aircraft cruise (CONDITION.json scale_resolution)."
+    }
+  },
+  "results": {
+    "CL": 0.5292406,
+    "CD": 0.017707,
+    "CD_pressure": 0.01251583130632511,
+    "CD_viscous": 0.0051911772410312374,
+    "Cm": -0.61200118439,
+    "CD_counts": 177.07
+  },
+  "trim": {
+    "target_CL": 0.52929708745,
+    "tolerance": 0.0001,
+    "alpha_trim_deg": 0.8954459214790783,
+    "history": [
+      {
+        "alpha_deg": 0.964950998,
+        "CL": 0.5389152,
+        "CD": 0.018075
+      },
+      {
+        "alpha_deg": 0.8954459214790783,
+        "CL": 0.5292406,
+        "CD": 0.017707,
+        "Cm": -0.61200118439
+      }
+    ],
+    "converged": true
+  },
+  "cost": {
+    "wall_clock_s": 103128,
+    "n_cores": 128,
+    "core_hours": 3666.8,
+    "machine": "n12-127"
+  },
+  "decomposition": {
+    "method": "hierarchical",
+    "n_subdomains": 128
+  },
+  "hpc": {
+    "machine": "hpc12.tudelft.net",
+    "solve_ranks": 128,
+    "solve_decomposition_method": "hierarchical",
+    "walltime_requested": "12:00:00 per leg on fpt-medium, 16:00:00 on fpt-large"
+  },
+  "wall_treatment": {
+    "nut": "nutUSpaldingWallFunction",
+    "nuTilda": "fixedValue",
+    "yplus_min": 3.57506761,
+    "yplus_mean": 38.2148038,
+    "yplus_max": 837.184262,
+    "yplus_convention": "cell-centre"
+  },
+  "notes": "Welded cruise trim (ARG-196). checkMesh fails 4 checks, of the classes the pipeline's mesh check accepts (listed per mesh in ARG-196). Trim reached by continuation over 2 leg(s), history in trim. Wall clock summed over every PBS leg of this case, read from each leg's own stdout: argus-CMPW_welded-L2.o1034028 26s (first to last time stamp); argus-CMPW_welded-L2.o1034034 34180s (first to last time stamp); argus-CMPW_welded.o1033196 68922s (first to last time stamp). git_commit is the working-repo HEAD at card writing; the cluster ran the argus-production clone. Convergence marker: case CMPW_welded | finalised 2026-09-26T21:38:39Z on n12-120, leg 2 |   CONVERGENCE GATE over 200 samples: MEAN drift Cd 0.0015 ct (<=0.05), Cl 0.0475 ct (<=1.0), Cl SPAN 0.1028 ct (<=1.0) -> CONVERGED |   REPORT THESE: Cd 0.0177070  Cl 0.5292406  (window means)"
+}

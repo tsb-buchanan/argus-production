@@ -1,0 +1,68 @@
+/*  ARGUS airfoil2d template, OpenFOAM-org 7 (D009). 2D slab meshing: octree refinement
+    is isotropic, so refined zones hold 2^level cells across the (single-base-cell) slab;
+    peak slab ~5-8M cells at the levels below, flattened to ~100-150k 2D cells by
+    extrudeMesh. Levels and layer counts are GRID-STUDY VARIABLES (D011/D012 Layer 2):
+    coarse-level starting points, not frozen-recipe values.  */
+FoamFile { version 2.0; format ascii; class dictionary; object snappyHexMeshDict; }
+castellatedMesh true;  snap true;  addLayers true;
+
+geometry
+{
+    airfoil.stl { type triSurfaceMesh; name airfoil; }  // METERS, registered sha256 only; from dat2stl.py
+    // Boxes sized on chord 0.3404 m (LE at x=0); y spans the slab
+    boxNear  { type searchableBox; min (-0.15 -1 -0.20); max (0.60 1 0.20); }
+    boxMid   { type searchableBox; min (-0.50 -1 -0.45); max (1.20 1 0.45); }
+    boxWake  { type searchableBox; min ( 0.25 -1 -0.40); max (3.50 1 0.40); }  // wake-rake corridor
+    boxFar   { type searchableBox; min (-1.20 -1 -1.00); max (3.00 1 1.00); }
+    boxOuter { type searchableBox; min (-3.50 -1 -2.50); max (7.00 1 2.50); }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells 2000000;
+    maxGlobalCells 12000000;              // laptop slab ceiling (environment.md)
+    minRefinementCells 100;
+    nCellsBetweenLevels 3;
+    features ( { file "airfoil.eMesh"; level 9; } );       // LE + blunt-TE edges
+    refinementSurfaces { airfoil { level (8 9); } }        // 1.66/0.83 mm on 0.425 m base
+    resolveFeatureAngle 15;
+    refinementRegions
+    {
+        boxNear  { mode inside; levels ((1e15 7)); }
+        boxMid   { mode inside; levels ((1e15 5)); }
+        boxWake  { mode inside; levels ((1e15 5)); }
+        boxFar   { mode inside; levels ((1e15 4)); }
+        boxOuter { mode inside; levels ((1e15 3)); }
+    }
+    locationInMesh (-2.0 0.2125 1.0);   // mid-slab in y, OUTSIDE the airfoil
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    nSmoothPatch 3; tolerance 2.0; nSolveIter 100; nRelaxIter 5;
+    nFeatureSnapIter 15; implicitFeatureSnap false; explicitFeatureSnap true;
+}
+
+addLayersControls
+{
+    relativeSizes false;               // ABSOLUTE sizing for y+ ~1 (no wall functions)
+    layers { airfoil { nSurfaceLayers 28; } }
+    firstLayerThickness 8e-6;          // y+~1 at Cond WT/CR (u_tau~1.9 m/s, nu 1.46e-5); same stack as wing3d
+    expansionRatio 1.2;
+    minThickness 1e-6;
+    nGrow 0; featureAngle 130; nRelaxIter 5; nSmoothSurfaceNormals 1;
+    nSmoothNormals 3; nSmoothThickness 10; maxFaceThicknessRatio 0.5;
+    maxThicknessToMedialRatio 0.3; minMedianAxisAngle 90;
+    nBufferCellsNoExtrude 0; nLayerIter 50; nRelaxedIter 20;
+}
+
+meshQualityControls
+{
+    maxNonOrtho 65; maxBoundarySkewness 20; maxInternalSkewness 4;
+    maxConcave 80; minVol 1e-13; minTetQuality 1e-15; minArea -1;
+    minTwist 0.02; minDeterminant 0.001; minFaceWeight 0.05;
+    minVolRatio 0.01; minTriangleTwist -1; nSmoothScale 4; errorReduction 0.75;
+    relaxed { maxNonOrtho 75; }
+}
+mergeTolerance 1e-6;

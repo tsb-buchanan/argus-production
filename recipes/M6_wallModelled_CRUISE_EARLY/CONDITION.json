@@ -1,0 +1,122 @@
+{
+  "name": "M6_wallModelled_CRUISE_EARLY",
+  "flight_state": "early_cruise",
+  "provenance": {
+    "condition": "Liming 2026-08-09, recorded ARG-152; CL confirmed in dso_reference/ARGUS_CDIW_audit_delivery_2026-08-19/01_cruise_cdiw_audit/rigid_baseline/state_summary.csv",
+    "numerics": "byte-copied from cases/validation/onera_m6_B_flin2, validated against AGARD AR-138 run 308",
+    "bc_types": "M6 types re-expressed on ARGUS patch names (symm->symmetry, Back->outboard, topAndBottom->topBottom)"
+  },
+  "pinned": {
+    "mach": 0.78,
+    "target_CL": 0.52929708745,
+    "altitude_m": 10000,
+    "mass_kg": 74500,
+    "rho": 0.41271,
+    "T": 223.15,
+    "mu_physical": 1.4571085809048601e-05
+  },
+  "derived": {
+    "gamma": 1.4010833558851579,
+    "R_specific": 287.69792387543254,
+    "a": 299.91542077742827,
+    "U": 233.93402820639406,
+    "p": 26495.896037790833,
+    "Re_aircraft_chord": 21176454.335108876,
+    "aircraft_chord_m": 3.196
+  },
+  "scale_resolution": {
+    "ISSUE": "the cruise condition is defined at AIRCRAFT scale (chord 3.196 m, b 38.36 m); geometry/derived/wing3d/*.stl is MODEL scale (half-span 1.8254 m, Cref 0.393957 m)",
+    "CHOSEN": "Re-match: model-scale geometry, mu adjusted so Re on Cref equals the aircraft-scale cruise Re. Same device the 2D transonic work already uses.",
+    "mu_model_scale": 1.7961142841287105e-06,
+    "Re_matched": 21176454.335108876,
+    "alternatives": [
+      "scale the STL to aircraft size and use physical mu",
+      "run model scale at physical mu, which gives Re 2.6103e+06 and is a DIFFERENT flow"
+    ],
+    "NOTE": "NOT ratified by a decision entry. This is the one modelling choice in this recipe without a ratifying project decision."
+  },
+  "alpha": {
+    "value_deg": 0.8654766754810572,
+    "status": "STARTING GUESS from the VSPAERO/VLM trim, NOT a RANS trim",
+    "action": "trim each geometry to CL 0.52929708745 to |dCL| < 1e-4"
+  },
+  "reference_quantities": {
+    "Aref_half_wing": 0.620462,
+    "lRef": 0.393957,
+    "CofR": [
+      1.34,
+      0.0,
+      0.0
+    ],
+    "basis": "DSO normalisation, Sref 1.24092 m2 / Cref 0.39396 m (project rules, hard fact 2); Aref is the HALF-wing value"
+  },
+  "limiter_variant": {
+    "default": "system/fvSchemes, cellLimited Gauss linear 1, as validated on the M6",
+    "ab": "variants/fvSchemes.nolimiter",
+    "why": "the limiter chatters on the ARGUS 2D mesh (7.55-count odd-even cycle) but the M6 keeps it and reproduces exactly. Detect, do not pre-emptively change: split Cd and residuals by iteration parity; two separated lines means switch to the variant."
+  },
+  "layers": {
+    "target_yplus": 80,
+    "convention": "cell-centre",
+    "nSurfaceLayers": 5,
+    "firstLayerThickness_m": 4.37e-05,
+    "expansionRatio": 1.3,
+    "minThickness_m": 3.933e-05,
+    "stack_total_m": 0.00039518347,
+    "top_layer_m": 0.00012481157,
+    "surface_cell_m": 0.000488,
+    "first_over_surface_cell": 0.08954918032786885,
+    "top_over_surface_cell": 0.25576141393442625,
+    "method": "0.026/Re^(1/7) flat-plate Cf, u_tau = U sqrt(Cf/2), y = yplus nu / u_tau",
+    "RISK": "first/surface = 9.0%, against a documented snappy floor near 8.4%. MUST be confirmed on a real mesh by reading the ACHIEVED layer thickness.",
+    "ARG129_NOTE": "ARG-129 rules y+80 incompatible with the 1.03 mm TE. That is a LOW-SPEED result (first layer 1.65x the surface cell). At cruise Re it is 0.09x and fits. The finding does not transfer; D077 shape."
+  },
+  "mesh": {
+    "levels": "identical to L11_wallResolved_*; the surface cell is set by the 1.03 mm blunt TE, not by wall treatment or Reynolds (ARG-173)",
+    "differs_from_L11_only_in": "the layer stack"
+  },
+  "layer_floor_test": {
+    "question": "does snappy build a first layer at ~9% of the local surface cell, or thicken it to its floor?",
+    "method": "scale-invariant: every refinement level dropped by 2 and the first layer scaled by 4, so the first-layer-to-cell ratio is held at 8.95% at 1/16 the face count. Run on the real baseline_oml_placed_laddercap.stl, 12 ranks, laptop.",
+    "RESULT": "PASS",
+    "requested_stack_mm": 1.5807,
+    "achieved_stack_mm": 1.54,
+    "achieved_percent": 97.4,
+    "layers_achieved": 4.8,
+    "layers_requested": 5,
+    "extrusion": "98.90% of faces extruded, 0 removed, 0 illegal faces",
+    "implied_first_layer_um": 170.3,
+    "requested_first_layer_um": 174.8,
+    "checkMesh": "Mesh OK; max aspect 19.2, max non-orthogonality 68.5, max skewness 3.10",
+    "contrast": "ARG-129 attempted y+80 at LOW SPEED and got 1.98 layers of 5 (40.5%) with 304,500 concave cells, because there the first layer is 1.65x the surface cell. At cruise Re it is 0.09x and builds.",
+    "production_scaling": {
+      "test_wing_faces": 330659,
+      "scaled_to_level11": 5290544,
+      "measured_L11_wall_faces": 5276772,
+      "agreement_percent": 100.3,
+      "estimated_production_cells_M": 27.3,
+      "estimated_GB": 102,
+      "ARG173_budget": "24.1 M cells / 90 GB",
+      "SUPERSEDED_BY": "measured_production_mesh"
+    },
+    "CAVEAT": "Run at 4x the production first-layer thickness with the RATIO held. This shows the ratio is buildable. If snappy's minimum has an ABSOLUTE component as well as a relative one, production could still differ. Only a production-resolution mesh settles that, which is what the cluster pre-flight is for."
+  },
+  "measured_production_mesh": {
+    "source": "job 4307, argus-cmp-mesh, DelftBlue cmp[090-093], 192 ranks, 2026-08-25",
+    "wall_faces": 5276775,
+    "total_cells": 60241255,
+    "faces": 188576076,
+    "points": 68482214,
+    "layers_achieved": 4.96,
+    "layers_requested": 5,
+    "stack_achieved_m": 0.000394,
+    "stack_requested_m": 0.000395,
+    "stack_percent": 99.6,
+    "extrusion": "99.87% of faces, 0 removed",
+    "illegal_faces": 0,
+    "memory_estimate_GB": 225,
+    "CORRECTION": "SUPERSEDES the pre-run estimate of 27.3 M cells / ~102 GB carried in this file before the job ran. That estimate scaled the laptop level-9 layer cells by 16 and carried the background over unchanged, which under-counted the background refinement by more than a factor of two. LOAD-BEARING FOR: solve memory sizing and node count. A solve provisioned from the old number would be short by ~120 GB. The ARG-173 budget of 24.1 M / 90 GB is likewise superseded for THIS layer spec.",
+    "layer_floor_verdict": "CONFIRMED AT PRODUCTION RESOLUTION. The laptop scale-invariant test returned 97.4% of the requested stack and carried the caveat that snappy's minimum might have an ABSOLUTE component the ratio test could not see. It does not: the real mesh returns 99.6% with 4.96 of 5 layers and 0 illegal faces. The caveat is closed.",
+    "wall_face_prediction": "scaled from the level-9 laptop test as 5,290,000; measured 5,276,775, a 0.25% error. Also matches the L11 wall-RESOLVED mesh at 5,276,772, confirming ARG-173: the surface cell is set by the 1.03 mm blunt TE, not by wall treatment."
+  }
+}

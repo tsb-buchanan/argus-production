@@ -1,0 +1,17 @@
+FoamFile { version 2.0; format ascii; class volScalarField; object nut; }
+// WALL RESOLVED.  y+ ~ 0.54.  This is the file that makes the case wall-resolved --
+// the MESH ALONE DOES NOT.  Running a y+ 0.5 mesh with a wall-function nut is one
+// wall treatment on two meshes, not two wall treatments.
+dimensions      [0 2 -1 0 0 0 0];
+internalField   uniform 1.2167e-4;
+
+boundaryField
+{
+    inlet     { type calculated; value uniform 1.2167e-4; }
+    topBottom { type calculated; value uniform 1.2167e-4; }
+    outboard  { type calculated; value uniform 1.2167e-4; }
+    outlet    { type calculated; value uniform 1.2167e-4; }
+    symmetry  { type symmetry; }
+    wing      { type nutLowReWallFunction; value uniform 0; }
+    #includeEtc "caseDicts/setConstraintTypes"
+}

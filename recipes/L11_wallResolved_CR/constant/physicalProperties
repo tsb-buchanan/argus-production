@@ -1,0 +1,5 @@
+FoamFile { version 2.0; format ascii; class dictionary; object physicalProperties; }
+viscosityModel  constant;
+// ARGUS_reference_data.md section 1.6.  Re is realised through U, nu and geometry,
+// NEVER through lRef.  Assert  U * 0.3404 / nu = 0.9513e6.
+nu              [0 2 -1 0 0 0 0] 1.46e-05;

@@ -1,0 +1,257 @@
+% ARGUS morphing wing: restructured all-geometry report (v2).
+% Sections are fragments in sections/, figures in fig/.
+% Compile from this directory: latexmk -pdf argus_rans_validation_report.tex
+% Preamble is main.tex's, reused unchanged so the two documents compare like for like.
+\documentclass[10pt,a4paper]{article}
+
+\usepackage[a4paper,margin=20mm,top=18mm,bottom=20mm]{geometry}
+\usepackage{booktabs}
+\usepackage{graphicx}
+\usepackage{siunitx}
+\usepackage{amsmath}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{longtable}
+\usepackage[hidelinks]{hyperref}
+\usepackage{microtype}
+\usepackage{enumitem}
+\usepackage{titlesec}
+\usepackage{tikz}
+\usetikzlibrary{positioning,arrows.meta}
+\titleformat{\section}{\normalfont\large\bfseries}{\thesection}{0.6em}{}
+\titleformat{\subsection}{\normalfont\normalsize\bfseries}{\thesubsection}{0.6em}{}
+\titleformat{\subsubsection}{\normalfont\normalsize\itshape\bfseries}{\thesubsubsection}{0.6em}{}
+\titlespacing*{\subsubsection}{0pt}{1.1ex plus 0.3ex minus 0.2ex}{0.5ex plus 0.2ex}
+\titlespacing*{\section}{0pt}{1.7ex plus 0.4ex minus 0.2ex}{0.9ex plus 0.2ex}
+\titlespacing*{\subsection}{0pt}{1.3ex plus 0.3ex minus 0.2ex}{0.6ex plus 0.2ex}
+\titlespacing*{\paragraph}{0pt}{0.8ex plus 0.2ex minus 0.1ex}{1em}
+\setlist[enumerate]{itemsep=1pt,parsep=0pt,topsep=3pt,partopsep=0pt}
+\setlist[itemize]{itemsep=1pt,parsep=0pt,topsep=3pt,partopsep=0pt}
+
+\graphicspath{{fig/}}
+
+% Float packing. These change layout only: no content is added or removed by them.
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.65}
+\renewcommand{\textfraction}{0.06}
+\renewcommand{\floatpagefraction}{0.80}
+\setcounter{topnumber}{3}
+\setcounter{bottomnumber}{2}
+\setcounter{totalnumber}{5}
+\setlength{\textfloatsep}{7pt plus 2pt minus 2pt}
+\setlength{\intextsep}{7pt plus 2pt minus 2pt}
+\setlength{\floatsep}{7pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{2pt}
+
+\hypersetup{
+  pdftitle={ARGUS Morphing Wing: High-Fidelity RANS Validation of the VLM Design Study},
+  pdfauthor={Tyler Buchanan},
+  pdfsubject={Viscous RANS validation of morphing-wing candidates against VSPAERO/DSO}
+}
+
+\captionsetup{font=small,labelfont=bf}
+\renewcommand{\arraystretch}{1.0}
+\setcounter{tocdepth}{1}
+% group-digits=integer: without it siunitx groups the DECIMAL digits too, so
+% Sref 1.24092 printed as "1.240,92", which reads as a comma decimal. 25 lines of
+% the rendered PDF carried that, including two on page 1. Raised by a peer audit.
+\sisetup{group-separator={,},group-minimum-digits=4,group-digits=integer}
+
+\title{ARGUS Morphing Wing: High-Fidelity RANS Validation\\of the VLM Design Study}
+\author{Tyler Buchanan}
+\date{9 October 2026}
+
+% Generated table rows (sections/gen/, scripts/make_cruise_tables.py). \input is not expandable
+% inside an alignment and breaks the booktabs rule that follows it; the TeX primitive is.
+\newcommand*{\inputrows}[1]{\csname @@input\endcsname #1 }
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+\small\noindent
+Six wing surfaces were meshed and solved with steady RANS. One is the rigid baseline. Five are
+morphing candidates a VSPAERO vortex-lattice study selected on induced drag alone. Every geometry
+is trimmed to its own condition's target lift. All coefficients are on the DSO basis,
+$S_\mathrm{ref} = \num{1.24092}$~m$^2$ and $C_\mathrm{ref} = \num{0.39396}$~m. Ninety cases
+converged and all eighteen trims are solved. At
+Condition~CR, $M = 0.10$ and $C_L = 0.428277635108$, the candidates span $-0.868$ to $+0.232$
+counts against a baseline of $188.031$ counts, four of the five below it. At early cruise,
+$M = 0.78$ and $C_L = 0.529297087450$, W saves $0.769$ counts against a baseline of $177.839$, F
+and H cost $1.796$ and $2.244$, and C and M cost $12.871$ and $14.554$. Late cruise, $M = 0.78$
+and $C_L = 0.544114800210$, gives the same order, W at $-0.781$ to M at $+13.728$ against
+$187.959$, and W is the cheapest geometry at all three operating points. The cost follows the
+aft shock: C and M carry a strong shock at $\eta = 0.80$ and separate behind it, F and H a
+moderate one and stay attached, W none. The far-field induced-drag metric the study now ranks on reproduces
+the measured Condition~CR ordering to nine pairs of ten; the near-field metric the June selection
+was made on reproduces four of ten, and neither resolves the size of the effect. Every candidate
+raises the hinge moment about the morph line, by $0.4$ to $6.3$ per cent, and the root-bending
+constraint that selected C is not satisfied once computed viscously: C moves from $+6.796$ per
+cent in the vortex-lattice study, inside the $6.8$ per cent screen, to $+7.170$ per cent in RANS,
+outside it. The hinge moments tabulated for the hinged and twist concepts are common-basis
+comparisons rather than the load their own mechanisms carry, so the two morphing concepts cannot
+yet be ranked on actuator load.
+\end{abstract}
+
+\tableofcontents
+
+\section*{Nomenclature}
+\addcontentsline{toc}{section}{Nomenclature}
+\label{sec:nomenclature}
+
+Reference quantities are dual and are never mixed. The DSO basis is primary: all three fixed-lift
+targets are defined on it and every RANS coefficient here is on it, measured from each case's own
+\texttt{forceCoeffs} header rather than declared. The TP-1580 tunnel basis is reported alongside.
+The two areas differ by $13.3572/12.0 = \num{1.113100}$, i.e.\ $11.31$~per~cent, against a
+morphing effect of order $0.4$~per~cent, so a missed conversion is about 28 times the signal. The
+exact reciprocal $\num{0.898392}$ carries a TP-1580 coefficient onto the DSO basis, and these two
+are the pair used throughout; $\num{1.113132}$ is the same ratio formed from the rounded metric
+areas and is not the reciprocal of $\num{0.898392}$.
+
+{\footnotesize
+\begin{longtable}{@{}p{0.15\textwidth}p{0.81\textwidth}@{}}
+\toprule
+Symbol & Definition, value where fixed, and frame \\
+\midrule
+\endfirsthead
+\toprule
+Symbol & Definition, value where fixed, and frame \\
+\midrule
+\endhead
+\bottomrule
+\endlastfoot
+
+$S_\mathrm{ref}$, $C_\mathrm{ref}$, $c_\mathrm{ref}$ & Full-wing reference area and chord: DSO
+  $\num{1.24092}$~m$^2$ ($13.3572$~ft$^2$) with $C_\mathrm{ref}=\num{0.39396}$~m; TP-1580
+  $\num{1.1148}$~m$^2$ ($12.0$~ft$^2$) with $c_\mathrm{ref}=\num{0.3404}$~m, the chord used for
+  Reynolds matching to the tunnel \\
+$A_\mathrm{ref}$, $l_\mathrm{ref}$ & Half-wing reference area carried by every converged case,
+  $\num{0.620462}$~m$^2$ ($2A_\mathrm{ref}$ reproduces the DSO $S_\mathrm{ref}$ to
+  $3.22\times10^{-6}$ relative), and the mean aerodynamic chord $\num{0.393957}$~m \\
+AR, $b_\mathrm{ref}$ & Aspect ratio $\num{10.7807}$ on the DSO area and $\num{12.0000}$ on
+  TP-1580's; reference span $\num{3.6576}$~m ($12.0$~ft), common to both \\
+\addlinespace
+$C_L$, $C_D$ & Lift and total drag coefficient, each a 200-sample gate window mean, never a last
+  sample, on the DSO half-model basis, patch \texttt{wing} \\
+$C_M$ & Pitching-moment coefficient about $(1.34,0,0)$~m, nose-up positive; written by
+  \texttt{forceCoeffs} and reported per case, with the trim set carrying forces only
+  (Table~\ref{tab:qv:qoi}) \\
+$L/D$, ct & $C_L/C_D$, both window means, the reference area cancelling; drag count,
+  $1\times10^{-4}$ in a force coefficient. A $C_L$ residual in counts is written ``counts of
+  $C_L$'' \\
+$\Delta C_D$ & Candidate-minus-baseline drag increment at fixed $C_L$, within one condition only \\
+$C_{D,p}$, $C_{D,v}$ & Pressure and viscous drag split; closes at Condition~CR and, once $q$
+  carries $\rho$, at cruise \\
+$C_{Di}$, $C_{Diw}$ & Induced drag, near field (surface integration) and far field (wake plane),
+  both VSPAERO columns. The DSO reranked onto $C_{Diw}$ on 19~August 2026. The RANS Trefftz-plane
+  induced drag, and the span efficiency it implies, are in Section~\ref{sec:cr:spaneff} \\
+$C_{Dtot}$, $C_{Do}$ & VSPAERO total $C_{Do}+C_{Di}$, held apart from any RANS total; and its
+  flat-plate skin-friction correlation, whose $Re=1\times10^{7}$ is a VSPAERO placeholder
+  entering only that correlation, the VLM itself being inviscid \\
+$e$, $E$, $E_w$ & Span efficiency in $C_{Di}=C_L^2/(\pi\,\mathrm{AR}\,e)$; $E$ near field and
+  $E_w$ far field as printed by VSPAERO \\
+\addlinespace
+$c_p$, $c_p^{*}$ & Pressure coefficient $(p-p_\infty)/q$, formed in the solver so the
+  normalisation travels with the file; and the sonic value $-0.4931$, derived at $M=0.780302$
+  with $\gamma=1.4$. These carry no reference area \\
+$c_f$, $c_{f,s}$ & Skin friction $|\tau_w|/q$, and its signed freestream-aligned form
+  $m(\tau_w\!\cdot\!\hat{d})/q$ with $m=-1$ calibrated per case, where $\tau_s<0$ marks reversed
+  flow \\
+$c_l$, $c_l c/C_\mathrm{ref}$ & Sectional lift coefficient (pressure only) and sectional load,
+  the spanwise loading quantity \\
+$m'_h$, $c_{mh}$ & Sectional hinge moment per unit span, N\,m/m, and its coefficient
+  $m'_h/(q_\infty c(y)^2)$ formed on the \emph{local} section chord rather than a reference
+  chord. Taken about the swept $x_h/c = 0.62$ line, projected on that line's \emph{local
+  tangent}, over aft surfaces only, positive trailing-edge down \\
+$M_x$ & Half-wing root bending moment about the root chord line at $y = 0$, N\,m, taken from
+  the solver's own moment output rather than integrated from a surface. Dimensional, so it is
+  \emph{not} comparable across dynamic pressures; the comparison against the low-order method is
+  made on the percentage increase over each method's own baseline, which cancels $q$
+  (Section~\ref{sec:rbm}) \\
+$M_h$, $C_{Mh,\mathrm{region}}$ & Integrated half-wing hinge moment over
+  $0.60 \leq \eta \leq 1.00$, N\,m, and its coefficient
+  $M_h/[q_\infty\!\int\! c(y)^2\,\mathrm{d}y]$ over the same region, which avoids selecting one
+  of this wing's several defensible reference chords. $M_h$ is dimensional and therefore
+  \emph{not} comparable across the three dynamic pressures; $C_{Mh,\mathrm{region}}$ is \\
+$C_f$ & Flat-plate correlation $0.026\,Re^{-1/7}$, used only in the $y^+$ stack design and
+  distinct from $c_f$ \\
+\addlinespace
+$M$, $\alpha$, $\alpha_{0L}$ & Mach number; incidence in degrees read from the solver's own
+  drag-direction header, never from the case name; zero-lift angle from the bracket fit \\
+$U_\infty$, $\rho_\infty$, $p_\infty$, $T_\infty$, $q$ & Freestream speed, density, static
+  pressure, temperature and dynamic pressure; $q$ is kinematic at Condition~CR
+  ($\tfrac{1}{2}|U|^2=578$~m$^2$/s$^2$) and absolute at cruise \\
+$\gamma$ & Ratio of specific heats: $1.4$ for $c_p^{*}$, and the file's own $\num{1.4010834}$ for
+  the late-cruise dynamic-pressure closure \\
+$\nu$, $\mu$, $\nu_t$, $\tilde{\nu}$ & Kinematic and dynamic viscosity (the cruise $\mu$ is the
+  model-scale Reynolds-matched value, not the physical one); eddy viscosity $\nu_t=k/\omega$;
+  Spalart-Allmaras transported variable \\
+$k$, $\omega$, $Tu$ & Turbulence kinetic energy, specific dissipation rate, and freestream
+  turbulence intensity $\sqrt{2k/3}/U_\infty$ \\
+$Re_{C_\mathrm{ref}}$, $Re_{c_\mathrm{ref}}$ & Reynolds number on the DSO and on the TP-1580 chord
+  respectively; the subscript names which chord, and both are quoted for every condition \\
+$\tau_w$, $\tau_s$, $u_\tau$, $y^+$ & Wall shear stress, its signed streamwise component, friction
+  velocity, and $y\,u_\tau/\nu$, quoted throughout on the \emph{cell-centre} convention the solver
+  evaluates, on which a stack designed at the full first-cell height reads half its nominal
+  target (Section~\ref{sec:setup:mesh}) \\
+\addlinespace
+$\eta$, $x/c$, $x_h/c$ & Spanwise station on $b_\mathrm{ref}/2$ unless a table names the extractor
+  axis, which is $0.19$~per~cent inboard of it; chordwise fraction of local chord; morph start or
+  hinge line, $0.62$ continuous and $0.70$ hinged \\
+$\xi$, $S(\xi)$, $A/c$, $\Delta z_c$, $\Delta\theta$ & Morph coordinate
+  $(x/c-x_h/c)/(1-x_h/c)$; smoothstep $3\xi^2-2\xi^3$; commanded camber amplitude on the local
+  chord, positive trailing-edge down; camber displacement $-A(\eta)S(\xi)$ applied equally to both
+  surfaces so thickness is preserved; commanded twist in degrees \\
+\addlinespace
+$W$, $n$, $\tau$ & Convergence-gate window (200 force samples); converged bracket points in a fit;
+  Kendall rank correlation (wall shear is $\tau_w$) \\
+B, C, F, M, W, H & The six geometries: rigid baseline; continuous trailing-edge camber (C, F, M);
+  distributed twist (W); conventional hinged (H) \\
+B$^{*}$ & The corrected-interpolation baseline the DSO ranks against, which no RANS case has ever
+  meshed \\
+Condition~CR & The $M = 0.10$ low-speed state the design study selected its candidates at.
+  \textbf{CR does not stand for cruise}: the two cruise states are at $M = 0.78$ and are always
+  written ``early cruise'' and ``late cruise''. Unqualified ``cruise'' in this report means those
+  two and never Condition~CR \\
+\texttt{SW*}, \texttt{CMP*}, \texttt{LC*} & Case prefixes at Condition~CR, early cruise and late
+  cruise respectively \\
+DSO, VLM, RANS, EET & Design-space optimisation, the VSPAERO vortex-lattice study that selected
+  the candidates; vortex-lattice method; Reynolds-averaged Navier-Stokes; Energy Efficient
+  Transport, the NASA TP-1580 high-aspect-ratio supercritical-wing model \\
+\end{longtable}
+}
+
+\input{sections/t1_objectives.tex}
+\input{sections/t2_conditions_geometries.tex}
+\input{sections/t3_setup_pipeline.tex}
+\input{sections/t4_quantities.tex}
+\input{sections/t5_results.tex}
+\input{sections/t6_vlm_verdict.tex}
+\input{sections/t7_conclusions.tex}
+
+\appendix
+\input{sections/tA_sections.tex}
+\input{sections/tB_delta_maps.tex}
+
+{\footnotesize
+\begin{thebibliography}{9}
+\setlength{\itemsep}{1pt}
+\bibitem{tp1580} Morgan, H.~L., and Paulson, J.~W., \emph{Low-Speed Aerodynamic Performance of
+a High-Aspect-Ratio Supercritical-Wing Transport Model Equipped With Full-Span Slat and
+Part-Span Double-Slotted Flaps}, NASA TP-1580 (L-13201), December 1979. NTRS 19820007142.
+\bibitem{tm80048} Morgan, H.~L., \emph{Model Geometry Description and Pressure Distribution
+Data From Tests of EET High-Lift Research Model}, NASA TM-80048, February 1979.
+\bibitem{agard138} \emph{Experimental Data Base for Computer Program Assessment}, AGARD
+AR-138, 1979. Onera M6 wing, run 308; the validation case for the cruise numerics used here.
+\bibitem{zheng} Zheng, L., \emph{ARGUS Aerodynamic Optimization of a Morphing Outer Wing},
+internal ARGUS design-space-optimisation report, July 2026, with the far-field $C_{Diw}$ audit
+delivery of 19 August 2026. Table~18 is the cruise operating-point table referred to in the
+caption of Table~\ref{tab:cond:points}.
+\bibitem{openfoam} \emph{OpenFOAM}, version 12, OpenFOAM Foundation. All cases run
+\texttt{foamRun} with the \texttt{incompressibleFluid} and \texttt{fluid} modules.
+\end{thebibliography}
+}
+
+\end{document}
